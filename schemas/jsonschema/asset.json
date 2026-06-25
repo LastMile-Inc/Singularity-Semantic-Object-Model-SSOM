@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/asset.json",
+  "title": "SSOM Asset",
+  "type": "object",
+  "required": [
+    "asset_id",
+    "asset_type",
+    "display_name",
+    "lifecycle_state",
+    "ssom_version",
+    "identity"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:asset:"
+    },
+    "asset_type": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "lifecycle_state": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "source_references",
+        "confidence"
+      ],
+      "properties": {
+        "source_references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_platform",
+              "source_reference"
+            ],
+            "properties": {
+              "source_platform": {
+                "type": "string"
+              },
+              "source_reference": {
+                "type": "string"
+              },
+              "authority": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
