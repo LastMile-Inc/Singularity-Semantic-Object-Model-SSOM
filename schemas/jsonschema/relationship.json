@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/relationship.json",
+  "title": "SSOM Relationship",
+  "type": "object",
+  "required": [
+    "relationship_id",
+    "relationship_type",
+    "from_ref",
+    "to_ref",
+    "provenance",
+    "confidence"
+  ],
+  "properties": {
+    "relationship_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:relationship:"
+    },
+    "relationship_type": {
+      "type": "string"
+    },
+    "from_ref": {
+      "type": "string"
+    },
+    "to_ref": {
+      "type": "string"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_to": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

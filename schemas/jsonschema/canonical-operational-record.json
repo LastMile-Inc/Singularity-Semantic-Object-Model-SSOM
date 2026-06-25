@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/canonical-operational-record.json",
+  "title": "SSOM Canonical Operational Record",
+  "type": "object",
+  "required": [
+    "record_id",
+    "record_type",
+    "ssom_version",
+    "subject_ref",
+    "event_time",
+    "priority_class",
+    "provenance",
+    "quality",
+    "temporal_integrity"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:record:"
+    },
+    "record_type": {
+      "enum": [
+        "observation",
+        "event",
+        "alarm",
+        "condition",
+        "relationship"
+      ]
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "priority_class": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "quality": {
+      "$ref": "common.json#/$defs/quality"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "causation_id": {
+      "type": "string"
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
