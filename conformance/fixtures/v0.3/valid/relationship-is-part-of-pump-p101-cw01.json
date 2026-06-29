@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:pump-p101-is-part-of-cw01",
+  "relationship_type": "is_part_of",
+  "from_ref": "urn:ssom:asset:pump-p101",
+  "to_ref": "urn:ssom:asset:cw-01",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.92,
+  "provenance": {
+    "source_platform": "asset_hierarchy",
+    "source_authority_id": "asset_hierarchy",
+    "source_reference": "P101>CW01",
+    "lineage_id": "ln-rel-partof-001",
+    "ingest_time": "2026-06-29T10:09:10Z",
+    "processing_time": "2026-06-29T10:09:11Z"
+  },
+  "relationship_context": {
+    "relationship_scope": "functional_system"
+  },
+  "source_system": "asset_hierarchy",
+  "source_record": "P101>CW01",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "n:1"
+}

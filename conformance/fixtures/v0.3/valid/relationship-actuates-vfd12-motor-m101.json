@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:vfd12-actuates-motor-m101",
+  "relationship_type": "actuates",
+  "from_ref": "urn:ssom:asset:vfd-12",
+  "to_ref": "urn:ssom:asset:motor-m101",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.95,
+  "provenance": {
+    "source_platform": "electrical_design",
+    "source_authority_id": "electrical_design",
+    "source_reference": "DRV12>M101",
+    "lineage_id": "ln-rel-actuates-001",
+    "ingest_time": "2026-06-29T10:08:20Z",
+    "processing_time": "2026-06-29T10:08:21Z"
+  },
+  "relationship_context": {
+    "actuation_mode": "variable_speed"
+  },
+  "source_system": "electrical_design",
+  "source_record": "DRV12>M101",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "1:1"
+}

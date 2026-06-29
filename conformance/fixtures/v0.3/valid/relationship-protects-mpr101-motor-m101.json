@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:mpr101-protects-motor-m101",
+  "relationship_type": "protects",
+  "from_ref": "urn:ssom:asset:mpr-101",
+  "to_ref": "urn:ssom:asset:motor-m101",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.91,
+  "provenance": {
+    "source_platform": "relay_config",
+    "source_authority_id": "relay_config",
+    "source_reference": "MPR101>M101",
+    "lineage_id": "ln-rel-protects-001",
+    "ingest_time": "2026-06-29T10:08:30Z",
+    "processing_time": "2026-06-29T10:08:31Z"
+  },
+  "relationship_context": {
+    "protection_type": "overcurrent_and_thermal"
+  },
+  "source_system": "relay_config",
+  "source_record": "MPR101>M101",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "1:1"
+}

@@ -17,3 +17,5 @@ A conformant implementation will commonly maintain multiple data domains:
    Product-specific users, permissions, workflows, dashboards, credentials, configuration, billing, and support operations.
 
 Application-private state may reference SSOM identifiers. It must not redefine the meaning of SSOM core objects.
+
+SSOM v0.3.0 keeps Asset as the canonical lifecycle identity while allowing Equipment and Device to coexist as overlapping operational classifications. Workflow and system-of-action products may reference those classifications, but they do not redefine them.

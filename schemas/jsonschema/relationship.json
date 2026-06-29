@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ssom.dev/schema/relationship.json",
   "title": "SSOM Relationship",
+  "description": "Typed, directed, and optionally time-bounded relationships between SSOM entities, including equipment and device interactions.",
   "type": "object",
   "required": [
     "relationship_id",
@@ -17,7 +18,8 @@
       "pattern": "^urn:ssom:relationship:"
     },
     "relationship_type": {
-      "type": "string"
+      "type": "string",
+      "description": "Core vocabulary includes contains, located_in, part_of, is_part_of, feeds, depends_on, controls, monitors, measures, actuates, protects, communicates_with, is_connected_to, is_installed_on, is_contained_in, drives, powered_by, is_powered_by, is_managed_by, has_control_target, has_measurement_target, has_protection_target, serves, and has_sensor."
     },
     "from_ref": {
       "type": "string"
@@ -40,6 +42,30 @@
     },
     "provenance": {
       "$ref": "common.json#/$defs/provenance"
+    },
+    "relationship_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "source_system": {
+      "type": "string"
+    },
+    "source_record": {
+      "type": "string"
+    },
+    "semantic_profile_version": {
+      "type": "string"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "directed",
+        "undirected",
+        "bidirectional"
+      ]
+    },
+    "cardinality": {
+      "type": "string"
     },
     "extensions": {
       "type": "object",

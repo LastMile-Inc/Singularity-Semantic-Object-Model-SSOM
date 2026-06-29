@@ -1,0 +1,74 @@
+{
+  "asset_id": "urn:ssom:asset:pump-p101",
+  "asset_type": "centrifugal_pump",
+  "display_name": "Pump P-101",
+  "lifecycle_state": "in_service",
+  "asset_form": "machine",
+  "equipment_roles": [
+    "process_equipment"
+  ],
+  "lifecycle_roles": [
+    "serialized_asset",
+    "maintainable_asset",
+    "monitored_asset",
+    "critical_asset"
+  ],
+  "primary_operational_role": "process_equipment",
+  "ssom_version": "0.3.0",
+  "identity": {
+    "source_references": [
+      {
+        "source_platform": "eam",
+        "source_reference": "asset:P-101",
+        "authority": "plant_eam"
+      }
+    ],
+    "confidence": 0.98
+  },
+  "classification_assertions": [
+    {
+      "classification_scheme": "ssom-core",
+      "classification_category": "asset_form",
+      "classification_code": "machine",
+      "asserted_by": "asset-mastering",
+      "source_reference": "asset:P-101",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.98,
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "asset:P-101",
+        "lineage_id": "ln-p101-form",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:02Z"
+      }
+    },
+    {
+      "classification_scheme": "ssom-core",
+      "classification_category": "equipment_role",
+      "classification_code": "process_equipment",
+      "asserted_by": "asset-mastering",
+      "source_reference": "asset:P-101",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.96,
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "asset:P-101",
+        "lineage_id": "ln-p101-role",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:02Z"
+      }
+    }
+  ],
+  "context": {
+    "functional_system": "CW-01",
+    "installed_in": "Plant-2/Area-B/Unit-14",
+    "related_assets": [
+      "urn:ssom:asset:motor-m101",
+      "urn:ssom:asset:pt-101"
+    ]
+  }
+}

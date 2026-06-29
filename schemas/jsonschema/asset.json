@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ssom.dev/schema/asset.json",
   "title": "SSOM Asset",
+  "description": "Asset is the canonical lifecycle identity for physical or logical entities participating in industrial operations. Equipment and Device are overlapping operational classifications of an Asset.",
   "type": "object",
   "required": [
     "asset_id",
@@ -17,13 +18,48 @@
       "pattern": "^urn:ssom:asset:"
     },
     "asset_type": {
-      "type": "string"
+      "type": "string",
+      "description": "Source or semantic type retained from the authoritative system or mapping."
     },
     "display_name": {
       "type": "string"
     },
     "lifecycle_state": {
       "type": "string"
+    },
+    "asset_form": {
+      "$ref": "common.json#/$defs/assetForm"
+    },
+    "equipment_roles": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/equipmentRole"
+      },
+      "uniqueItems": true
+    },
+    "device_roles": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/deviceRole"
+      },
+      "uniqueItems": true
+    },
+    "lifecycle_roles": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/lifecycleRole"
+      },
+      "uniqueItems": true
+    },
+    "primary_operational_role": {
+      "oneOf": [
+        {
+          "$ref": "common.json#/$defs/equipmentRole"
+        },
+        {
+          "$ref": "common.json#/$defs/deviceRole"
+        }
+      ]
     },
     "ssom_version": {
       "type": "string"
@@ -61,6 +97,12 @@
           "minimum": 0,
           "maximum": 1
         }
+      }
+    },
+    "classification_assertions": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/classificationAssertion"
       }
     },
     "context": {

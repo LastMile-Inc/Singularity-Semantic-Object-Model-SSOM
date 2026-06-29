@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:pump-p101-installed-on-unit14",
+  "relationship_type": "is_installed_on",
+  "from_ref": "urn:ssom:asset:pump-p101",
+  "to_ref": "urn:ssom:asset:plant-2-area-b-unit-14",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.94,
+  "provenance": {
+    "source_platform": "functional_location_registry",
+    "source_authority_id": "functional_location_registry",
+    "source_reference": "P101@Plant-2/Area-B/Unit-14",
+    "lineage_id": "ln-rel-installed-001",
+    "ingest_time": "2026-06-29T10:09:20Z",
+    "processing_time": "2026-06-29T10:09:21Z"
+  },
+  "relationship_context": {
+    "alias_from_source": "is_installed_in"
+  },
+  "source_system": "functional_location_registry",
+  "source_record": "P101@Plant-2/Area-B/Unit-14",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "n:1"
+}

@@ -4,6 +4,116 @@
   "title": "SSOM Common Types",
   "type": "object",
   "$defs": {
+    "assetForm": {
+      "type": "string",
+      "enum": [
+        "system",
+        "unit",
+        "machine",
+        "assembly",
+        "component",
+        "instrument",
+        "controller",
+        "software",
+        "logical_asset"
+      ]
+    },
+    "equipmentRole": {
+      "type": "string",
+      "enum": [
+        "process_equipment",
+        "utility_equipment",
+        "material_handling_equipment",
+        "facility_equipment",
+        "production_equipment"
+      ]
+    },
+    "deviceRole": {
+      "type": "string",
+      "enum": [
+        "sensing_device",
+        "measurement_device",
+        "actuation_device",
+        "control_device",
+        "protection_device",
+        "communication_device",
+        "compute_device"
+      ]
+    },
+    "lifecycleRole": {
+      "type": "string",
+      "enum": [
+        "serialized_asset",
+        "maintainable_asset",
+        "replaceable_unit",
+        "monitored_asset",
+        "critical_asset",
+        "cyber_managed_asset",
+        "safety_related_asset"
+      ]
+    },
+    "classificationAssertion": {
+      "type": "object",
+      "required": [
+        "classification_scheme",
+        "classification_category",
+        "classification_code",
+        "confidence"
+      ],
+      "properties": {
+        "classification_scheme": {
+          "type": "string"
+        },
+        "classification_category": {
+          "type": "string",
+          "enum": [
+            "asset_form",
+            "equipment_role",
+            "device_role",
+            "lifecycle_role",
+            "source_type",
+            "derived_role",
+            "extension"
+          ]
+        },
+        "classification_code": {
+          "type": "string"
+        },
+        "asserted_by": {
+          "type": "string"
+        },
+        "source_reference": {
+          "type": "string"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "derivation_method": {
+          "type": "string"
+        },
+        "semantic_profile_version": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "common.json#/$defs/provenance"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "provenance": {
       "type": "object",
       "required": [

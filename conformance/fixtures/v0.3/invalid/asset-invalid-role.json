@@ -1,0 +1,20 @@
+{
+  "asset_id": "urn:ssom:asset:invalid-role-example",
+  "asset_type": "pump",
+  "display_name": "Invalid Role Example",
+  "lifecycle_state": "in_service",
+  "asset_form": "machine",
+  "equipment_roles": [
+    "invalid_equipment_role"
+  ],
+  "ssom_version": "0.3.0",
+  "identity": {
+    "source_references": [
+      {
+        "source_platform": "test",
+        "source_reference": "invalid:001"
+      }
+    ],
+    "confidence": 0.5
+  }
+}
