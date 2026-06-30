@@ -49,4 +49,4 @@ Observability agents may expose job health, projection freshness, anomaly summar
 
 ## Boundary statement
 
-This profile is proprietary and optional. It may be released as `Last Mile Platform Operations and SSOM Master Profile v1.0.0` only if it remains explicitly distinct from portable SSOM Core and if its tenant, learning, and observability controls stay validator-backed and non-normative to the SSOM Core specification.
+This profile is proprietary and optional. In the audited repository state represented by the final v1.0 release gate, it is designated as `Last Mile Platform Operations and SSOM Master Profile v1.0.0` because it remains explicitly distinct from portable SSOM Core and its tenant, learning, and observability controls stay validator-backed and non-normative to the SSOM Core specification.

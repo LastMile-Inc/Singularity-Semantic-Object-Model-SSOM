@@ -8,3 +8,4 @@
 - [SSOM v0.7 Conformance Checklist](checklist-v0.7.md)
 - [SSOM v0.8 Conformance Checklist](checklist-v0.8.md)
 - [SSOM v0.9 Conformance Checklist](checklist-v0.9.md)
+- [SSOM v1.0 Conformance Checklist](checklist-v1.0.md)

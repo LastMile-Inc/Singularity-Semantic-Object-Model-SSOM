@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## v1.0.0 - 2026-06-30
+
+### Changed: Final Release Gate And Promotion Decision
+
+- Promoted the audited portable semantic core from the `v0.9.0` draft surface to `SSOM Core v1.0.0` after closing discovery, proof-bundle, proprietary-boundary, and reference-validation workstreams.
+- Added the final `SSOM_v1_0_Release_Acceptance_Audit` artifact and a current `conformance/checklist-v1.0.md` release checklist.
+- Designated the optional proprietary `Last Mile Platform Operations and SSOM Master Profile v1.0.0` as a separate, validator-backed release surface that remains explicitly outside portable SSOM Core semantics.
 
 ### Added: Industry Profiles And Candidate-Specification Package
 

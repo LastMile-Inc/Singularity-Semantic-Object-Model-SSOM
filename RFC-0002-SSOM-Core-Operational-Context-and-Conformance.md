@@ -1,8 +1,8 @@
 # RFC-0002: SSOM Core, Operational Context, and Conformance
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.9.0
+- **Intended Version:** SSOM v1.0.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -26,6 +26,8 @@ SSOM v0.7.0 adds first-class failure, maintenance, work verification, and work o
 SSOM v0.8.0 adds first-class event, alarm, and state-transition semantics so implementations can preserve time-bound operational occurrences, governed alarm lifecycle, source-state mappings, maintenance suppression windows, late-arriving evidence, and verification of false or transient alarms without collapsing those semantics into free text.
 
 SSOM v0.9.0 adds governed relationship semantics plus explicit boundary objects for Asset Class, Equipment Model, and non-serialized operational boundaries so implementations can distinguish lifecycle assets from taxonomy concepts, functional location, systems, process segments, production units, and control entities without falling back to unrestricted relationship text.
+
+SSOM v1.0.0 promotes the previously audited v0.9.0 draft surface as the first stable portable core release without adding Last Mile-specific commercial or platform-operating semantics into SSOM Core.
 
 ## 1. Motivation
 
@@ -1111,7 +1113,7 @@ urn:ssom:ext:<organization-or-community>:<domain>:<name>
 
 ### 7.3 Profiles
 
-SSOM v0.9.0 defines:
+SSOM v1.0.0 defines:
 
 1. Core Asset and Relationship Profile
 2. Asset Identity and Continuity Profile
@@ -1128,11 +1130,11 @@ An implementation MAY support a subset but MUST declare supported profiles.
 
 ## 8. Serialization and schema strategy
 
-SSOM v0.9.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
+SSOM v1.0.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
 
 JSON Schema is selected because it supports broad API, cloud, event, and validation tooling.
 
-XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.9.0. Placeholder XML artifacts remain informative until a compatibility update is published.
+XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v1.0.0. Placeholder XML artifacts remain informative until a compatibility update is published.
 
 ## 9. Compatibility and versioning
 
@@ -1142,11 +1144,11 @@ XML Schema artifacts MAY be retained for compatibility. In this repository, the 
 - Implementations MUST include `ssom_version`.
 - Consumers MUST reject or quarantine unsupported major versions.
 - Consumers SHOULD preserve unknown extension fields where safe.
-- SSOM v0.9.0 is an additive, backward-compatible extension of the v0.8.0 draft.
+- SSOM v1.0.0 promotes the audited v0.9.0 draft semantic surface as the first stable portable-core release.
 
 ## 10. Conformance
 
-An SSOM v0.9.0 implementation MUST:
+An SSOM v1.0.0 implementation MUST:
 
 1. Validate claimed profiles against normative JSON Schemas.
 2. Preserve identity, provenance, quality, and temporal information.
@@ -1183,9 +1185,9 @@ Operational records can expose sensitive facility, topology, production, equipme
 
 Implementations SHOULD minimize sensitive content, keep credentials outside semantic records, apply purpose and retention metadata, protect source references that reveal proprietary topology, control access to high-resolution telemetry and media references, avoid placing private application authorization logic inside SSOM, and support deletion or tombstone references where required.
 
-## 12. Migration from v0.8
+## 12. Migration from earlier drafts
 
-Implementations moving from v0.8.0 to v0.9.0 SHOULD:
+Implementations moving from v0.8.0 or the audited v0.9.0 draft to v1.0.0 SHOULD:
 
 1. retain existing Assets, Relationships, Observations, Conditions, truth-state records, identity lifecycle records, event or alarm records, and reliability or work records without re-identifying them;
 2. replace unrestricted free-text core relationship values with governed relationship codes or namespaced extension relationship codes;

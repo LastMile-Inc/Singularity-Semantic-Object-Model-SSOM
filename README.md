@@ -125,7 +125,7 @@ The BigQuery artifacts in this repository define a provider-specific reference a
 
 > SSOM is the canonical industrial semantic and evidence layer. ServiceNow remains a system of action and workflow consumer. Safety and cybersecurity profiles extend operational context without converting SSOM into a complete safety or cybersecurity management product.
 
-The repository now includes a candidate-specification package and release-readiness assessment intended for disciplined external review. Those artifacts preserve draft status and qualified-claims boundaries; they do not position SSOM as a definitive or certified OT standard.
+The repository now includes a historical candidate-specification package, a historical release-readiness assessment, and a final v1.0 release acceptance audit. Those artifacts preserve qualified-claims boundaries; they do not position SSOM as a definitive or certified OT standard.
 
 The repository also includes a proprietary Last Mile platform-operations profile surface. That profile is optional, product-specific, and explicitly outside portable SSOM Core semantics.
 
@@ -133,11 +133,11 @@ Legacy note:
 
 The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
 
-## Current draft version
+## Current release version
 
-- SSOM v0.9.0 draft: additive governed relationship registry and operational boundary update
+- SSOM Core v1.0.0: stable release of the audited portable semantic core, conformance surface, and bounded profile family
 - RFC-0001: Draft / Experimental foundation
-- RFC-0002: Draft / Standards Track Proposal for v0.9.0
+- RFC-0002: Accepted / Standards Track for v1.0.0
 
 ## Read next
 
@@ -147,6 +147,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - BigQuery reference architecture: [docs/bigquery-reference-architecture-v0.9.md](docs/bigquery-reference-architecture-v0.9.md)
 - Candidate specification package: [docs/candidate-specification-package-v0.9.md](docs/candidate-specification-package-v0.9.md)
 - Release readiness assessment: [docs/release-readiness-assessment-v0.9.md](docs/release-readiness-assessment-v0.9.md)
+- Final v1.0 release acceptance audit: [docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md](docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md)
 - Industry profile index: [docs/industry-profile-index-v0.9.md](docs/industry-profile-index-v0.9.md)
 - ServiceNow serving projection profile: [docs/servicenow-serving-projection-profile-v0.9.md](docs/servicenow-serving-projection-profile-v0.9.md)
 - Functional safety foundation profile: [docs/functional-safety-foundation-profile-v0.9.md](docs/functional-safety-foundation-profile-v0.9.md)
@@ -186,7 +187,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Standards mapping claims are qualified conceptual-alignment statements unless an implementation publishes additional mapping evidence and profile-specific conformance artifacts.
 - Previous standards mapping note: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
-- Conformance: [conformance/checklist-v0.9.md](conformance/checklist-v0.9.md)
+- Conformance: [conformance/checklist-v1.0.md](conformance/checklist-v1.0.md)
 
 ## Participation
 

@@ -105,7 +105,7 @@ SSOM includes a reference implementation optimized for Google BigQuery to demons
 
 ## 7. Conformance
 
-Conformance requirements are indexed in `conformance/checklist.md`, with the current release-surface authority defined by the versioned checklist for the active semantic family. For the present audited repository state, the authoritative release checklist is `conformance/checklist-v0.9.md`.
+Conformance requirements are indexed in `conformance/checklist.md`, with the current release-surface authority defined by the versioned checklist for the active semantic family. For the present audited repository state, the authoritative release checklist is `conformance/checklist-v1.0.md`.
 
 ---
 

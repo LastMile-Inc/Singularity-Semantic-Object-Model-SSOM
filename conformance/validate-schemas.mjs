@@ -1215,6 +1215,114 @@ function ensureReferenceValidationPackageSemantics(testName) {
   );
 }
 
+function ensureV10ReleaseGateSemantics(testName) {
+  const readme = readText("README.md");
+  const rfc0001 = readText("RFC-0001-SSOM.md");
+  const rfc0002 = readText("RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md");
+  const checklistV1 = readText("conformance/checklist-v1.0.md");
+  const schemaReference = readText("docs/schema-reference-v1.0.md");
+  const changelog = readText("CHANGELOG.md");
+  const releaseAudit = readText("docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md");
+  const lastMileProfile = readText("docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md");
+
+  assertIncludesAll(
+    readme,
+    [
+      "## Current release version",
+      "SSOM Core v1.0.0",
+      "RFC-0002: Accepted / Standards Track for v1.0.0",
+      "Final v1.0 release acceptance audit",
+      "conformance/checklist-v1.0.md"
+    ],
+    testName,
+    "README current release surface"
+  );
+
+  assertIncludesAll(
+    rfc0001,
+    [
+      "the authoritative release checklist is `conformance/checklist-v1.0.md`"
+    ],
+    testName,
+    "RFC-0001 current conformance authority"
+  );
+
+  assertIncludesAll(
+    rfc0002,
+    [
+      "- **Status:** Accepted",
+      "- **Intended Version:** SSOM v1.0.0",
+      "SSOM v1.0.0 promotes the previously audited v0.9.0 draft surface as the first stable portable core release",
+      "SSOM v1.0.0 defines:",
+      "SSOM v1.0.0 adopts **JSON Schema** as the normative machine-readable schema",
+      "the JSON Schemas are normative for v1.0.0",
+      "An SSOM v1.0.0 implementation MUST:",
+      "Implementations moving from v0.8.0 or the audited v0.9.0 draft to v1.0.0 SHOULD:"
+    ],
+    testName,
+    "RFC-0002 release versioning"
+  );
+
+  assertIncludesAll(
+    checklistV1,
+    [
+      "# SSOM v1.0 Conformance Checklist",
+      "## Proprietary Last Mile Platform Profile Boundary",
+      "## v1.0 Release Gate",
+      "SSOM Core v1.0.0"
+    ],
+    testName,
+    "v1.0 conformance checklist"
+  );
+
+  assertIncludesAll(
+    schemaReference,
+    [
+      "SSOM Core `v1.0.0`",
+      "conformance/checklist-v1.0.md",
+      "docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md"
+    ],
+    testName,
+    "v1.0 schema discovery reference"
+  );
+
+  assertIncludesAll(
+    changelog,
+    [
+      "## v1.0.0 - 2026-06-30",
+      "Final Release Gate And Promotion Decision",
+      "SSOM Core v1.0.0",
+      "Last Mile Platform Operations and SSOM Master Profile v1.0.0"
+    ],
+    testName,
+    "changelog release marker"
+  );
+
+  assertIncludesAll(
+    releaseAudit,
+    [
+      "# SSOM v1.0 Release Acceptance Audit",
+      "APPROVED.",
+      "SSOM Core v1.0.0",
+      "Last Mile Platform Operations and SSOM Master Profile v1.0.0",
+      "`npm run validate` passes",
+      "`git diff --check` passes"
+    ],
+    testName,
+    "final v1.0 release acceptance audit"
+  );
+
+  assertIncludesAll(
+    lastMileProfile,
+    [
+      "designated as `Last Mile Platform Operations and SSOM Master Profile v1.0.0`",
+      "explicitly distinct from portable SSOM Core"
+    ],
+    testName,
+    "Last Mile proprietary profile release designation"
+  );
+}
+
 function ensureCandidateSpecificationPackageSemantics(testName) {
   const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
   const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
@@ -1339,7 +1447,7 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
   assertIncludesAll(
     rfc0001,
     [
-      "the authoritative release checklist is `conformance/checklist-v0.9.md`"
+      "the authoritative release checklist is `conformance/checklist-v1.0.md`"
     ],
     testName,
     "RFC-0001 conformance authority"
@@ -1404,10 +1512,12 @@ function ensureReleaseDiscoveryIntegrity(testName) {
     "reference-implementation/bigquery/schema.sql",
     "reference-implementation/bigquery/example-queries.sql",
     "conformance/validate-schemas.mjs",
+    "conformance/checklist-v1.0.md",
     "conformance/checklist-v0.9.md",
     "docs/candidate-specification-package-v0.9.md",
     "docs/release-readiness-assessment-v0.9.md",
     "docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md",
+    "docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md",
     "reference-validation/README.md",
     "reference-validation/bigquery/nonproduction-validation-plan-v1.0.md",
     "reference-validation/bigquery/nonprod-validation-queries.sql",
@@ -3300,6 +3410,9 @@ results.push("candidate-specification and release-readiness artifacts cover qual
 
 ensureReleaseDiscoveryIntegrity("release discovery integrity");
 results.push("release discovery surfaces, CI wiring, and governance submission paths remain current and validation-backed");
+
+ensureV10ReleaseGateSemantics("v1.0 release gate");
+results.push("the v1.0 release gate remains version-coherent, evidence-led, and explicitly separated from the proprietary Last Mile profile decision");
 
 expectInvalidCapabilityManifest(
   "capability manifest overclaim",

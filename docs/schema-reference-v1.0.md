@@ -1,6 +1,6 @@
 # SSOM v1.0 Discovery Surface Reference
 
-This document is the release-discovery index for the SSOM v1.0 promotion program. It does not by itself declare that SSOM has been promoted to `v1.0.0`. It identifies the artifacts that must remain coherent, discoverable, and validation-backed before a final v1.0 decision can be made.
+This document is the release-discovery index for SSOM Core `v1.0.0` and its bounded adjacent release surfaces. It complements the final release acceptance audit and identifies the artifacts that must remain coherent, discoverable, and validation-backed after promotion.
 
 ## Core normative specification
 
@@ -100,7 +100,7 @@ This document is the release-discovery index for the SSOM v1.0 promotion program
 ## Conformance and validation authority
 
 - `conformance/validate-schemas.mjs`
-- `conformance/checklist-v0.9.md`
+- `conformance/checklist-v1.0.md`
 - `conformance/fixtures/`
 
 ### Workstream 2 proof and adversarial fixtures
@@ -133,11 +133,12 @@ This document is the release-discovery index for the SSOM v1.0 promotion program
 - `docs/candidate-specification-package-v0.9.md`
 - `docs/release-readiness-assessment-v0.9.md`
 - `docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md`
+- `docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md`
 - `CHANGELOG.md`
 
 ## Last Mile platform and master-profile surfaces
 
-These are release-relevant to the v1.0 promotion program, but they are not part of portable SSOM Core semantics.
+These are release-relevant to the v1.0 release gate, but they are not part of portable SSOM Core semantics.
 
 - `docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md`
 - `schemas/jsonschema/last-mile-platform-operations-profile.json`
