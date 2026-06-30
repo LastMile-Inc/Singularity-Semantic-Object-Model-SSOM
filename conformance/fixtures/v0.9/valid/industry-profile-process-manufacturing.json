@@ -1,0 +1,136 @@
+{
+  "profile_id": "process-manufacturing-profile",
+  "profile_version": "0.9.0",
+  "industry_label": "Process Manufacturing",
+  "intended_scope": "Continuous and batch-adjacent process assets such as pumps, reactors, valves, SIS elements, analyzers, and utility-coupled process trains, while keeping recipe or detailed control logic outside the core profile scaffold.",
+  "core_ssom_objects_used": [
+    "Asset",
+    "Operational Boundary",
+    "Observation",
+    "Condition",
+    "Failure Event",
+    "Recommendation",
+    "Decision",
+    "Action",
+    "Work Verification",
+    "Work Outcome",
+    "Event",
+    "Alarm"
+  ],
+  "required_roles": [
+    "process_equipment",
+    "maintainable_asset"
+  ],
+  "optional_roles": [
+    "control_device",
+    "safety_related_asset",
+    "cyber_managed_asset"
+  ],
+  "profile_specific_relationships": [
+    "contains",
+    "controls",
+    "drives",
+    "protects",
+    "is_connected_to"
+  ],
+  "measurement_signal_expectations": [
+    "Pressure, flow, level, temperature, and vibration measurements should preserve original and canonical unit semantics.",
+    "Late-arriving historian evidence should remain distinguishable from event time.",
+    "Ungoverned units may be preserved as raw evidence but not treated as comparable measurements."
+  ],
+  "event_alarm_expectations": [
+    "Threshold-breach alarms and safety bypass events must remain distinct from conditions.",
+    "Maintenance suppression context should be explicit when alarm visibility is altered.",
+    "Safety-related occurrences should preserve state-transition and work-context references."
+  ],
+  "reliability_work_requirements": [
+    "Work execution must not imply restored function without verification evidence.",
+    "Recurrence should remain linked to earlier work and outcome context.",
+    "Failure mode, mechanism, cause, and work outcome should remain structured when available."
+  ],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Applicable where SIF or bypass semantics exist.",
+    "cyber_profile_applicability": "Applicable where controllers, VFDs, SIS logic, or networked analyzers are cyber-managed.",
+    "notes": [
+      "The safety profile adds bounded traceability, not a complete safety lifecycle.",
+      "The cyber profile adds zone, conduit, and posture context, not a complete control-framework implementation."
+    ]
+  },
+  "servicenow_serving_projection_implications": [
+    "Project current condition, risk, active anomalies, work references, and evidence freshness rather than raw time-series payloads.",
+    "Preserve links to full SSOM evidence bundles for workflow escalation and review."
+  ],
+  "standards_mapping_applicability": [
+    "OPC UA",
+    "ISA-95 or IEC 62264",
+    "IEC 61511 foundation profile",
+    "IEC 62443 foundation profile",
+    "ISA-18 or IEC 62682",
+    "ISO 14224",
+    "MIMOSA or OSA-EAI"
+  ],
+  "profile_specific_conformance_fixtures": [
+    "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+    "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+  ],
+  "known_exclusions": [
+    "Detailed ISA-88 recipe, phase, and procedure semantics.",
+    "Full SIL lifecycle implementation and safety-program governance.",
+    "Closed-loop DCS or PLC logic definitions."
+  ],
+  "end_to_end_example": {
+    "scenario_id": "process-pump-recurrence-and-bypass",
+    "scenario_label": "Pump recurrence, safety bypass traceability, and workflow projection",
+    "narrative_summary": "A process pump shows rising vibration, generates work and verification evidence, remains traceable through recurrence, and exposes bounded safety bypass and ServiceNow workflow context without collapsing raw evidence into workflow storage.",
+    "involved_entities": [
+      {
+        "entity_id": "urn:ssom:asset:pump-p101-v2",
+        "entity_kind": "asset",
+        "roles": [
+          "process_equipment",
+          "maintainable_asset"
+        ]
+      },
+      {
+        "entity_id": "urn:ssom:asset:sis-logic-1",
+        "entity_kind": "asset",
+        "roles": [
+          "logic_solver",
+          "safety_related_asset"
+        ]
+      }
+    ],
+    "stages": [
+      {
+        "stage_type": "measurement_signal",
+        "summary": "Vibration and pressure observations preserve original and canonical measurement semantics."
+      },
+      {
+        "stage_type": "event_alarm",
+        "summary": "Operational alarm and safety bypass events remain distinct and time-bound."
+      },
+      {
+        "stage_type": "reliability_work",
+        "summary": "A recommendation leads to work execution, verification, and a measurable but ineffective outcome due to recurrence."
+      },
+      {
+        "stage_type": "safety_or_cyber",
+        "summary": "A bounded safety context records bypass visibility and proof-test evidence without claiming lifecycle completeness."
+      },
+      {
+        "stage_type": "serving_projection",
+        "summary": "A curated ServiceNow projection exposes current state, risk, work references, and evidence freshness."
+      },
+      {
+        "stage_type": "outcome",
+        "summary": "The example ends with recurrence-aware operational context rather than a false claim of restored reliability."
+      }
+    ],
+    "related_repo_artifacts": [
+      "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+      "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+      "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+    ]
+  }
+}

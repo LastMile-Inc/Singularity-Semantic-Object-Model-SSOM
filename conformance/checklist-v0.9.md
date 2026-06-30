@@ -55,3 +55,11 @@
 - [ ] Cyber context keeps firmware or software identity, network identity, zones, conduits, vulnerability references, posture references, and mitigation actions explicit.
 - [ ] The profile covers a networked vulnerable VFD, a PLC communicating through a conduit, and a safety controller with cyber-managed identity.
 - [ ] The profile is bounded as foundational OT cyber interoperability context rather than a complete cybersecurity management surface.
+
+## Industry Profiles
+- [ ] Process manufacturing, discrete manufacturing, utilities and electric power, water and wastewater, and facilities and data centers each have a bounded profile scaffold.
+- [ ] Each industry profile defines scope, required or optional roles, measurement expectations, event or alarm expectations, reliability or work requirements, safety or cyber applicability, ServiceNow implications, standards applicability, exclusions, and an end-to-end example.
+
+## Candidate Specification Package
+- [ ] Candidate-specification package covers normative index, compatibility, governance, conformance, capability manifest, standards crosswalk, BigQuery reference architecture, ServiceNow coexistence, industry profiles, claims matrix, limitations, review guidance, and licensing boundary.
+- [ ] Release-readiness assessment classifies external claims and recommends a publication posture without overstating maturity.

@@ -125,6 +125,8 @@ The BigQuery artifacts in this repository define a provider-specific reference a
 
 > SSOM is the canonical industrial semantic and evidence layer. ServiceNow remains a system of action and workflow consumer. Safety and cybersecurity profiles extend operational context without converting SSOM into a complete safety or cybersecurity management product.
 
+The repository now includes a candidate-specification package and release-readiness assessment intended for disciplined external review. Those artifacts preserve draft status and qualified-claims boundaries; they do not position SSOM as a definitive or certified OT standard.
+
 Legacy note:
 
 The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
@@ -141,6 +143,9 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/asset-class.json](schemas/jsonschema/asset-class.json), [schemas/jsonschema/equipment-model.json](schemas/jsonschema/equipment-model.json), [schemas/jsonschema/operational-boundary.json](schemas/jsonschema/operational-boundary.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/relationship.json](schemas/jsonschema/relationship.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
 - Capability manifest schema: [schemas/jsonschema/capability-manifest.json](schemas/jsonschema/capability-manifest.json)
 - BigQuery reference architecture: [docs/bigquery-reference-architecture-v0.9.md](docs/bigquery-reference-architecture-v0.9.md)
+- Candidate specification package: [docs/candidate-specification-package-v0.9.md](docs/candidate-specification-package-v0.9.md)
+- Release readiness assessment: [docs/release-readiness-assessment-v0.9.md](docs/release-readiness-assessment-v0.9.md)
+- Industry profile index: [docs/industry-profile-index-v0.9.md](docs/industry-profile-index-v0.9.md)
 - ServiceNow serving projection profile: [docs/servicenow-serving-projection-profile-v0.9.md](docs/servicenow-serving-projection-profile-v0.9.md)
 - Functional safety foundation profile: [docs/functional-safety-foundation-profile-v0.9.md](docs/functional-safety-foundation-profile-v0.9.md)
 - OT cybersecurity foundation profile: [docs/ot-cybersecurity-foundation-profile-v0.9.md](docs/ot-cybersecurity-foundation-profile-v0.9.md)

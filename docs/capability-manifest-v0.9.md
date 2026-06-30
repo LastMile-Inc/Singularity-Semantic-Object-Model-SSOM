@@ -22,7 +22,7 @@ The capability manifest provides a machine-readable declaration of which SSOM pr
 
 ## Current Repository Posture
 
-The v0.9 manifest declares validated support for truth-state lineage, identity lifecycle, measurement safety, reliability and maintenance, event and alarm, relationship governance, the integrated lifecycle profile, the ServiceNow serving projection profile, the functional safety foundation profile, and the OT cybersecurity foundation profile.
+The v0.9 manifest declares validated support for truth-state lineage, identity lifecycle, measurement safety, reliability and maintenance, event and alarm, relationship governance, the integrated lifecycle profile, the ServiceNow serving projection profile, the functional safety foundation profile, the OT cybersecurity foundation profile, and the initial industry-profile scaffold family.
 
 ## Guardrails
 

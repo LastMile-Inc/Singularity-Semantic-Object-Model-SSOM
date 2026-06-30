@@ -41,3 +41,9 @@ Migration guidance for existing illustrative deployments:
 - Use the functional safety foundation profile only for safety context, traceability, bypass visibility, and proof-test evidence boundaries.
 - Use the OT cybersecurity foundation profile only for foundational identity, topology, vulnerability, posture, and mitigation context.
 - Do not infer complete safety or cybersecurity management behavior from these profiles alone.
+
+## Industry-profile migration note
+
+- Use the industry profiles as bounded scaffolds for vertical adaptation rather than as permission to push all sector-specific vocabulary into SSOM core.
+- Keep vertical-specific vocabulary, measurements, exclusions, and workflow implications inside the relevant profile or extension package.
+- Treat the industry-profile fixtures as candidate-spec review examples, not as exhaustive sector reference models.

@@ -793,6 +793,113 @@ function ensureCyberFoundationSemantics(bundle, testName) {
   }
 }
 
+function validateIndustryProfileBundle(testName, relativePath) {
+  return validateFixture(testName, "industry-profile-bundle.json", relativePath);
+}
+
+function ensureIndustryProfileSemantics(bundle, testName) {
+  assert(
+    bundle.required_roles.every((role) => !bundle.optional_roles.includes(role)),
+    `${testName} must not duplicate required roles in optional roles.`
+  );
+
+  for (const relativePath of bundle.profile_specific_conformance_fixtures || []) {
+    assertWorkspacePathExists(relativePath, testName, "profile-specific conformance fixture");
+  }
+
+  for (const relativePath of bundle.end_to_end_example?.related_repo_artifacts || []) {
+    assertWorkspacePathExists(relativePath, testName, "related repository artifact");
+  }
+
+  const stageTypes = new Set((bundle.end_to_end_example?.stages || []).map((stage) => stage.stage_type));
+  for (const requiredStageType of ["measurement_signal", "event_alarm", "reliability_work", "serving_projection", "outcome"]) {
+    assert(stageTypes.has(requiredStageType), `${testName} end-to-end example must include stage ${requiredStageType}.`);
+  }
+
+  assert(
+    (bundle.standards_mapping_applicability || []).length >= 2,
+    `${testName} must identify more than one standards-mapping applicability surface.`
+  );
+  assert(
+    (bundle.safety_cyber_applicability?.notes || []).length > 0,
+    `${testName} must include bounded safety or cyber applicability notes.`
+  );
+}
+
+function ensureCandidateSpecificationPackageSemantics(testName) {
+  const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
+  const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
+  const industryIndex = readText("docs/industry-profile-index-v0.9.md");
+  const readme = readText("README.md");
+
+  assertIncludesAll(
+    packageDoc,
+    [
+      "## 1. Executive Overview",
+      "## 2. Core Normative Specification Index",
+      "## 3. Version And Compatibility Statement",
+      "## 4. Governance Model",
+      "## 5. Conformance Model",
+      "## 6. Capability-Manifest Model",
+      "## 7. Standards Crosswalk Summary",
+      "## 8. BigQuery Reference Architecture Summary",
+      "## 9. ServiceNow Coexistence Summary",
+      "## 10. Industry-Profile Index",
+      "## 11. Claims Matrix",
+      "## 12. Known Limitations And Roadmap",
+      "## 13. Contributor And External-Review Guidance",
+      "## 14. IP And Licensing Boundary Statement",
+      "SSOM is not positioned here as the definitive OT standard"
+    ],
+    testName,
+    "candidate-specification package"
+  );
+
+  assertIncludesAll(
+    releaseDoc,
+    [
+      "## External Claims Gate",
+      "Candidate OT semantic specification",
+      "Standards-aware interoperability model",
+      "AI-ready operational context model",
+      "Cloud-scale reference architecture",
+      "Reliability and work-outcome semantics",
+      "ServiceNow coexistence model",
+      "Cross-vendor industrial semantic layer",
+      "Recommended decision: publish numbered draft release",
+      "Verdict: ready for candidate-specification external review as a numbered draft release"
+    ],
+    testName,
+    "release-readiness assessment"
+  );
+
+  assertIncludesAll(
+    industryIndex,
+    [
+      "## Process manufacturing",
+      "## Discrete manufacturing",
+      "## Utilities and electric power",
+      "## Water and wastewater",
+      "## Facilities and data centers",
+      "## Profile boundary"
+    ],
+    testName,
+    "industry-profile index"
+  );
+
+  assertIncludesAll(
+    readme,
+    [
+      "candidate-specification package",
+      "release-readiness assessment",
+      "industry profile index",
+      "do not position SSOM as a definitive or certified OT standard"
+    ],
+    testName,
+    "README candidate-review coverage"
+  );
+}
+
 function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
   try {
     validateMeasurementObservation(testName, relativePath);
@@ -2568,6 +2675,21 @@ const cyberFoundationBundle = validateCyberFoundationBundle(
 );
 ensureCyberFoundationSemantics(cyberFoundationBundle, "OT cybersecurity foundation profile");
 results.push("OT cybersecurity foundation profiles preserve cyber-managed identity, firmware or software context, zones, conduits, posture, vulnerability, and mitigation references without claiming full control-framework coverage");
+
+for (const [label, relativePath] of [
+  ["process manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"],
+  ["discrete manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"],
+  ["utilities and electric power industry profile", "conformance/fixtures/v0.9/valid/industry-profile-utilities-electric-power.json"],
+  ["water and wastewater industry profile", "conformance/fixtures/v0.9/valid/industry-profile-water-wastewater.json"],
+  ["facilities and data centers industry profile", "conformance/fixtures/v0.9/valid/industry-profile-facilities-data-centers.json"]
+]) {
+  const profileBundle = validateIndustryProfileBundle(label, relativePath);
+  ensureIndustryProfileSemantics(profileBundle, label);
+}
+results.push("initial industry profiles stay bounded, fixture-backed, and tied to end-to-end examples without pushing vertical-specific vocabulary into SSOM core");
+
+ensureCandidateSpecificationPackageSemantics("candidate-specification package");
+results.push("candidate-specification and release-readiness artifacts cover qualified external positioning, publication posture, and review boundaries");
 
 expectInvalidCapabilityManifest(
   "capability manifest overclaim",

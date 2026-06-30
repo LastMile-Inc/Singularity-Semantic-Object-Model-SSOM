@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added: Industry Profiles And Candidate-Specification Package
+
+- Added initial bounded industry-profile scaffolds for process manufacturing, discrete manufacturing, utilities and electric power, water and wastewater, and facilities and data centers, each with an end-to-end example fixture.
+- Added a candidate-specification package and release-readiness assessment covering governance, conformance, capability evidence, standards traceability, BigQuery architecture, ServiceNow coexistence, claims discipline, and publication posture.
+
+### Changed: Candidate Review Positioning
+
+- README, capability-manifest posture, migration guidance, and conformance checklist now reflect candidate-spec external review readiness while preserving draft and qualified-claims boundaries.
+
 ### Added: Serving, Safety, And Cyber Foundation Profiles
 
 - Added a formal ServiceNow serving projection profile with a typed curated projection bundle and fixture coverage for pump, PLC, VFD, chiller, and robot-cell scenarios.

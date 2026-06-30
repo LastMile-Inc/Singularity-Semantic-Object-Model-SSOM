@@ -1,0 +1,133 @@
+{
+  "profile_id": "discrete-manufacturing-profile",
+  "profile_version": "0.9.0",
+  "industry_label": "Discrete Manufacturing",
+  "intended_scope": "Robot cells, conveyors, PLCs, HMIs, sensors, drives, and line-control contexts common in discrete production environments, while keeping detailed execution sequencing and MES product genealogy outside the profile scaffold.",
+  "core_ssom_objects_used": [
+    "Asset",
+    "Operational Boundary",
+    "Relationship",
+    "Observation",
+    "Event",
+    "Alarm",
+    "Recommendation",
+    "Decision",
+    "Action",
+    "Work Verification",
+    "Work Outcome"
+  ],
+  "required_roles": [
+    "process_equipment",
+    "control_device"
+  ],
+  "optional_roles": [
+    "compute_device",
+    "actuation_device",
+    "cyber_managed_asset"
+  ],
+  "profile_specific_relationships": [
+    "contains",
+    "controls",
+    "communicates_with",
+    "monitors",
+    "drives",
+    "hosts"
+  ],
+  "measurement_signal_expectations": [
+    "Motor current, speed, cycle, position, and sensor state should preserve typed measurement semantics where queried frequently.",
+    "Controller or gateway identifiers should remain traceable across migrations."
+  ],
+  "event_alarm_expectations": [
+    "Drive faults, communication loss, interlocks, and suppression windows should remain explicit.",
+    "Event-to-alarm-to-recommendation flow should remain distinguishable from operator work history."
+  ],
+  "reliability_work_requirements": [
+    "Work outcomes should distinguish successful restoration from inconclusive resets.",
+    "Recommendations and actions should remain linked to the cell or asset context they affect."
+  ],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Applicable where guarding, interlocks, or safety controllers participate in cell context.",
+    "cyber_profile_applicability": "Applicable for PLC, HMI, drive, and gateway zone or conduit context.",
+    "notes": [
+      "Discrete safety context is bounded to operational traceability, not complete machine-safety engineering.",
+      "Cyber context is bounded to foundational identity and topology semantics."
+    ]
+  },
+  "servicenow_serving_projection_implications": [
+    "Project line or cell operational state, anomalies, drive faults, and workflow references.",
+    "Do not project raw sensor streams or every transition into workflow-primary storage."
+  ],
+  "standards_mapping_applicability": [
+    "ISA-95 or IEC 62264",
+    "OPC UA",
+    "IEC 62443 foundation profile",
+    "ISA-18 or IEC 62682",
+    "AutomationML"
+  ],
+  "profile_specific_conformance_fixtures": [
+    "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+    "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+    "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+  ],
+  "known_exclusions": [
+    "Full MES schedule, job, and genealogy modeling.",
+    "Detailed robot program, motion path, or PLC logic definitions.",
+    "Complete machine-safety compliance packages."
+  ],
+  "end_to_end_example": {
+    "scenario_id": "robot-cell-drive-fault",
+    "scenario_label": "Robot cell drive fault and workflow escalation",
+    "narrative_summary": "A robot cell contains a PLC, HMI, and VFD. A drive fault becomes an alarm and recommendation, is evaluated for cyber and workflow context, and is projected into a workflow-facing surface without losing topology meaning.",
+    "involved_entities": [
+      {
+        "entity_id": "urn:ssom:boundary:robot-cell-01",
+        "entity_kind": "operational_boundary",
+        "roles": [
+          "production_unit_context"
+        ]
+      },
+      {
+        "entity_id": "urn:ssom:asset:vfd-12",
+        "entity_kind": "asset",
+        "roles": [
+          "control_device",
+          "utility_equipment",
+          "cyber_managed_asset"
+        ]
+      }
+    ],
+    "stages": [
+      {
+        "stage_type": "measurement_signal",
+        "summary": "The cell preserves measurement context for drive and sensor observations."
+      },
+      {
+        "stage_type": "event_alarm",
+        "summary": "A VFD fault event leads to a governed alarm and recommendation."
+      },
+      {
+        "stage_type": "reliability_work",
+        "summary": "Recommended maintenance or reset work remains distinct from outcome claims."
+      },
+      {
+        "stage_type": "safety_or_cyber",
+        "summary": "The VFD and PLC remain visible as cyber-managed devices within zone and conduit context."
+      },
+      {
+        "stage_type": "serving_projection",
+        "summary": "A curated workflow projection exposes risk, active anomalies, and related assets for system-of-action routing."
+      },
+      {
+        "stage_type": "outcome",
+        "summary": "The cell retains topology and evidence lineage for later verification and recurrence analysis."
+      }
+    ],
+    "related_repo_artifacts": [
+      "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+      "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+      "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+      "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+    ]
+  }
+}

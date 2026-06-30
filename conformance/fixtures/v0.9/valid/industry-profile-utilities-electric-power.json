@@ -1,0 +1,129 @@
+{
+  "profile_id": "utilities-electric-power-profile",
+  "profile_version": "0.9.0",
+  "industry_label": "Utilities and Electric Power",
+  "intended_scope": "Substations, relays, breakers, transformers, control cabinets, utility boundaries, and operational communication context relevant to electric-power and utility operations, without attempting full power-system simulation or protection-engineering specification coverage.",
+  "core_ssom_objects_used": [
+    "Asset",
+    "Operational Boundary",
+    "Relationship",
+    "Observation",
+    "Event",
+    "Alarm",
+    "Condition",
+    "Action",
+    "Work Verification",
+    "Work Outcome"
+  ],
+  "required_roles": [
+    "utility_equipment",
+    "control_device"
+  ],
+  "optional_roles": [
+    "protection_device",
+    "cyber_managed_asset",
+    "maintainable_asset"
+  ],
+  "profile_specific_relationships": [
+    "contains",
+    "protects",
+    "controls",
+    "communicates_with",
+    "is_connected_to",
+    "hosts"
+  ],
+  "measurement_signal_expectations": [
+    "Breaker status, transformer health, relay evidence, and utility topology context should preserve event or quality timing semantics.",
+    "Time ordering is important for trip, suppression, and switching analysis."
+  ],
+  "event_alarm_expectations": [
+    "Protective events, communication loss, alarm state, and suppression windows should remain explicit.",
+    "Operational alerts should remain distinct from later dispatch or work decisions."
+  ],
+  "reliability_work_requirements": [
+    "Switching or maintenance work should remain linked to verification context.",
+    "Outage or service-impact outcomes should remain measurable rather than implied."
+  ],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Applicable where switching safety, lockout, or proof-test context must remain visible.",
+    "cyber_profile_applicability": "Strongly applicable for relay, PLC, and control-cabinet zone or conduit context.",
+    "notes": [
+      "The profile does not attempt a complete electrical protection study model.",
+      "Cyber applicability is foundational and does not imply security-level or control-framework completeness."
+    ]
+  },
+  "servicenow_serving_projection_implications": [
+    "Workflow projections should expose current operational state, outage risk, and relevant asset relationships.",
+    "Do not treat raw SCADA or relay event streams as workflow-primary records."
+  ],
+  "standards_mapping_applicability": [
+    "IEC 62443 foundation profile",
+    "OPC UA",
+    "IEC 81346 concepts",
+    "ISA-18 or IEC 62682",
+    "ISA-95 or IEC 62264 where enterprise-control boundaries matter"
+  ],
+  "profile_specific_conformance_fixtures": [
+    "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
+    "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+    "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json"
+  ],
+  "known_exclusions": [
+    "Detailed power-flow, contingency, or relay settings management.",
+    "Full outage-management-system implementation semantics.",
+    "Complete NERC or utility regulatory compliance packages."
+  ],
+  "end_to_end_example": {
+    "scenario_id": "substation-trip-and-restoration-context",
+    "scenario_label": "Substation event, protection context, and restoration workflow",
+    "narrative_summary": "A substation topology preserves relay, breaker, transformer, control-cabinet, zone, and conduit context so a protective event can be traced into work verification and utility workflow projection without flattening topology into free text.",
+    "involved_entities": [
+      {
+        "entity_id": "urn:ssom:boundary:substation-a",
+        "entity_kind": "operational_boundary",
+        "roles": [
+          "functional_system_context"
+        ]
+      },
+      {
+        "entity_id": "urn:ssom:asset:relay-r101",
+        "entity_kind": "asset",
+        "roles": [
+          "protection_device",
+          "cyber_managed_asset"
+        ]
+      }
+    ],
+    "stages": [
+      {
+        "stage_type": "measurement_signal",
+        "summary": "Utility evidence preserves breaker or relay timing and state context."
+      },
+      {
+        "stage_type": "event_alarm",
+        "summary": "Protective events and suppressed alarms remain explicit and governed."
+      },
+      {
+        "stage_type": "reliability_work",
+        "summary": "Restoration work and verification remain linked to the substation context."
+      },
+      {
+        "stage_type": "safety_or_cyber",
+        "summary": "Zone and conduit context preserves cyber-managed relay and control-cabinet relationships."
+      },
+      {
+        "stage_type": "serving_projection",
+        "summary": "A workflow projection can expose outage risk, asset criticality, and related assets without becoming the source of truth."
+      },
+      {
+        "stage_type": "outcome",
+        "summary": "The example ends with verified restoration context and retained lineage for later review."
+      }
+    ],
+    "related_repo_artifacts": [
+      "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
+      "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+      "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json"
+    ]
+  }
+}

@@ -102,6 +102,56 @@
         "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
       ],
       "notes": "The OT cyber profile is intentionally bounded to foundational identity, topology, posture, and mitigation context."
+    },
+    {
+      "profile_id": "process-manufacturing-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"
+      ],
+      "notes": "Initial bounded process-manufacturing scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "discrete-manufacturing-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"
+      ],
+      "notes": "Initial bounded discrete-manufacturing scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "utilities-electric-power-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-utilities-electric-power.json"
+      ],
+      "notes": "Initial bounded utilities and electric-power scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "water-wastewater-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-water-wastewater.json"
+      ],
+      "notes": "Initial bounded water and wastewater scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "facilities-data-centers-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-facilities-data-centers.json"
+      ],
+      "notes": "Initial bounded facilities and data-centers scaffold with one end-to-end example."
     }
   ],
   "conformance_artifacts": {
