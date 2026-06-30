@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/equipment-model.json",
+  "title": "SSOM Equipment Model",
+  "description": "A governed manufacturer or design model concept. An equipment model is not a serialized equipment instance.",
+  "type": "object",
+  "required": [
+    "model_id",
+    "display_name",
+    "manufacturer_name",
+    "model_code",
+    "ssom_version",
+    "provenance"
+  ],
+  "properties": {
+    "model_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:equipment-model:"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "manufacturer_name": {
+      "type": "string"
+    },
+    "model_code": {
+      "type": "string"
+    },
+    "asset_class_ref": {
+      "type": "string",
+      "pattern": "^urn:ssom:asset-class:"
+    },
+    "model_family": {
+      "type": "string"
+    },
+    "description_text": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -25,6 +25,17 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(rootDir, relativePath), "utf8"));
 }
 
+const relationshipRegistry = readJson("schemas/registry/core-relationship-vocabulary.json");
+const relationshipRegistryIndex = new Map();
+const relationshipAliasIndex = new Map();
+
+for (const entry of relationshipRegistry.entries || []) {
+  relationshipRegistryIndex.set(entry.canonical_code, entry);
+  for (const alias of entry.aliases || []) {
+    relationshipAliasIndex.set(alias, entry.canonical_code);
+  }
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -672,7 +683,285 @@ function expectInvalidEventAlarmBundle(testName, relativePath, expectedFragment)
   }
 }
 
+function validateRegistryFile(testName, schemaFile, relativePath) {
+  const validate = ajv.getSchema(schemaFile);
+  const payload = readJson(relativePath);
+  const valid = validate(payload);
+
+  if (!valid) {
+    const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+    throw new Error(`${testName} failed for ${relativePath}\n${detail}`);
+  }
+
+  return payload;
+}
+
+function normalizeRelationshipType(relationshipType) {
+  if (relationshipRegistryIndex.has(relationshipType)) {
+    return relationshipType;
+  }
+  return relationshipAliasIndex.get(relationshipType) || relationshipType;
+}
+
+function getAssetEntityKinds(asset) {
+  const kinds = new Set(["asset_instance"]);
+
+  if (Array.isArray(asset.equipment_roles) && asset.equipment_roles.length > 0) {
+    kinds.add("equipment_asset");
+  }
+  if (Array.isArray(asset.device_roles) && asset.device_roles.length > 0) {
+    kinds.add("device_asset");
+  }
+
+  switch (asset.asset_form) {
+    case "component":
+      kinds.add("component_asset");
+      break;
+    case "assembly":
+      kinds.add("assembly_asset");
+      break;
+    case "instrument":
+      kinds.add("instrument_asset");
+      break;
+    case "controller":
+      kinds.add("controller_asset");
+      break;
+    case "logical_asset":
+      kinds.add("logical_asset_instance");
+      break;
+    case "system":
+      kinds.add("system");
+      break;
+    default:
+      break;
+  }
+
+  return kinds;
+}
+
+function addEntityKinds(catalog, ref, kinds) {
+  if (!catalog.has(ref)) {
+    catalog.set(ref, new Set());
+  }
+  const existing = catalog.get(ref);
+  for (const kind of kinds) {
+    existing.add(kind);
+  }
+}
+
+function validateRelationshipBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["asset_classes", "asset-class.json", "asset class"],
+    ["equipment_models", "equipment-model.json", "equipment model"],
+    ["operational_boundaries", "operational-boundary.json", "operational boundary"],
+    ["functional_locations", "functional-location.json", "functional location"],
+    ["assets", "asset.json", "asset"],
+    ["conditions", "condition.json", "condition"],
+    ["failure_modes", "failure-mode.json", "failure mode"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["relationships", "relationship.json", "relationship"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function validateRelationshipRegistrySemantics(testName, registry) {
+  const seen = new Set();
+  for (const entry of registry.entries || []) {
+    assert(!seen.has(entry.canonical_code), `${testName} duplicate canonical relationship code ${entry.canonical_code} is not allowed.`);
+    seen.add(entry.canonical_code);
+    const inverse = registry.entries.find((candidate) => candidate.canonical_code === entry.inverse_code);
+    assert(inverse, `${testName} inverse relationship ${entry.inverse_code} must exist in the registry.`);
+    for (const alias of entry.aliases || []) {
+      assert(alias !== entry.canonical_code, `${testName} alias ${alias} must not duplicate the canonical relationship code.`);
+    }
+  }
+}
+
+function buildRelationshipEntityCatalog(bundle, testName) {
+  const catalog = new Map();
+  const assetClassIds = new Set((bundle.asset_classes || []).map((entry) => entry.class_id));
+  const equipmentModelIds = new Set((bundle.equipment_models || []).map((entry) => entry.model_id));
+  const boundaryIds = new Set((bundle.operational_boundaries || []).map((entry) => entry.boundary_id));
+  const locationIds = new Set((bundle.functional_locations || []).map((entry) => entry.location_id));
+  const assetIds = new Set((bundle.assets || []).map((entry) => entry.asset_id));
+
+  for (const assetClass of bundle.asset_classes || []) {
+    addEntityKinds(catalog, assetClass.class_id, ["asset_class"]);
+    if (assetClass.parent_class_ref) {
+      assert(assetClassIds.has(assetClass.parent_class_ref), `${testName} asset class ${assetClass.class_id} must reference a known parent asset class.`);
+    }
+  }
+
+  for (const equipmentModel of bundle.equipment_models || []) {
+    addEntityKinds(catalog, equipmentModel.model_id, ["equipment_model"]);
+    if (equipmentModel.asset_class_ref) {
+      assert(assetClassIds.has(equipmentModel.asset_class_ref), `${testName} equipment model ${equipmentModel.model_id} must reference a known asset class.`);
+    }
+  }
+
+  for (const boundary of bundle.operational_boundaries || []) {
+    addEntityKinds(catalog, boundary.boundary_id, [boundary.boundary_type]);
+    if (boundary.parent_boundary_ref) {
+      assert(boundaryIds.has(boundary.parent_boundary_ref), `${testName} boundary ${boundary.boundary_id} must reference a known parent boundary.`);
+    }
+    if (boundary.managed_as_asset_ref) {
+      assert(assetIds.has(boundary.managed_as_asset_ref), `${testName} boundary ${boundary.boundary_id} managed asset reference must point to a known asset.`);
+    }
+  }
+
+  for (const location of bundle.functional_locations || []) {
+    addEntityKinds(catalog, location.location_id, ["functional_location"]);
+    if (location.parent_location_ref) {
+      assert(locationIds.has(location.parent_location_ref), `${testName} functional location ${location.location_id} must reference a known parent functional location.`);
+    }
+  }
+
+  for (const asset of bundle.assets || []) {
+    addEntityKinds(catalog, asset.asset_id, getAssetEntityKinds(asset));
+    if (asset.asset_class_ref) {
+      assert(assetClassIds.has(asset.asset_class_ref), `${testName} asset ${asset.asset_id} must reference a known asset class.`);
+    }
+    if (asset.equipment_model_ref) {
+      assert(equipmentModelIds.has(asset.equipment_model_ref), `${testName} asset ${asset.asset_id} must reference a known equipment model.`);
+    }
+  }
+
+  for (const condition of bundle.conditions || []) {
+    addEntityKinds(catalog, condition.condition_id, ["condition"]);
+  }
+
+  for (const failureMode of bundle.failure_modes || []) {
+    addEntityKinds(catalog, failureMode.failure_mode_id, ["failure_mode"]);
+  }
+
+  for (const workExecution of bundle.work_executions || []) {
+    addEntityKinds(catalog, workExecution.action_id, ["work_execution"]);
+  }
+
+  return catalog;
+}
+
+function relationshipKindsMatch(kinds, permittedKinds) {
+  for (const kind of kinds) {
+    if (permittedKinds.includes(kind)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function ensureRelationshipSemantics(bundle, testName) {
+  const entityCatalog = buildRelationshipEntityCatalog(bundle, testName);
+  const relationships = bundle.relationships || [];
+
+  for (const relationship of relationships) {
+    if (relationship.valid_from && relationship.valid_to) {
+      intervalBounds(relationship);
+    }
+
+    const normalizedType = normalizeRelationshipType(relationship.relationship_type);
+    const registryEntry = relationshipRegistryIndex.get(normalizedType);
+    const fromKinds = entityCatalog.get(relationship.from_ref);
+    const toKinds = entityCatalog.get(relationship.to_ref);
+
+    assert(fromKinds, `${testName} relationship ${relationship.relationship_id} must reference a known subject.`);
+    assert(toKinds, `${testName} relationship ${relationship.relationship_id} must reference a known object.`);
+
+    if (registryEntry) {
+      assert(
+        relationshipKindsMatch(fromKinds, registryEntry.permitted_subject_types),
+        `${testName} relationship ${relationship.relationship_id} uses unsupported subject/object domain for ${normalizedType}.`
+      );
+      assert(
+        relationshipKindsMatch(toKinds, registryEntry.permitted_object_types),
+        `${testName} relationship ${relationship.relationship_id} uses unsupported subject/object domain for ${normalizedType}.`
+      );
+      assert(
+        registryEntry.allow_self_reference || relationship.from_ref !== relationship.to_ref,
+        `${testName} relationship ${relationship.relationship_id} must not self-reference for ${normalizedType}.`
+      );
+      if (relationship.direction) {
+        assert(
+          relationship.direction === registryEntry.direction,
+          `${testName} relationship ${relationship.relationship_id} must align with the governed relationship direction for ${normalizedType}.`
+        );
+      }
+      if (relationship.relationship_mapping?.normalized_relationship_type) {
+        const mapped = normalizeRelationshipType(relationship.relationship_mapping.normalized_relationship_type);
+        assert(
+          mapped === normalizedType,
+          `${testName} relationship ${relationship.relationship_id} mapping must normalize to the governed relationship code in use.`
+        );
+      }
+    } else {
+      assert(
+        relationship.relationship_mapping,
+        `${testName} extension relationship ${relationship.relationship_id} must include mapping metadata.`
+      );
+      assert(
+        relationship.relationship_type.includes(":"),
+        `${testName} extension relationship ${relationship.relationship_id} must be namespaced.`
+      );
+      assert(
+        relationship.relationship_mapping.extension_namespace,
+        `${testName} extension relationship ${relationship.relationship_id} must declare an extension namespace.`
+      );
+    }
+  }
+
+  for (let i = 0; i < relationships.length; i += 1) {
+    for (let j = i + 1; j < relationships.length; j += 1) {
+      const left = relationships[i];
+      const right = relationships[j];
+      if (left.from_ref !== right.to_ref || left.to_ref !== right.from_ref) {
+        continue;
+      }
+      const leftType = normalizeRelationshipType(left.relationship_type);
+      const rightType = normalizeRelationshipType(right.relationship_type);
+      const leftEntry = relationshipRegistryIndex.get(leftType);
+      const rightEntry = relationshipRegistryIndex.get(rightType);
+      if (!leftEntry || !rightEntry) {
+        continue;
+      }
+      if (leftEntry.direction === "undirected" && rightEntry.direction === "undirected") {
+        continue;
+      }
+      assert(
+        leftEntry.inverse_code === rightType && rightEntry.inverse_code === leftType,
+        `${testName} reverse relationship usage between ${left.relationship_id} and ${right.relationship_id} must use a known inverse pair.`
+      );
+    }
+  }
+}
+
+function expectInvalidRelationshipBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateRelationshipBundle(testName, relativePath);
+    ensureRelationshipSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 const results = [];
+
+const registryPayload = validateRegistryFile(
+  "core relationship registry",
+  "relationship-registry.json",
+  "schemas/registry/core-relationship-vocabulary.json"
+);
+validateRelationshipRegistrySemantics("core relationship registry", registryPayload);
+results.push("core relationship registry remains machine-readable, reciprocal, and alias-governed");
 
 const pump = validateFixture(
   "equipment-only asset",
@@ -1278,6 +1567,76 @@ expectInvalidEventAlarmBundle(
   "must retain a valid-from timestamp"
 );
 results.push("suppression and shelving require provenance and an explicit valid interval");
+
+const coolingWaterBundle = validateRelationshipBundle(
+  "cooling water system relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
+);
+ensureRelationshipSemantics(coolingWaterBundle, "cooling water system relationship bundle");
+results.push("cooling-water systems can distinguish operational boundaries, functional locations, asset classes, equipment models, and constituent assets");
+
+const driveTrainBundle = validateRelationshipBundle(
+  "motor pump drive train relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-motor-pump-drive-train.json"
+);
+ensureRelationshipSemantics(driveTrainBundle, "motor pump drive train relationship bundle");
+results.push("drive, power, control, and monitoring relationships remain directionally governed across mixed asset and control entities");
+
+const robotCellBundle = validateRelationshipBundle(
+  "robot cell relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json"
+);
+ensureRelationshipSemantics(robotCellBundle, "robot cell relationship bundle");
+results.push("robot cells can be modeled as composite operational boundaries with constituent controllers, sensors, HMI, and line context");
+
+const processSegmentBundle = validateRelationshipBundle(
+  "process segment upstream downstream bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-process-segment-upstream-downstream.json"
+);
+ensureRelationshipSemantics(processSegmentBundle, "process segment upstream downstream bundle");
+results.push("process segments remain distinct from asset instances while supporting upstream and downstream relationship semantics");
+
+const extensionBundle = validateRelationshipBundle(
+  "source extension relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-source-extension-mapping.json"
+);
+ensureRelationshipSemantics(extensionBundle, "source extension relationship bundle");
+results.push("source-specific relationships can be preserved as namespaced mappings without collapsing into unrestricted core free text");
+
+expectInvalidRelationshipBundle(
+  "unsupported subject object relationship domain",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-unsupported-domain.json",
+  "uses unsupported subject/object domain"
+);
+results.push("core relationships reject unsupported subject and object domain combinations");
+
+expectInvalidRelationshipBundle(
+  "contradictory inverse relationship usage",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-contradictory-inverse.json",
+  "must use a known inverse pair"
+);
+results.push("reverse relationships must use governed inverse pairs rather than contradictory duplicate directionality");
+
+expectInvalidRelationshipBundle(
+  "unrestricted free text relationship type",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-free-text-core-use.json",
+  "must match a schema in anyOf"
+);
+results.push("core relationship types cannot degrade into unrestricted free text");
+
+expectInvalidRelationshipBundle(
+  "extension relationship missing namespace stewardship",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-extension-missing-namespace.json",
+  "must declare an extension namespace"
+);
+results.push("extension relationships must retain namespace and mapping stewardship metadata");
+
+expectInvalidRelationshipBundle(
+  "invalid relationship temporal validity",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-invalid-temporal-validity.json",
+  "has an invalid validity period"
+);
+results.push("time-bounded relationships must preserve valid temporal intervals");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {

@@ -27,24 +27,19 @@ Practical warning:
 
 > A value is not operationally comparable merely because it is numeric.
 
-## Assets, Equipment, and Devices
+## Assets, Classes, and Boundaries
 
-SSOM uses **Asset** as the canonical lifecycle identity for any physical or logical entity that participates in industrial operations. **Equipment** and **Device** are distinct operational classifications of an Asset. They are **not** mutually exclusive top-level types.
+SSOM uses **Asset** as the canonical lifecycle identity for any physical or logical entity that participates in industrial operations. **Equipment** and **Device** are distinct operational classifications of an Asset. They are **not** mutually exclusive top-level types. SSOM also distinguishes an Asset instance from an Asset class, an equipment model, a functional location, and non-serialized operational boundaries such as systems, process segments, production units, and control entities.
 
 ```text
-Asset
-  ├── Asset Form
-  ├── Operational Roles
-  │     ├── Equipment Roles
-  │     └── Device Roles
-  ├── Lifecycle Roles
-  ├── Relationships
-  ├── Observations
-  ├── Source and Derived Assertions
-  ├── Inference, Prediction, and Recommendation
-  ├── Decision and Action
-  ├── Outcome
-  └── Condition
+Asset Instance
+  ├── asset_class_ref -> Asset Class
+  ├── equipment_model_ref -> Equipment Model
+  ├── asset_form -> Component | Assembly | Instrument | Controller | Logical Asset | ...
+  ├── roles -> Equipment and/or Device
+  ├── installed_in -> Functional Location
+  ├── related_to -> System | Subsystem | Functional System | Process Segment | Production Unit | Control Entity
+  └── lifecycle identity, observations, actions, outcomes, and conditions
 ```
 
 Practical examples:
@@ -62,8 +57,9 @@ SSOM distinguishes:
 - **Asset identity:** the canonical SSOM Asset identity, which is stable and never reused.
 - **Asset identifier:** an external or business-specific identifier assigned to an Asset within a scope and authority.
 - **Asset class:** a semantic or source classification such as pump, PLC, or chiller.
-- **Asset model:** a manufacturer or product model designation such as a vendor model code.
+- **Equipment model:** a manufacturer or design model designation such as a vendor model code.
 - **Functional location:** a distinct operational or engineering location context, not the same thing as Asset identity.
+- **Operational boundary:** a non-serialized organizing context such as a System, Subsystem, Functional System, Process Segment, Production Unit, or Control Entity.
 - **External source reference:** a source-specific pointer retained for provenance and reconciliation.
 - **Asset succession:** a governed continuity relationship such as replacement, predecessor or successor, split, merge, decommissioned-as, or recommissioned-as.
 
@@ -72,8 +68,9 @@ SSOM allows one Asset to have many identifiers at the same time, and it allows t
 ## What SSOM standardizes
 
 - Assets, asset forms, and classification assertions
+- Asset classes, equipment models, and non-serialized operational boundary objects
 - Canonical Asset identity, identifier assignments, scopes, authorities, aliases, and succession semantics
-- Relationships and topology
+- Governed relationships and topology with machine-readable inverse and domain rules
 - Observations and telemetry
 - Quantity kind, unit reference, conversion lineage, calibration context, and signal semantics for measurement safety
 - Symptom, failure mode, failure mechanism, failure cause, failure event, diagnostic, and prognostic semantics
@@ -126,24 +123,27 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 
 ## Current draft version
 
-- SSOM v0.8.0 draft: additive event, alarm, state-transition, and operational evidence update
+- SSOM v0.9.0 draft: additive governed relationship registry and operational boundary update
 - RFC-0001: Draft / Experimental foundation
-- RFC-0002: Draft / Standards Track Proposal for v0.8.0
+- RFC-0002: Draft / Standards Track Proposal for v0.9.0
 
 ## Read next
 
 - Core specification: [RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md](RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md)
-- JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/identity-lifecycle-event.json](schemas/jsonschema/identity-lifecycle-event.json), [schemas/jsonschema/observation.json](schemas/jsonschema/observation.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/source-assertion.json](schemas/jsonschema/source-assertion.json), [schemas/jsonschema/outcome.json](schemas/jsonschema/outcome.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
-- Schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
+- JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/asset-class.json](schemas/jsonschema/asset-class.json), [schemas/jsonschema/equipment-model.json](schemas/jsonschema/equipment-model.json), [schemas/jsonschema/operational-boundary.json](schemas/jsonschema/operational-boundary.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/relationship.json](schemas/jsonschema/relationship.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
+- Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
+- Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
 - Previous schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
 - Previous schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)
 - Previous schema reference: [docs/schema-reference-v0.5.md](docs/schema-reference-v0.5.md)
+- Relationship vocabulary: [docs/relationship-vocabulary-v0.9.md](docs/relationship-vocabulary-v0.9.md)
 - Event and alarm profile: [docs/event-alarm-profile-v0.8.md](docs/event-alarm-profile-v0.8.md)
 - Reliability and maintenance profile: [docs/reliability-maintenance-profile-v0.7.md](docs/reliability-maintenance-profile-v0.7.md)
 - Identity lifecycle examples: [docs/examples-v0.5-identity-lifecycle.md](docs/examples-v0.5-identity-lifecycle.md)
 - Truth-state examples: [docs/examples-v0.4-semantic-truth-lifecycle.md](docs/examples-v0.4-semantic-truth-lifecycle.md)
 - Examples: [docs/examples-v0.3-equipment-device-roles.md](docs/examples-v0.3-equipment-device-roles.md)
-- Migration guidance: [docs/migration-v0.8.md](docs/migration-v0.8.md)
+- Migration guidance: [docs/migration-v0.9.md](docs/migration-v0.9.md)
+- Previous migration guidance: [docs/migration-v0.8.md](docs/migration-v0.8.md)
 - Previous migration guidance: [docs/migration-v0.7.md](docs/migration-v0.7.md)
 - Previous migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)
 - Previous migration guidance: [docs/migration-v0.5.md](docs/migration-v0.5.md)
@@ -151,7 +151,7 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 - Standards mapping: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
 - ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
-- Conformance: [conformance/checklist-v0.8.md](conformance/checklist-v0.8.md)
+- Conformance: [conformance/checklist-v0.9.md](conformance/checklist-v0.9.md)
 
 ## Participation
 

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/operational-boundary.json",
+  "title": "SSOM Operational Boundary",
+  "description": "A non-serialized operational boundary or organizing context such as a System, Subsystem, Functional System, Process Segment, Production Unit, or Control Entity.",
+  "type": "object",
+  "required": [
+    "boundary_id",
+    "boundary_type",
+    "display_name",
+    "ssom_version",
+    "provenance"
+  ],
+  "properties": {
+    "boundary_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:operational-boundary:"
+    },
+    "boundary_type": {
+      "$ref": "common.json#/$defs/operationalBoundaryKind"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "parent_boundary_ref": {
+      "type": "string"
+    },
+    "managed_as_asset_ref": {
+      "type": "string",
+      "pattern": "^urn:ssom:asset:"
+    },
+    "description_text": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/relationship-registry.json",
+  "title": "SSOM Relationship Registry",
+  "description": "Machine-readable registry of governed SSOM core relationship semantics.",
+  "type": "object",
+  "required": [
+    "registry_name",
+    "ssom_version",
+    "entries"
+  ],
+  "properties": {
+    "registry_name": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/relationshipRegistryEntry"
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true
+}

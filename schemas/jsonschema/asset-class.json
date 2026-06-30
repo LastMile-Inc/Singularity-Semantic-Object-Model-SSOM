@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/asset-class.json",
+  "title": "SSOM Asset Class",
+  "description": "A governed class or taxonomy concept for assets. An Asset class is not a serialized Asset instance.",
+  "type": "object",
+  "required": [
+    "class_id",
+    "display_name",
+    "class_scheme",
+    "class_code",
+    "ssom_version",
+    "provenance"
+  ],
+  "properties": {
+    "class_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:asset-class:"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "class_scheme": {
+      "type": "string"
+    },
+    "class_code": {
+      "type": "string"
+    },
+    "parent_class_ref": {
+      "type": "string"
+    },
+    "description_text": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

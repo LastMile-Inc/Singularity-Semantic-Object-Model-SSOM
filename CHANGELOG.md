@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Added: Governed Relationship Registry and Operational Boundary Semantics
+
+- Added dedicated schemas for Asset Class, Equipment Model, and Operational Boundary plus governed relationship typing for core and namespaced extension relationship codes.
+- Added a machine-readable core relationship registry with inverse, family, domain, direction, cardinality, temporal, profile, and alias metadata.
+- Added v0.9 relationship fixtures for cooling-water system composition, drive and power chains, robot-cell context, process-segment flow, and namespaced source relationship preservation.
+- Added semantic validation proving inverse-pair integrity, subject and object domain validity, extension namespace stewardship, free-text rejection, and temporal validity for relationships.
+
+### Changed: Ontology Boundaries
+
+- README and RFC-0002 now distinguish Asset instances from Asset Classes, Equipment Models, Functional Locations, and non-serialized operational boundaries such as Systems, Process Segments, Production Units, and Control Entities.
+- Core relationship guidance now rejects unrestricted free-text core relationship types and reserves detailed ISA-95 style hierarchy expansion for profiles rather than the core model.
+
 ### Added: Event, Alarm, and State-Transition Semantics
 
 - Added dedicated schemas for Event, Alarm, and State Transition plus shared event-category, alarm-state, threshold, suppression, source-payload, and transition definitions.

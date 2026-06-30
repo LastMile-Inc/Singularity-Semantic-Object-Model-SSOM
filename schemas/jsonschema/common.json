@@ -18,6 +18,221 @@
         "logical_asset"
       ]
     },
+    "operationalBoundaryKind": {
+      "type": "string",
+      "enum": [
+        "system",
+        "subsystem",
+        "functional_system",
+        "process_segment",
+        "production_unit",
+        "control_entity"
+      ]
+    },
+    "coreEntityKind": {
+      "type": "string",
+      "enum": [
+        "asset_instance",
+        "equipment_asset",
+        "device_asset",
+        "component_asset",
+        "assembly_asset",
+        "instrument_asset",
+        "controller_asset",
+        "logical_asset_instance",
+        "asset_class",
+        "equipment_model",
+        "system",
+        "subsystem",
+        "functional_system",
+        "functional_location",
+        "process_segment",
+        "production_unit",
+        "control_entity",
+        "condition",
+        "failure_mode",
+        "work_execution"
+      ]
+    },
+    "coreRelationshipTerm": {
+      "type": "string",
+      "enum": [
+        "contains",
+        "is_contained_in",
+        "has_part",
+        "is_part_of",
+        "part_of",
+        "is_installed_in",
+        "is_installed_on",
+        "hosts",
+        "is_hosted_on",
+        "is_connected_to",
+        "communicates_with",
+        "controls",
+        "is_controlled_by",
+        "measures",
+        "is_measured_by",
+        "monitors",
+        "is_monitored_by",
+        "actuates",
+        "is_actuated_by",
+        "protects",
+        "is_protected_by",
+        "drives",
+        "is_driven_by",
+        "powers",
+        "powered_by",
+        "is_powered_by",
+        "feeds",
+        "is_fed_by",
+        "is_upstream_of",
+        "is_downstream_of",
+        "supports",
+        "is_supported_by",
+        "has_failure_mode",
+        "is_failure_mode_of",
+        "has_condition",
+        "is_condition_of",
+        "is_affected_by_work",
+        "affects",
+        "replaces",
+        "replaced_by",
+        "is_replaced_by",
+        "succeeds",
+        "preceded_by",
+        "is_preceded_by",
+        "split_into",
+        "merged_from",
+        "decommissioned_as",
+        "recommissioned_as"
+      ]
+    },
+    "extensionRelationshipCode": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*:[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "relationshipDirection": {
+      "type": "string",
+      "enum": [
+        "directed",
+        "undirected",
+        "bidirectional"
+      ]
+    },
+    "relationshipMapping": {
+      "type": "object",
+      "required": [
+        "source_relationship_type",
+        "mapping_status"
+      ],
+      "properties": {
+        "source_relationship_type": {
+          "type": "string"
+        },
+        "mapping_status": {
+          "type": "string",
+          "enum": [
+            "core_exact",
+            "core_alias",
+            "source_preserved_unmapped",
+            "source_preserved_mapped",
+            "candidate_core_extension"
+          ]
+        },
+        "normalized_relationship_type": {
+          "type": "string"
+        },
+        "extension_namespace": {
+          "type": "string"
+        },
+        "steward": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "relationshipRegistryEntry": {
+      "type": "object",
+      "required": [
+        "canonical_code",
+        "label",
+        "inverse_code",
+        "relationship_family",
+        "permitted_subject_types",
+        "permitted_object_types",
+        "direction",
+        "cardinality_guidance",
+        "temporal_validity",
+        "profile_applicability"
+      ],
+      "properties": {
+        "canonical_code": {
+          "$ref": "common.json#/$defs/coreRelationshipTerm"
+        },
+        "label": {
+          "type": "string"
+        },
+        "inverse_code": {
+          "$ref": "common.json#/$defs/coreRelationshipTerm"
+        },
+        "relationship_family": {
+          "type": "string"
+        },
+        "permitted_subject_types": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/coreEntityKind"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "permitted_object_types": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/coreEntityKind"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "direction": {
+          "$ref": "common.json#/$defs/relationshipDirection"
+        },
+        "cardinality_guidance": {
+          "type": "string"
+        },
+        "temporal_validity": {
+          "type": "string"
+        },
+        "profile_applicability": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/coreRelationshipTerm"
+          },
+          "uniqueItems": true
+        },
+        "deprecated": {
+          "type": "boolean"
+        },
+        "deprecation_note": {
+          "type": "string"
+        },
+        "allow_self_reference": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
     "equipmentRole": {
       "type": "string",
       "enum": [
@@ -1188,6 +1403,8 @@
             "equipment_role",
             "device_role",
             "lifecycle_role",
+            "asset_class",
+            "equipment_model",
             "source_type",
             "derived_role",
             "extension"

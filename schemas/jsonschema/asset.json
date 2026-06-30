@@ -111,6 +111,14 @@
         "$ref": "common.json#/$defs/classificationAssertion"
       }
     },
+    "asset_class_ref": {
+      "type": "string",
+      "pattern": "^urn:ssom:asset-class:"
+    },
+    "equipment_model_ref": {
+      "type": "string",
+      "pattern": "^urn:ssom:equipment-model:"
+    },
     "context": {
       "type": "object",
       "additionalProperties": true

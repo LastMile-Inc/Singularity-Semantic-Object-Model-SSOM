@@ -18,8 +18,15 @@
       "pattern": "^urn:ssom:relationship:"
     },
     "relationship_type": {
-      "type": "string",
-      "description": "Core vocabulary includes contains, located_in, part_of, is_part_of, feeds, depends_on, controls, monitors, measures, actuates, protects, communicates_with, is_connected_to, is_installed_on, is_contained_in, drives, powered_by, is_powered_by, is_managed_by, has_control_target, has_measurement_target, has_protection_target, serves, has_sensor, replaces, replaced_by, succeeds, preceded_by, split_into, merged_from, decommissioned_as, and recommissioned_as."
+      "description": "Relationship code MUST be a governed SSOM core term or a namespaced extension relationship code.",
+      "anyOf": [
+        {
+          "$ref": "common.json#/$defs/coreRelationshipTerm"
+        },
+        {
+          "$ref": "common.json#/$defs/extensionRelationshipCode"
+        }
+      ]
     },
     "from_ref": {
       "type": "string"
@@ -43,6 +50,9 @@
     "provenance": {
       "$ref": "common.json#/$defs/provenance"
     },
+    "relationship_mapping": {
+      "$ref": "common.json#/$defs/relationshipMapping"
+    },
     "relationship_context": {
       "type": "object",
       "additionalProperties": true
@@ -57,12 +67,7 @@
       "type": "string"
     },
     "direction": {
-      "type": "string",
-      "enum": [
-        "directed",
-        "undirected",
-        "bidirectional"
-      ]
+      "$ref": "common.json#/$defs/relationshipDirection"
     },
     "cardinality": {
       "type": "string"
@@ -72,5 +77,21 @@
       "additionalProperties": true
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "relationship_type": {
+            "$ref": "common.json#/$defs/extensionRelationshipCode"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "relationship_mapping"
+        ]
+      }
+    }
+  ],
   "additionalProperties": true
 }

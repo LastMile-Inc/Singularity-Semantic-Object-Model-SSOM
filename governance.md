@@ -46,6 +46,14 @@ Extensions must:
 - include fixtures;
 - state compatibility behavior.
 
+## Relationship stewardship
+
+- Core relationship semantics are governed by the machine-readable registry in `schemas/registry/core-relationship-vocabulary.json`.
+- New core relationship proposals must document canonical code, label, inverse code, relationship family, subject and object domains, direction, cardinality guidance, temporal expectations, profile applicability, aliases, and deprecation behavior.
+- Source-specific relationship names MUST be preserved through namespaced extension relationship codes plus mapping metadata when no approved core term exists.
+- A namespaced extension relationship becomes a candidate core relationship only when repeated interoperable use demonstrates durable cross-source semantics rather than a product-private convenience label.
+- Maintainers should reject proposals that duplicate an existing core semantic under a different surface label unless the proposal is a backward-compatibility alias with a deprecation plan.
+
 ## Conformance claims
 
 An implementation may state that it conforms to an SSOM profile only when it can provide:

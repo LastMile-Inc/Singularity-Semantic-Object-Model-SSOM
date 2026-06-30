@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.8.0
+- **Intended Version:** SSOM v0.9.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -24,6 +24,8 @@ SSOM v0.6.0 adds measurement-safety semantics so Observations can preserve origi
 SSOM v0.7.0 adds first-class failure, maintenance, work verification, and work outcome semantics so implementations can represent whether an intervention addressed the relevant failure mechanism, restored intended function, reduced risk, improved reliability, or failed to produce improvement.
 
 SSOM v0.8.0 adds first-class event, alarm, and state-transition semantics so implementations can preserve time-bound operational occurrences, governed alarm lifecycle, source-state mappings, maintenance suppression windows, late-arriving evidence, and verification of false or transient alarms without collapsing those semantics into free text.
+
+SSOM v0.9.0 adds governed relationship semantics plus explicit boundary objects for Asset Class, Equipment Model, and non-serialized operational boundaries so implementations can distinguish lifecycle assets from taxonomy concepts, functional location, systems, process segments, production units, and control entities without falling back to unrestricted relationship text.
 
 ## 1. Motivation
 
@@ -47,40 +49,43 @@ A practical semantic standard must preserve that context without becoming a repl
 SSOM specifies transport-independent semantics for:
 
 1. Asset
-2. Functional Location
-3. Relationship
-4. Identity Lifecycle Event
-5. Observation
-6. Source Assertion
-7. Derived Assertion
-8. Inference
-9. Prediction
-10. Recommendation
-11. Decision
-12. Action
-13. Outcome
-14. Event
-15. Alarm
-16. State Transition
-17. Condition
-18. Operational Context
-19. Provenance
-20. Quality
-21. Temporal Integrity
-22. Policy Evidence
-23. Symptom
-24. Failure Mode
-25. Failure Mechanism
-26. Failure Cause
-27. Failure Event
-28. Diagnostic
-29. Prognostic
-30. Maintenance Strategy
-31. Work Request
-32. Work Plan
-33. Work Verification
-34. Work Outcome
-35. Extension and conformance metadata
+2. Asset Class
+3. Equipment Model
+4. Operational Boundary
+5. Functional Location
+6. Relationship
+7. Identity Lifecycle Event
+8. Observation
+9. Source Assertion
+10. Derived Assertion
+11. Inference
+12. Prediction
+13. Recommendation
+14. Decision
+15. Action
+16. Outcome
+17. Event
+18. Alarm
+19. State Transition
+20. Condition
+21. Operational Context
+22. Provenance
+23. Quality
+24. Temporal Integrity
+25. Policy Evidence
+26. Symptom
+27. Failure Mode
+28. Failure Mechanism
+29. Failure Cause
+30. Failure Event
+31. Diagnostic
+32. Prognostic
+33. Maintenance Strategy
+34. Work Request
+35. Work Plan
+36. Work Verification
+37. Work Outcome
+38. Extension and conformance metadata
 
 ### 2.2 SSOM does not cover
 
@@ -131,6 +136,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context.
 16. **Verified operational outcome.** SSOM MUST distinguish work request, work execution, work verification, and work outcome semantics so a completed action is not silently treated as proof of restored function.
 17. **Event and alarm discipline.** SSOM MUST distinguish an Event from an Alarm, MUST preserve original source alarm state separately from canonical alarm state, and MUST retain explicit suppression or shelving context when alarm visibility is intentionally altered.
+18. **Boundary clarity.** SSOM MUST distinguish Asset instances from Asset Classes, Equipment Models, Functional Locations, and non-serialized operational boundaries such as Systems, Process Segments, Production Units, and Control Entities.
 
 ## 5. Core semantic objects
 
@@ -160,6 +166,8 @@ An Asset MAY include:
 - `lifecycle_roles[]`
 - `primary_operational_role`
 - `classification_assertions[]`
+- `asset_class_ref`
+- `equipment_model_ref`
 - manufacturer or model metadata
 - serial number
 - operational criticality
@@ -181,6 +189,24 @@ SSOM distinguishes the following identity-related concepts:
 - **Asset Succession:** a governed continuity relationship indicating replacement, predecessor, successor, split, merge, supersession, decommissioned-as, or recommissioned-as semantics.
 
 An Asset class or source type is not the same thing as an Asset identifier. A manufacturer model designation is not the same thing as a serialized Asset identity. A functional location is not the same thing as the Asset occupying that location.
+
+SSOM uses the following core boundary distinctions:
+
+- **Asset instance:** a specific managed or observed lifecycle entity.
+- **Asset class:** a taxonomy or governed type concept for assets. It is not a serialized asset instance.
+- **Equipment model:** a manufacturer or design model concept. It is not a serialized asset instance.
+- **System:** a non-serialized operational boundary that groups related assets or functions unless the system is explicitly managed as an Asset.
+- **Subsystem:** a nested operational boundary within a larger System.
+- **Functional system:** a function-oriented operational boundary used to represent purpose or service grouping rather than serialized identity.
+- **Functional location:** a placement or engineering location context, not an Asset identity.
+- **Process segment:** a process or production step boundary, not an Asset instance.
+- **Production unit:** a production-context boundary such as a line or unit operation, not automatically an Asset instance.
+- **Control entity:** a logical control-zone or orchestration boundary used to organize control semantics without implying serialized lifecycle identity.
+- **Equipment:** an Asset role indicating process, utility, facility, production, or material-handling function.
+- **Device:** an Asset role indicating sensing, measurement, control, actuation, protection, communications, or computation function.
+- **Component, Assembly, Instrument, Controller, Logical Asset:** Asset forms used when those entities are explicitly represented as Assets.
+
+Detailed ISA-95 style hierarchy specialization MAY be defined in profiles, but the core model MUST preserve the above distinctions without requiring a complete ISA-95 implementation.
 
 #### 5.1.2 Normative asset identity rules
 
@@ -208,7 +234,7 @@ An Asset class or source type is not the same thing as an Asset identifier. A ma
 
 #### 5.1.4 Asset forms
 
-SSOM v0.3.0 defines the following core `asset_form` values:
+SSOM v0.9.0 defines the following core `asset_form` values for Asset instances:
 
 - `system`
 - `unit`
@@ -221,6 +247,8 @@ SSOM v0.3.0 defines the following core `asset_form` values:
 - `logical_asset`
 
 Additional asset forms MAY be introduced only through a governed extension or profile mechanism.
+
+The `system` asset form is reserved for cases where the system itself is explicitly managed as an Asset. When a system is only an organizational or process boundary, implementations SHOULD use the Operational Boundary object instead.
 
 #### 5.1.5 Equipment roles
 
@@ -350,7 +378,7 @@ Simple consumer projections such as `asset_form`, `equipment_roles[]`, `device_r
 
 ### 5.2 Relationship
 
-A **Relationship** is a typed, directed, time-bounded association between SSOM entities.
+A **Relationship** is a typed, governed, directed, and optionally time-bounded association between SSOM entities.
 
 Required fields:
 
@@ -364,6 +392,7 @@ Required fields:
 Relationship records SHOULD support, where applicable:
 
 - subject and object references using `from_ref` and `to_ref`;
+- `relationship_mapping` for source-preserved extension relationships;
 - `relationship_context`;
 - `valid_from` and `valid_to`;
 - `source_system`;
@@ -372,42 +401,35 @@ Relationship records SHOULD support, where applicable:
 - `direction`; and
 - `cardinality`.
 
-Core and normalized relationship semantics include:
+For core semantics, `relationship_type` MUST be a governed SSOM relationship term or a namespaced extension relationship code. Unrestricted free text is not permitted for core relationship use.
 
-- `contains`
-- `located_in`
-- `part_of`
-- `is_part_of`
-- `feeds`
-- `depends_on`
-- `controls`
-- `monitors`
-- `measures`
-- `actuates`
-- `protects`
-- `communicates_with`
-- `is_connected_to`
-- `is_installed_on`
-- `is_contained_in`
-- `drives`
-- `powered_by`
-- `is_powered_by`
-- `is_managed_by`
-- `has_control_target`
-- `has_measurement_target`
-- `has_protection_target`
-- `serves`
-- `has_sensor`
-- `replaces`
-- `replaced_by`
-- `succeeds`
-- `preceded_by`
-- `split_into`
-- `merged_from`
-- `decommissioned_as`
-- `recommissioned_as`
+The normative machine-readable registry is `schemas/registry/core-relationship-vocabulary.json`. It defines canonical code, label, inverse code, relationship family, subject and object domains, direction, cardinality guidance, temporal expectations, profile applicability, aliases, and deprecation behavior.
 
-Profiles MAY document aliases. For example, a source term such as `is_installed_in` SHOULD normalize to `is_installed_on` or `located_in` without losing the source assertion.
+The core registry supports at least the following canonical or alias-governed semantics:
+
+- `contains`, `is_contained_in`
+- `has_part`, `is_part_of`
+- `is_installed_in`, `hosts`, `is_hosted_on`
+- `is_connected_to`, `communicates_with`
+- `controls`, `is_controlled_by`
+- `measures`, `is_measured_by`
+- `monitors`, `is_monitored_by`
+- `actuates`, `is_actuated_by`
+- `protects`, `is_protected_by`
+- `drives`, `is_driven_by`
+- `powers`, `is_powered_by`
+- `feeds`, `is_fed_by`
+- `is_upstream_of`, `is_downstream_of`
+- `supports`, `is_supported_by`
+- `has_failure_mode`, `is_failure_mode_of`
+- `has_condition`, `is_condition_of`
+- `is_affected_by_work`, `affects`
+- `replaces`, `is_replaced_by`
+- `succeeds`, `is_preceded_by`
+
+Implementations MAY preserve compatibility aliases such as `is_installed_on`, `powered_by`, `replaced_by`, or `preceded_by`, but the governed registry remains the normative source of meaning.
+
+Source-specific relationship names MUST be preserved through a namespaced extension relationship code plus mapping metadata when no approved core term exists. An unmapped source relationship MUST NOT be discarded solely because the core vocabulary does not yet contain an exact match.
 
 Relationship examples:
 
@@ -417,8 +439,8 @@ Relationship examples:
 - Motor M-101 drives Pump P-101.
 - Motor Protection Relay MPR-101 protects Motor M-101.
 - Industrial Gateway GW-01 communicates_with PLC-17.
-- Pump P-101 is_part_of Cooling Water System CW-01.
-- Pump P-101 is_installed_on Functional Location Plant-2/Area-B/Unit-14.
+- Pump P-101 is_contained_in Cooling Water System CW-01.
+- Pump P-101 is_installed_in Functional Location Plant-2/Area-B/Unit-14.
 - Pump P-101 replacement asset replaces Pump P-101 original while retaining the same engineering tag over a later validity period.
 - Robot Cell RC-01 is classified as both `production_equipment` and `control_device` where the maintained evidence supports both roles.
 
@@ -1089,7 +1111,7 @@ urn:ssom:ext:<organization-or-community>:<domain>:<name>
 
 ### 7.3 Profiles
 
-SSOM v0.8.0 defines:
+SSOM v0.9.0 defines:
 
 1. Core Asset and Relationship Profile
 2. Asset Identity and Continuity Profile
@@ -1099,17 +1121,18 @@ SSOM v0.8.0 defines:
 6. Quality, Provenance, and Temporal Integrity Profile
 7. Condition Profile
 8. Event, Alarm, and State Transition Profile
-9. Analytical Warehouse Profile
+9. Governed Relationship and Operational Boundary Profile
+10. Analytical Warehouse Profile
 
 An implementation MAY support a subset but MUST declare supported profiles.
 
 ## 8. Serialization and schema strategy
 
-SSOM v0.8.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
+SSOM v0.9.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
 
 JSON Schema is selected because it supports broad API, cloud, event, and validation tooling.
 
-XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.8.0. Placeholder XML artifacts remain informative until a compatibility update is published.
+XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.9.0. Placeholder XML artifacts remain informative until a compatibility update is published.
 
 ## 9. Compatibility and versioning
 
@@ -1119,11 +1142,11 @@ XML Schema artifacts MAY be retained for compatibility. In this repository, the 
 - Implementations MUST include `ssom_version`.
 - Consumers MUST reject or quarantine unsupported major versions.
 - Consumers SHOULD preserve unknown extension fields where safe.
-- SSOM v0.8.0 is an additive, backward-compatible extension of the v0.7.0 draft.
+- SSOM v0.9.0 is an additive, backward-compatible extension of the v0.8.0 draft.
 
 ## 10. Conformance
 
-An SSOM v0.8.0 implementation MUST:
+An SSOM v0.9.0 implementation MUST:
 
 1. Validate claimed profiles against normative JSON Schemas.
 2. Preserve identity, provenance, quality, and temporal information.
@@ -1150,6 +1173,9 @@ An SSOM v0.8.0 implementation MUST:
 23. Preserve alarm suppression or shelving provenance and valid interval where visibility is intentionally altered.
 24. Preserve source alarm state and canonical mapped alarm state when both are available.
 25. Preserve event time separately from ingest, receive, and processing time for late-arriving operational evidence.
+26. Distinguish Asset instances from Asset Classes, Equipment Models, Functional Locations, and non-serialized operational boundaries.
+27. Use governed relationship terms or namespaced extension relationship codes rather than unrestricted free-text core relationship values.
+28. Preserve relationship mapping metadata and provenance when source-specific relationships cannot be exactly normalized to a current core term.
 
 ## 11. Security and privacy considerations
 
@@ -1157,17 +1183,17 @@ Operational records can expose sensitive facility, topology, production, equipme
 
 Implementations SHOULD minimize sensitive content, keep credentials outside semantic records, apply purpose and retention metadata, protect source references that reveal proprietary topology, control access to high-resolution telemetry and media references, avoid placing private application authorization logic inside SSOM, and support deletion or tombstone references where required.
 
-## 12. Migration from v0.7
+## 12. Migration from v0.8
 
-Implementations moving from v0.7.0 to v0.8.0 SHOULD:
+Implementations moving from v0.8.0 to v0.9.0 SHOULD:
 
-1. retain existing Assets, Relationships, Observations, Conditions, truth-state records, identity lifecycle records, and reliability or work records without re-identifying them;
-2. emit typed Event records for operational occurrences rather than collapsing them into generic Condition or extension text;
-3. emit typed Alarm records when governed attention, acknowledgment, suppression, shelving, or clearance semantics apply;
-4. preserve original source alarm state alongside canonical mapped alarm state when source systems use vendor-specific alarm vocabulary;
-5. emit explicit State Transition records or inline transition objects when operational state changes matter independently of the enclosing Event or Alarm;
-6. preserve late-arriving event evidence by keeping event time separate from receive and processing time; and
-7. keep application-private alarm workflow details out of the standard while preserving normative provenance and lifecycle evidence.
+1. retain existing Assets, Relationships, Observations, Conditions, truth-state records, identity lifecycle records, event or alarm records, and reliability or work records without re-identifying them;
+2. replace unrestricted free-text core relationship values with governed relationship codes or namespaced extension relationship codes;
+3. move taxonomy concepts into Asset Class and Equipment Model records rather than representing them as serialized assets;
+4. model systems, subsystems, functional systems, process segments, production units, and control entities as Operational Boundary records unless those aggregates are explicitly managed as Assets;
+5. preserve compatibility aliases through governed registry normalization rather than multiplying synonymous relationship codes;
+6. preserve source-specific relationship names and mapping metadata when no exact core term exists; and
+7. keep detailed ISA-95 style hierarchy specialization in profiles rather than overloading the core boundary model.
 
 ## 13. Open questions
 
