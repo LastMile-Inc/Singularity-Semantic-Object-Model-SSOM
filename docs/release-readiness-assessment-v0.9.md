@@ -53,7 +53,7 @@ Reasoning:
 
 - Add richer end-to-end domain bundles with more domain-native measurements, events, work, and outcome semantics for utilities, water, and facilities.
 - Add at least one independent implementation-oriented interoperability proof outside the repository’s internal fixture corpus.
-- Expand release-process documentation for external review intake and issue triage.
+- Expand release-process documentation, discovery-surface integrity checks, and external review intake or issue triage pathways.
 
 ### P2
 

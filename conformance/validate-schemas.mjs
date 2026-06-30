@@ -830,6 +830,8 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
   const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
   const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
   const industryIndex = readText("docs/industry-profile-index-v0.9.md");
+  const schemaRefV1 = readText("docs/schema-reference-v1.0.md");
+  const rfc0001 = readText("RFC-0001-SSOM.md");
   const readme = readText("README.md");
 
   assertIncludesAll(
@@ -893,10 +895,136 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
       "candidate-specification package",
       "release-readiness assessment",
       "industry profile index",
+      "v1.0 promotion discovery surface",
       "do not position SSOM as a definitive or certified OT standard"
     ],
     testName,
     "README candidate-review coverage"
+  );
+
+  assertIncludesAll(
+    schemaRefV1,
+    [
+      "# SSOM v1.0 Discovery Surface Reference",
+      "RFC-0001-SSOM.md",
+      "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+      "schemas/jsonschema/capability-manifest.json",
+      "schemas/jsonschema/servicenow-serving-projection-bundle.json",
+      "schemas/jsonschema/safety-foundation-bundle.json",
+      "schemas/jsonschema/cyber-foundation-bundle.json",
+      "schemas/jsonschema/industry-profile-bundle.json",
+      "docs/standards-crosswalk-matrix-v0.9.json",
+      "docs/bigquery-reference-architecture-v0.9.md",
+      "conformance/validate-schemas.mjs",
+      "docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md",
+      "schemas/jsonschema/last-mile-platform-operations-profile.json",
+      "reference-validation/"
+    ],
+    testName,
+    "v1.0 discovery surface"
+  );
+
+  for (const requiredPath of [
+    "docs/schema-reference-v1.0.md",
+    ".github/workflows/validate.yml",
+    ".github/ISSUE_TEMPLATE/semantic-change-proposal.md",
+    ".github/ISSUE_TEMPLATE/profile-proposal.md",
+    ".github/ISSUE_TEMPLATE/vocabulary-or-relationship-proposal.md",
+    ".github/ISSUE_TEMPLATE/standards-mapping-change.md",
+    ".github/ISSUE_TEMPLATE/defect-report.md",
+    ".github/ISSUE_TEMPLATE/release-readiness-issue.md",
+    "SECURITY.md"
+  ]) {
+    assertWorkspacePathExists(requiredPath, testName, "release-governance artifact");
+  }
+
+  assertIncludesAll(
+    rfc0001,
+    [
+      "the authoritative release checklist is `conformance/checklist-v0.9.md`"
+    ],
+    testName,
+    "RFC-0001 conformance authority"
+  );
+
+  assert(
+    !rfc0001.includes("Conformance requirements are defined in conformance/checklist.md."),
+    `${testName} RFC-0001 must not present the unversioned checklist as the sole conformance authority.`
+  );
+}
+
+function ensureReleaseDiscoveryIntegrity(testName) {
+  const readme = readText("README.md");
+  const candidatePackage = readText("docs/candidate-specification-package-v0.9.md");
+  const releaseAssessment = readText("docs/release-readiness-assessment-v0.9.md");
+  const schemaReference = readText("docs/schema-reference-v1.0.md");
+  const workflow = readText(".github/workflows/validate.yml");
+  const security = readText("SECURITY.md");
+
+  for (const referencedPath of [
+    "RFC-0001-SSOM.md",
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "governance.md",
+    "schemas/jsonschema/capability-manifest.json",
+    "schemas/jsonschema/servicenow-serving-projection-bundle.json",
+    "schemas/jsonschema/safety-foundation-bundle.json",
+    "schemas/jsonschema/cyber-foundation-bundle.json",
+    "schemas/jsonschema/industry-profile-bundle.json",
+    "docs/servicenow-serving-projection-profile-v0.9.md",
+    "docs/functional-safety-foundation-profile-v0.9.md",
+    "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+    "docs/industry-profile-index-v0.9.md",
+    "docs/standards-crosswalk-matrix-v0.9.json",
+    "docs/source-system-mapping-guidance-v0.9.json",
+    "docs/transformation-loss-register-v0.9.json",
+    "docs/profile-applicability-matrix-v0.9.json",
+    "docs/standards-claims-matrix-v0.9.json",
+    "docs/bigquery-reference-architecture-v0.9.md",
+    "reference-implementation/bigquery/schema.sql",
+    "reference-implementation/bigquery/example-queries.sql",
+    "conformance/validate-schemas.mjs",
+    "conformance/checklist-v0.9.md",
+    "docs/candidate-specification-package-v0.9.md",
+    "docs/release-readiness-assessment-v0.9.md",
+    "docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md"
+  ]) {
+    assertWorkspacePathExists(referencedPath, testName, "discovery-surface artifact");
+  }
+
+  for (const disallowedPhrase of [
+    "conformance/checklist.md.",
+    "schemas/ssom-core.xsd as the normative",
+    "schemas/ssom-relationships.xsd as the normative",
+    "schemas/ssom-telemetry.xsd as the normative"
+  ]) {
+    assert(!candidatePackage.toLowerCase().includes(disallowedPhrase.toLowerCase()), `${testName} candidate package must not contain stale normative authority wording ${disallowedPhrase}.`);
+    assert(!releaseAssessment.toLowerCase().includes(disallowedPhrase.toLowerCase()), `${testName} release assessment must not contain stale normative authority wording ${disallowedPhrase}.`);
+  }
+
+  assertIncludesAll(
+    workflow,
+    [
+      "on:",
+      "push:",
+      "pull_request:",
+      "npm ci",
+      "npm run validate",
+      "git diff --check"
+    ],
+    testName,
+    "CI workflow"
+  );
+
+  assertIncludesAll(
+    security,
+    [
+      "private",
+      "do not disclose",
+      "maintainer",
+      "coordinated"
+    ],
+    testName,
+    "security disclosure guidance"
   );
 }
 
@@ -2690,6 +2818,9 @@ results.push("initial industry profiles stay bounded, fixture-backed, and tied t
 
 ensureCandidateSpecificationPackageSemantics("candidate-specification package");
 results.push("candidate-specification and release-readiness artifacts cover qualified external positioning, publication posture, and review boundaries");
+
+ensureReleaseDiscoveryIntegrity("release discovery integrity");
+results.push("release discovery surfaces, CI wiring, and governance submission paths remain current and validation-backed");
 
 expectInvalidCapabilityManifest(
   "capability manifest overclaim",

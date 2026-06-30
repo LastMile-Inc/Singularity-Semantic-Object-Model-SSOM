@@ -150,6 +150,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Functional safety foundation profile: [docs/functional-safety-foundation-profile-v0.9.md](docs/functional-safety-foundation-profile-v0.9.md)
 - OT cybersecurity foundation profile: [docs/ot-cybersecurity-foundation-profile-v0.9.md](docs/ot-cybersecurity-foundation-profile-v0.9.md)
 - Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
+- v1.0 promotion discovery surface: [docs/schema-reference-v1.0.md](docs/schema-reference-v1.0.md)
 - Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
 - Previous schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
 - Previous schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)

@@ -13,6 +13,7 @@ SSOM is not positioned here as the definitive OT standard. It is positioned as a
 - JSON Schemas: `schemas/jsonschema/`
 - Governed relationship registry: `schemas/registry/core-relationship-vocabulary.json`
 - Conformance harness: `conformance/validate-schemas.mjs`
+- Promotion-program discovery surface: `docs/schema-reference-v1.0.md`
 
 ## 3. Version And Compatibility Statement
 
