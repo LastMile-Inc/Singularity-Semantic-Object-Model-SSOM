@@ -1,5 +1,7 @@
 # SSOM Release Candidate Acceptance Audit
 
+Historical note: this draft-stage audit is superseded by `docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md` as the current authoritative release-gate artifact.
+
 - Date: 2026-06-29
 - Repository: `LastMile-Inc/Singularity-Semantic-Object-Model-SSOM`
 - Branch audited: `feature/ssom-equipment-device-roles`

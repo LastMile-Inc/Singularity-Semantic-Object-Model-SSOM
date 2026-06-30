@@ -1,5 +1,7 @@
 # SSOM Candidate Specification Package v0.9
 
+Historical note: this document is retained as a pre-v1.0 promotion input. The current release-decision artifact is `docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md`.
+
 ## 1. Executive Overview
 
 SSOM is a draft, AI-native, vendor-neutral industrial semantic and evidence model with executable schema and fixture validation. The repository now includes governed core semantics, qualified standards crosswalks, a cloud-scale BigQuery reference architecture, bounded ServiceNow serving, safety, and cybersecurity profiles, and initial industry-profile scaffolds suitable for disciplined external review.

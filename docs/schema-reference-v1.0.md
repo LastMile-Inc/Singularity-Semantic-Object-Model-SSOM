@@ -130,10 +130,15 @@ This document is the release-discovery index for SSOM Core `v1.0.0` and its boun
 
 ## Release-readiness surfaces
 
+- `docs/migration-v1.0.md`
 - `docs/candidate-specification-package-v0.9.md`
 - `docs/release-readiness-assessment-v0.9.md`
 - `docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md`
 - `docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md`
+- `docs/releases/SSOM_v1_0_Release_Execution_Guide.md`
+- `docs/releases/SSOM_v1_0_GitHub_Pull_Request_Summary.md`
+- `docs/releases/SSOM_v1_0_Release_Notes.md`
+- `docs/releases/SSOM_v1_0_Artifact_Inventory.md`
 - `CHANGELOG.md`
 
 ## Last Mile platform and master-profile surfaces
@@ -167,3 +172,4 @@ These artifacts are retained only as deprecated, non-normative compatibility mar
 - Release readiness requires the validator, versioned conformance checklist, fixtures, standards artifacts, profile documents, and reference-architecture documents to remain mutually consistent.
 - BigQuery artifacts are informative, provider-specific reference architecture materials and are not the normative semantic contract.
 - Last Mile platform-operations artifacts define a proprietary operating profile and must remain distinct from portable SSOM Core.
+- Candidate-specification and release-readiness materials versioned as `v0.9` are retained as historical promotion inputs and are superseded as current release-decision artifacts by the final v1.0 release audit.

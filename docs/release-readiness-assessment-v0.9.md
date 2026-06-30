@@ -1,5 +1,7 @@
 # SSOM Release Readiness Assessment v0.9
 
+Historical note: this document is retained as a pre-v1.0 publication assessment. The current release-decision artifact is `docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md`.
+
 ## Assessment Basis
 
 This assessment evaluates the repository as it exists after Prompts 1 through 10, with current validation evidence, governance artifacts, profile structure, standards traceability, and reference architecture coverage.
