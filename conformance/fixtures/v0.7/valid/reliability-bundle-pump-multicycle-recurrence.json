@@ -1,0 +1,858 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:p501-vibration-cycle1-pre",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "metric": "vibration_rms",
+      "value": 8.2,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T08:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P501.VIB_RMS",
+        "lineage_id": "lin-p501-obs-c1-pre",
+        "ingest_time": "2026-06-29T08:00:02Z",
+        "processing_time": "2026-06-29T08:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:00:00Z",
+        "source_time": "2026-06-29T08:00:00Z",
+        "receive_time": "2026-06-29T08:00:02Z",
+        "processing_time": "2026-06-29T08:00:03Z",
+        "delivery_classification": "live"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p501-vibration-cycle1-post",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "metric": "vibration_rms",
+      "value": 4.1,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T16:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P501.VIB_RMS",
+        "lineage_id": "lin-p501-obs-c1-post",
+        "ingest_time": "2026-06-29T16:00:02Z",
+        "processing_time": "2026-06-29T16:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:00:00Z",
+        "source_time": "2026-06-29T16:00:00Z",
+        "receive_time": "2026-06-29T16:00:02Z",
+        "processing_time": "2026-06-29T16:00:03Z",
+        "delivery_classification": "live"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p501-vibration-cycle2-recurrence",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "metric": "vibration_rms",
+      "value": 8.7,
+      "unit": "mm/s",
+      "event_time": "2026-07-03T07:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P501.VIB_RMS",
+        "lineage_id": "lin-p501-obs-c2-recurrence",
+        "ingest_time": "2026-07-03T07:00:02Z",
+        "processing_time": "2026-07-03T07:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:00:00Z",
+        "source_time": "2026-07-03T07:00:00Z",
+        "receive_time": "2026-07-03T07:00:02Z",
+        "processing_time": "2026-07-03T07:00:03Z",
+        "delivery_classification": "live"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p501-vibration-cycle2-post",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "metric": "vibration_rms",
+      "value": 3.3,
+      "unit": "mm/s",
+      "event_time": "2026-07-03T17:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P501.VIB_RMS",
+        "lineage_id": "lin-p501-obs-c2-post",
+        "ingest_time": "2026-07-03T17:00:02Z",
+        "processing_time": "2026-07-03T17:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T17:00:00Z",
+        "source_time": "2026-07-03T17:00:00Z",
+        "receive_time": "2026-07-03T17:00:02Z",
+        "processing_time": "2026-07-03T17:00:03Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "condition_id": "urn:ssom:condition:p501-bearing-cycle1",
+      "ssom_version": "0.7.0",
+      "condition_type": "bearing_degradation",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "lifecycle_state": "detected",
+      "severity": "medium",
+      "confidence": 0.78,
+      "detected_at": "2026-06-29T08:05:00Z",
+      "evidence_refs": ["urn:ssom:record:p501-vibration-cycle1-pre"],
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "reliability-engineer",
+        "source_reference": "cond:P501:cycle1",
+        "lineage_id": "lin-cond-p501-c1",
+        "ingest_time": "2026-06-29T08:05:02Z",
+        "processing_time": "2026-06-29T08:05:03Z"
+      },
+      "quality_summary": { "status": "good", "validation_status": "valid", "score": 0.9 }
+    },
+    {
+      "condition_id": "urn:ssom:condition:p501-bearing-cycle2-recurrence",
+      "ssom_version": "0.7.0",
+      "condition_type": "bearing_degradation_recurrence",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "lifecycle_state": "escalated",
+      "severity": "high",
+      "confidence": 0.84,
+      "detected_at": "2026-07-03T07:05:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p501-vibration-cycle2-recurrence",
+        "urn:ssom:work-verification:p501-cycle1-verification",
+        "urn:ssom:outcome:p501-cycle1-outcome",
+        "urn:ssom:condition:p501-bearing-cycle1"
+      ],
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "reliability-engineer",
+        "source_reference": "cond:P501:cycle2",
+        "lineage_id": "lin-cond-p501-c2",
+        "ingest_time": "2026-07-03T07:05:02Z",
+        "processing_time": "2026-07-03T07:05:03Z"
+      },
+      "quality_summary": { "status": "good", "validation_status": "valid", "score": 0.92 },
+      "extensions": {
+        "prior_condition_ref": "urn:ssom:condition:p501-bearing-cycle1",
+        "prior_verification_ref": "urn:ssom:work-verification:p501-cycle1-verification",
+        "prior_outcome_ref": "urn:ssom:outcome:p501-cycle1-outcome"
+      }
+    }
+  ],
+  "failure_modes": [
+    {
+      "failure_mode_id": "urn:ssom:failure-mode:p501-bearing-degradation",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "affected_function": "deliver stable pump rotation within vibration tolerance",
+      "classified_at": "2026-06-29T08:10:00Z",
+      "evidence_refs": ["urn:ssom:condition:p501-bearing-cycle1"],
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "reliability-engineer",
+        "source_reference": "fm:P501:bearing",
+        "lineage_id": "lin-fm-p501",
+        "ingest_time": "2026-06-29T08:10:01Z",
+        "processing_time": "2026-06-29T08:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:10:00Z",
+        "receive_time": "2026-06-29T08:10:01Z",
+        "processing_time": "2026-06-29T08:10:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "failure_events": [
+    {
+      "failure_event_id": "urn:ssom:failure-event:p501-cycle1",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "event_status": "active",
+      "occurred_at": "2026-06-29T08:00:00Z",
+      "evidence_refs": ["urn:ssom:condition:p501-bearing-cycle1"],
+      "provenance": {
+        "source_platform": "operations",
+        "source_authority_id": "shift-lead",
+        "source_reference": "fe:P501:c1",
+        "lineage_id": "lin-fe-p501-c1",
+        "ingest_time": "2026-06-29T08:15:01Z",
+        "processing_time": "2026-06-29T08:15:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:15:00Z",
+        "receive_time": "2026-06-29T08:15:01Z",
+        "processing_time": "2026-06-29T08:15:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "failure_event_id": "urn:ssom:failure-event:p501-cycle2",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "event_status": "active",
+      "occurred_at": "2026-07-03T07:00:00Z",
+      "evidence_refs": [
+        "urn:ssom:condition:p501-bearing-cycle2-recurrence",
+        "urn:ssom:outcome:p501-cycle1-outcome"
+      ],
+      "provenance": {
+        "source_platform": "operations",
+        "source_authority_id": "shift-lead",
+        "source_reference": "fe:P501:c2",
+        "lineage_id": "lin-fe-p501-c2",
+        "ingest_time": "2026-07-03T07:06:01Z",
+        "processing_time": "2026-07-03T07:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:06:00Z",
+        "receive_time": "2026-07-03T07:06:01Z",
+        "processing_time": "2026-07-03T07:06:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:p501-cycle1-diagnostic",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "diagnostic_type": "bearing_health_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "Bearing lubrication breakdown is the likely source of high vibration.",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "evidence_refs": [
+        "urn:ssom:record:p501-vibration-cycle1-pre",
+        "urn:ssom:condition:p501-bearing-cycle1"
+      ],
+      "diagnosed_at": "2026-06-29T08:20:00Z",
+      "confidence": 0.8,
+      "provenance": {
+        "source_platform": "diagnostics",
+        "source_authority_id": "reliability-team",
+        "source_reference": "diag:P501:c1",
+        "lineage_id": "lin-diag-p501-c1",
+        "ingest_time": "2026-06-29T08:20:01Z",
+        "processing_time": "2026-06-29T08:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:20:00Z",
+        "receive_time": "2026-06-29T08:20:01Z",
+        "processing_time": "2026-06-29T08:20:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    },
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:p501-cycle2-diagnostic",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "diagnostic_type": "recurrence_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "The first-cycle repair improved vibration temporarily, but recurrence indicates the maintenance strategy must change.",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "evidence_refs": [
+        "urn:ssom:record:p501-vibration-cycle2-recurrence",
+        "urn:ssom:work-verification:p501-cycle1-verification",
+        "urn:ssom:outcome:p501-cycle1-outcome",
+        "urn:ssom:condition:p501-bearing-cycle2-recurrence"
+      ],
+      "diagnosed_at": "2026-07-03T07:10:00Z",
+      "confidence": 0.86,
+      "provenance": {
+        "source_platform": "diagnostics",
+        "source_authority_id": "reliability-team",
+        "source_reference": "diag:P501:c2",
+        "lineage_id": "lin-diag-p501-c2",
+        "ingest_time": "2026-07-03T07:10:01Z",
+        "processing_time": "2026-07-03T07:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:10:00Z",
+        "receive_time": "2026-07-03T07:10:01Z",
+        "processing_time": "2026-07-03T07:10:02Z",
+        "delivery_classification": "reconstructed"
+      },
+      "extensions": {
+        "prior_verification_ref": "urn:ssom:work-verification:p501-cycle1-verification",
+        "prior_outcome_ref": "urn:ssom:outcome:p501-cycle1-outcome"
+      }
+    }
+  ],
+  "maintenance_strategies": [
+    {
+      "strategy_id": "urn:ssom:maintenance-strategy:p501-condition-based",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "strategy_type": "condition_based",
+      "objective": "Respond to vibration degradation with targeted repair when evidence crosses threshold.",
+      "target_failure_mode_refs": ["urn:ssom:failure-mode:p501-bearing-degradation"],
+      "evidence_refs": ["urn:ssom:diagnostic:p501-cycle1-diagnostic"],
+      "effective_from": "2026-06-29T08:25:00Z",
+      "provenance": {
+        "source_platform": "reliability_program",
+        "source_authority_id": "reliability-program",
+        "source_reference": "ms:P501:c1",
+        "lineage_id": "lin-ms-p501-c1",
+        "ingest_time": "2026-06-29T08:25:01Z",
+        "processing_time": "2026-06-29T08:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:25:00Z",
+        "receive_time": "2026-06-29T08:25:01Z",
+        "processing_time": "2026-06-29T08:25:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "strategy_id": "urn:ssom:maintenance-strategy:p501-preventive-redesign",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "strategy_type": "preventive",
+      "objective": "Change lubrication route and bearing housing practice after proven recurrence.",
+      "target_failure_mode_refs": ["urn:ssom:failure-mode:p501-bearing-degradation"],
+      "evidence_refs": ["urn:ssom:diagnostic:p501-cycle2-diagnostic"],
+      "effective_from": "2026-07-03T07:20:00Z",
+      "provenance": {
+        "source_platform": "reliability_program",
+        "source_authority_id": "reliability-program",
+        "source_reference": "ms:P501:c2",
+        "lineage_id": "lin-ms-p501-c2",
+        "ingest_time": "2026-07-03T07:20:01Z",
+        "processing_time": "2026-07-03T07:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:20:00Z",
+        "receive_time": "2026-07-03T07:20:01Z",
+        "processing_time": "2026-07-03T07:20:02Z",
+        "delivery_classification": "manual_entry"
+      },
+      "extensions": {
+        "previous_strategy_ref": "urn:ssom:maintenance-strategy:p501-condition-based"
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:p501-cycle1-repair",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.7.0",
+      "recommendation_type": "maintenance_recommendation",
+      "target_ref": "urn:ssom:asset:pump-p501",
+      "recommended_action": "Relubricate and inspect bearing alignment.",
+      "rationale": "First-cycle evidence indicates repair is likely sufficient.",
+      "priority": "high",
+      "confidence": 0.81,
+      "evidence_refs": ["urn:ssom:diagnostic:p501-cycle1-diagnostic"],
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "recommended_at": "2026-06-29T08:30:00Z",
+      "provenance": {
+        "source_platform": "reliability_advisor",
+        "source_authority_id": "advisor",
+        "source_reference": "rec:P501:c1",
+        "lineage_id": "lin-rec-p501-c1",
+        "ingest_time": "2026-06-29T08:30:01Z",
+        "processing_time": "2026-06-29T08:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:30:00Z",
+        "receive_time": "2026-06-29T08:30:01Z",
+        "processing_time": "2026-06-29T08:30:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    },
+    {
+      "recommendation_id": "urn:ssom:recommendation:p501-cycle2-strategy-change",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.7.0",
+      "recommendation_type": "maintenance_recommendation",
+      "target_ref": "urn:ssom:asset:pump-p501",
+      "recommended_action": "Change lubrication route, replace bearing housing components, and move to preventive inspection interval.",
+      "rationale": "Recurrence after verified first-cycle work shows the maintenance strategy must change.",
+      "priority": "high",
+      "confidence": 0.9,
+      "evidence_refs": [
+        "urn:ssom:diagnostic:p501-cycle2-diagnostic",
+        "urn:ssom:outcome:p501-cycle1-outcome"
+      ],
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 4.0 mm/s and prevent repeat recurrence.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "recommended_at": "2026-07-03T07:25:00Z",
+      "provenance": {
+        "source_platform": "reliability_advisor",
+        "source_authority_id": "advisor",
+        "source_reference": "rec:P501:c2",
+        "lineage_id": "lin-rec-p501-c2",
+        "ingest_time": "2026-07-03T07:25:01Z",
+        "processing_time": "2026-07-03T07:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:25:00Z",
+        "receive_time": "2026-07-03T07:25:01Z",
+        "processing_time": "2026-07-03T07:25:02Z",
+        "delivery_classification": "reconstructed"
+      },
+      "extensions": {
+        "prior_recommendation_ref": "urn:ssom:recommendation:p501-cycle1-repair"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "urn:ssom:decision:p501-cycle1-approve",
+      "semantic_truth_state": "decision",
+      "ssom_version": "0.7.0",
+      "decision_type": "maintenance_approval",
+      "decision_status": "approved",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "context_refs": ["urn:ssom:recommendation:p501-cycle1-repair"],
+      "evidence_refs": ["urn:ssom:diagnostic:p501-cycle1-diagnostic"],
+      "decision_actor": "maintenance_supervisor",
+      "decision_time": "2026-06-29T08:35:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "supervisor",
+        "source_reference": "dec:P501:c1",
+        "lineage_id": "lin-dec-p501-c1",
+        "ingest_time": "2026-06-29T08:35:01Z",
+        "processing_time": "2026-06-29T08:35:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:35:00Z",
+        "receive_time": "2026-06-29T08:35:01Z",
+        "processing_time": "2026-06-29T08:35:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "decision_id": "urn:ssom:decision:p501-cycle2-change-strategy",
+      "semantic_truth_state": "decision",
+      "ssom_version": "0.7.0",
+      "decision_type": "maintenance_approval",
+      "decision_status": "selected",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "context_refs": ["urn:ssom:recommendation:p501-cycle2-strategy-change"],
+      "evidence_refs": [
+        "urn:ssom:diagnostic:p501-cycle2-diagnostic",
+        "urn:ssom:outcome:p501-cycle1-outcome"
+      ],
+      "decision_actor": "maintenance_manager",
+      "decision_time": "2026-07-03T07:30:00Z",
+      "rationale": "The prior condition-based strategy produced only temporary improvement, so preventive redesign is selected.",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "manager",
+        "source_reference": "dec:P501:c2",
+        "lineage_id": "lin-dec-p501-c2",
+        "ingest_time": "2026-07-03T07:30:01Z",
+        "processing_time": "2026-07-03T07:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:30:00Z",
+        "receive_time": "2026-07-03T07:30:01Z",
+        "processing_time": "2026-07-03T07:30:02Z",
+        "delivery_classification": "manual_entry"
+      },
+      "extensions": {
+        "previous_strategy_ref": "urn:ssom:maintenance-strategy:p501-condition-based",
+        "selected_strategy_ref": "urn:ssom:maintenance-strategy:p501-preventive-redesign"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:p501-cycle1",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "request_type": "corrective_work",
+      "request_status": "approved",
+      "requested_action": "Relubricate and inspect Pump P-501 bearing alignment.",
+      "recommendation_ref": "urn:ssom:recommendation:p501-cycle1-repair",
+      "decision_ref": "urn:ssom:decision:p501-cycle1-approve",
+      "maintenance_strategy_ref": "urn:ssom:maintenance-strategy:p501-condition-based",
+      "basis_refs": ["urn:ssom:diagnostic:p501-cycle1-diagnostic"],
+      "requested_at": "2026-06-29T08:40:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr:P501:c1",
+        "lineage_id": "lin-wr-p501-c1",
+        "ingest_time": "2026-06-29T08:40:01Z",
+        "processing_time": "2026-06-29T08:40:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:40:00Z",
+        "receive_time": "2026-06-29T08:40:01Z",
+        "processing_time": "2026-06-29T08:40:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "work_request_id": "urn:ssom:work-request:p501-cycle2",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "request_type": "corrective_work",
+      "request_status": "approved",
+      "requested_action": "Implement lubrication-route redesign and replace bearing housing wear components.",
+      "recommendation_ref": "urn:ssom:recommendation:p501-cycle2-strategy-change",
+      "decision_ref": "urn:ssom:decision:p501-cycle2-change-strategy",
+      "maintenance_strategy_ref": "urn:ssom:maintenance-strategy:p501-preventive-redesign",
+      "basis_refs": [
+        "urn:ssom:diagnostic:p501-cycle2-diagnostic",
+        "urn:ssom:outcome:p501-cycle1-outcome"
+      ],
+      "requested_at": "2026-07-03T07:35:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr:P501:c2",
+        "lineage_id": "lin-wr-p501-c2",
+        "ingest_time": "2026-07-03T07:35:01Z",
+        "processing_time": "2026-07-03T07:35:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:35:00Z",
+        "receive_time": "2026-07-03T07:35:01Z",
+        "processing_time": "2026-07-03T07:35:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:p501-cycle1",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "work_request_ref": "urn:ssom:work-request:p501-cycle1",
+      "plan_status": "approved",
+      "planned_actions": ["Relubricate bearing", "Inspect alignment", "Verify vibration"],
+      "planned_verification_method": "post-work vibration check",
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "planned_start": "2026-06-29T13:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp:P501:c1",
+        "lineage_id": "lin-wp-p501-c1",
+        "ingest_time": "2026-06-29T08:45:01Z",
+        "processing_time": "2026-06-29T08:45:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:45:00Z",
+        "receive_time": "2026-06-29T08:45:01Z",
+        "processing_time": "2026-06-29T08:45:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "work_plan_id": "urn:ssom:work-plan:p501-cycle2",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "work_request_ref": "urn:ssom:work-request:p501-cycle2",
+      "plan_status": "approved",
+      "planned_actions": ["Redesign lubrication route", "Replace wear components", "Verify vibration", "Adopt preventive inspection interval"],
+      "planned_verification_method": "post-work vibration check and follow-up review",
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 4.0 mm/s and eliminate short-cycle recurrence.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "planned_start": "2026-07-03T12:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp:P501:c2",
+        "lineage_id": "lin-wp-p501-c2",
+        "ingest_time": "2026-07-03T07:40:01Z",
+        "processing_time": "2026-07-03T07:40:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T07:40:00Z",
+        "receive_time": "2026-07-03T07:40:01Z",
+        "processing_time": "2026-07-03T07:40:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:p501-cycle1-work",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p501",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:p501-cycle1"],
+      "executed_at": "2026-06-29T14:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:p501-cycle1",
+      "work_plan_ref": "urn:ssom:work-plan:p501-cycle1",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "technician",
+        "source_reference": "we:P501:c1",
+        "lineage_id": "lin-we-p501-c1",
+        "ingest_time": "2026-06-29T14:00:01Z",
+        "processing_time": "2026-06-29T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T14:00:00Z",
+        "receive_time": "2026-06-29T14:00:01Z",
+        "processing_time": "2026-06-29T14:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "action_id": "urn:ssom:action:p501-cycle2-work",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p501",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:p501-cycle2"],
+      "executed_at": "2026-07-03T15:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:p501-cycle2",
+      "work_plan_ref": "urn:ssom:work-plan:p501-cycle2",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "technician",
+        "source_reference": "we:P501:c2",
+        "lineage_id": "lin-we-p501-c2",
+        "ingest_time": "2026-07-03T15:00:01Z",
+        "processing_time": "2026-07-03T15:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T15:00:00Z",
+        "receive_time": "2026-07-03T15:00:01Z",
+        "processing_time": "2026-07-03T15:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:p501-cycle1-verification",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "work_execution_ref": "urn:ssom:action:p501-cycle1-work",
+      "verification_status": "verified",
+      "verification_method": "post-work vibration check",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:record:p501-vibration-cycle1-post"],
+      "verified_at": "2026-06-29T16:05:00Z",
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "analyst",
+        "source_reference": "wv:P501:c1",
+        "lineage_id": "lin-wv-p501-c1",
+        "ingest_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:05:00Z",
+        "receive_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "verification_id": "urn:ssom:work-verification:p501-cycle2-verification",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "work_execution_ref": "urn:ssom:action:p501-cycle2-work",
+      "verification_status": "verified",
+      "verification_method": "post-work vibration check and review",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:record:p501-vibration-cycle2-post"],
+      "verified_at": "2026-07-03T17:05:00Z",
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "analyst",
+        "source_reference": "wv:P501:c2",
+        "lineage_id": "lin-wv-p501-c2",
+        "ingest_time": "2026-07-03T17:05:01Z",
+        "processing_time": "2026-07-03T17:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T17:05:00Z",
+        "receive_time": "2026-07-03T17:05:01Z",
+        "processing_time": "2026-07-03T17:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:p501-cycle1-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "action_ref": "urn:ssom:action:p501-cycle1-work",
+      "work_execution_ref": "urn:ssom:action:p501-cycle1-work",
+      "verification_refs": ["urn:ssom:work-verification:p501-cycle1-verification"],
+      "outcome_disposition": "positive",
+      "intended_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "observed_outcome": {
+        "description": "Immediate post-work vibration fell below target.",
+        "result_class": "successful",
+        "measured_metric": "vibration_rms",
+        "measured_value": 4.1,
+        "unit": "mm/s"
+      },
+      "assessed_at": "2026-06-29T16:06:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p501-vibration-cycle1-post",
+        "urn:ssom:work-verification:p501-cycle1-verification"
+      ],
+      "confidence": 0.84,
+      "reliability_impact": {
+        "direction": "improved",
+        "description": "Short-term vibration evidence improved after first-cycle work.",
+        "asset_class": "centrifugal_pump",
+        "operating_context": {
+          "asset_class": "centrifugal_pump",
+          "operating_mode": "normal_operation"
+        },
+        "measurement_evidence_refs": ["urn:ssom:record:p501-vibration-cycle1-post"],
+        "work_history_refs": ["urn:ssom:action:p501-cycle1-work"],
+        "assessment_basis": "post_work_vibration_check"
+      },
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "maintenance-analyst",
+        "source_reference": "wo:P501:c1",
+        "lineage_id": "lin-wo-p501-c1",
+        "ingest_time": "2026-06-29T16:06:01Z",
+        "processing_time": "2026-06-29T16:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:06:00Z",
+        "receive_time": "2026-06-29T16:06:01Z",
+        "processing_time": "2026-06-29T16:06:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    },
+    {
+      "outcome_id": "urn:ssom:outcome:p501-cycle2-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:pump-p501",
+      "action_ref": "urn:ssom:action:p501-cycle2-work",
+      "decision_ref": "urn:ssom:decision:p501-cycle2-change-strategy",
+      "work_execution_ref": "urn:ssom:action:p501-cycle2-work",
+      "verification_refs": ["urn:ssom:work-verification:p501-cycle2-verification"],
+      "outcome_disposition": "positive",
+      "intended_outcome": {
+        "description": "Reduce vibration RMS below 4.0 mm/s and eliminate short-cycle recurrence.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "observed_outcome": {
+        "description": "Second-cycle strategy change reduced vibration below the revised target after recurrence had been linked to prior work history.",
+        "result_class": "successful",
+        "measured_metric": "vibration_rms",
+        "measured_value": 3.3,
+        "unit": "mm/s"
+      },
+      "assessed_at": "2026-07-03T17:06:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p501-vibration-cycle2-recurrence",
+        "urn:ssom:record:p501-vibration-cycle2-post",
+        "urn:ssom:work-verification:p501-cycle1-verification",
+        "urn:ssom:work-verification:p501-cycle2-verification",
+        "urn:ssom:outcome:p501-cycle1-outcome"
+      ],
+      "confidence": 0.88,
+      "reliability_impact": {
+        "direction": "improved",
+        "description": "The revised strategy improved reliability after explicitly incorporating prior recurrence history.",
+        "asset_class": "centrifugal_pump",
+        "operating_context": {
+          "asset_class": "centrifugal_pump",
+          "operating_mode": "normal_operation"
+        },
+        "measurement_evidence_refs": [
+          "urn:ssom:record:p501-vibration-cycle2-recurrence",
+          "urn:ssom:record:p501-vibration-cycle2-post"
+        ],
+        "work_history_refs": [
+          "urn:ssom:action:p501-cycle1-work",
+          "urn:ssom:action:p501-cycle2-work"
+        ],
+        "assessment_basis": "recurrence_informed_strategy_change"
+      },
+      "availability_impact": {
+        "direction": "improved",
+        "description": "The strategy change reduced repeated disruption risk.",
+        "magnitude": 12,
+        "unit": "hours_risk_avoided"
+      },
+      "recurrence_context": {
+        "recurrence_status": "closed",
+        "prior_failure_event_refs": ["urn:ssom:failure-event:p501-cycle1"],
+        "prior_work_refs": ["urn:ssom:action:p501-cycle1-work"]
+      },
+      "provenance": {
+        "source_platform": "reliability_assessment",
+        "source_authority_id": "maintenance-analyst",
+        "source_reference": "wo:P501:c2",
+        "lineage_id": "lin-wo-p501-c2",
+        "ingest_time": "2026-07-03T17:06:01Z",
+        "processing_time": "2026-07-03T17:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-07-03T17:06:00Z",
+        "receive_time": "2026-07-03T17:06:01Z",
+        "processing_time": "2026-07-03T17:06:02Z",
+        "delivery_classification": "reconstructed"
+      },
+      "extensions": {
+        "comparison_to_prior_outcome_ref": "urn:ssom:outcome:p501-cycle1-outcome",
+        "prior_condition_ref": "urn:ssom:condition:p501-bearing-cycle1",
+        "prior_verification_ref": "urn:ssom:work-verification:p501-cycle1-verification",
+        "strategy_change_from_ref": "urn:ssom:maintenance-strategy:p501-condition-based",
+        "strategy_change_to_ref": "urn:ssom:maintenance-strategy:p501-preventive-redesign"
+      }
+    }
+  ]
+}

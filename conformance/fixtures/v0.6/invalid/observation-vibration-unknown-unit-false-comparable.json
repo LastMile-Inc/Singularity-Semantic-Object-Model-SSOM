@@ -1,0 +1,102 @@
+{
+  "record_id": "urn:ssom:record:p401-vibration-unknown-unit-invalid",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:pump-p401",
+  "metric": "bearing_vibration_velocity_rms",
+  "value": 17.2,
+  "unit": "vendor_vu",
+  "event_time": "2026-06-29T12:30:00Z",
+  "quality": {
+    "status": "uncertain",
+    "validation_status": "partial",
+    "score": 0.55
+  },
+  "original_measurement": {
+    "source_value": 17.2,
+    "source_unit": {
+      "unit_code": "VENDOR_VU_UNKNOWN",
+      "vocabulary_id": "vendor-private",
+      "symbol": "vu",
+      "dimension": "unknown"
+    },
+    "source_timestamp": "2026-06-29T12:30:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "vibration_velocity",
+    "canonical_value": 8.4,
+    "canonical_unit": {
+      "unit_code": "MM_PER_S",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm/s",
+      "dimension": "vibration_velocity"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "VENDOR_VU_UNKNOWN",
+      "vocabulary_id": "vendor-private",
+      "symbol": "vu"
+    },
+    "canonical_unit": {
+      "unit_code": "MM_PER_S",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm/s"
+    },
+    "formula_reference": "unsupported_vendor_mapping",
+    "conversion_method": "manual_guess",
+    "conversion_service": "spreadsheet",
+    "conversion_version": "n/a",
+    "conversion_timestamp": "2026-06-29T12:31:00Z"
+  },
+  "measurement_quality": {
+    "quality_code": "degraded",
+    "communication_quality": "degraded",
+    "validity_status": "suspect",
+    "uncertainty": 1.5,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:pump-p401",
+    "source_device_ref": "urn:ssom:asset:vb-401",
+    "source_signal_ref": "vendor:VB401:UNKNOWNUNIT",
+    "engineering_unit": {
+      "unit_code": "VENDOR_VU_UNKNOWN",
+      "vocabulary_id": "vendor-private",
+      "symbol": "vu"
+    },
+    "sampling_interval": "PT5S",
+    "aggregation_method": "rms",
+    "operating_mode_context": "steady_state"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T12:30:00Z",
+    "ingestion_timestamp": "2026-06-29T12:30:03Z",
+    "clock_source_context": "vendor_gateway_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "vendor_gateway",
+    "source_authority_id": "vendor-device",
+    "source_reference": "vendor:VB401:UNKNOWNUNIT:20260629T123000Z",
+    "lineage_id": "lin-p401-unknown-unit-invalid",
+    "ingest_time": "2026-06-29T12:30:03Z",
+    "processing_time": "2026-06-29T12:30:04Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T12:30:00Z",
+    "source_time": "2026-06-29T12:30:00Z",
+    "receive_time": "2026-06-29T12:30:03Z",
+    "processing_time": "2026-06-29T12:30:04Z",
+    "delivery_classification": "live"
+  },
+  "extensions": {
+    "measurement_comparability": {
+      "comparable": true,
+      "comparable_view_eligible": true,
+      "reason": "unverified_guess"
+    }
+  }
+}

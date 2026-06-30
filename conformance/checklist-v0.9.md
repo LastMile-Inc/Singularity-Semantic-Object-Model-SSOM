@@ -14,6 +14,14 @@
 - [ ] Namespaced extension relationships preserve source-specific relationship semantics with mapping metadata and provenance.
 - [ ] Time-bounded relationships preserve valid temporal intervals.
 
+## Integrated Lifecycle Profile
+- [ ] Pump P-101 integrated lifecycle bundle validates across truth-state, measurement-safety, reliability, and identity-continuity semantics.
+- [ ] Original and replacement Pump P-101 assets have distinct canonical SSOM asset identities.
+- [ ] Engineering tag `P-101` is reused only through non-overlapping validity periods.
+- [ ] Immediate post-work vibration reduction does not automatically imply sustained reliability improvement.
+- [ ] Recurrence remains linked to earlier work, outcome, and failure context.
+- [ ] Replacement preserves predecessor or successor lineage and full provenance history.
+
 ## Standards Discipline
 - [ ] Implementations do not claim complete ISA-95 hierarchy conformance from the core boundary model alone.
 - [ ] Implementations do not duplicate existing core relationship semantics under new synonymous codes without governance approval.

@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Added: P0 Closure Edge-Case Hardening
+
+- Added v0.4 truth-state lineage fixtures proving corrected source assertions, superseded derived assertions, revised inferences, superseded recommendations, and reassessed outcomes preserve original evidence, provenance, and temporal context.
+- Added v0.6 measurement fixtures proving raw evidence with unknown or ungoverned units may be preserved without being falsely normalized or marked safely comparable.
+- Added a v0.7 multi-cycle recurrence bundle proving recurrence can link prior condition, prior work, verification, outcome, failure history, and maintenance-strategy change context explicitly.
+- Added semantic validation for truth-state supersession lineage, unknown-unit comparability restrictions, and recurrence-aware work-history linkage.
+
+### Changed: Standards Claim Discipline
+
+- Standards-mapping, README, and RFC wording now describe conceptual alignment and semantic-preservation intent rather than implying formal interoperability, profile completeness, or standards-certified behavior.
+
+### Added: Integrated Pump Lifecycle Cross-Feature Conformance
+
+- Added an executable Pump P-101 integrated lifecycle bundle proving truth-state, measurement-safety, reliability outcome, recurrence, and replacement identity continuity work together in one end-to-end scenario.
+- Added an invalid integrated bundle proving overlapping engineering-tag reuse across original and replacement assets is rejected.
+- Added semantic validation proving short-term vibration reduction does not automatically imply sustained reliability improvement and that replacement preserves history without reusing canonical identity.
+
 ### Added: Governed Relationship Registry and Operational Boundary Semantics
 
 - Added dedicated schemas for Asset Class, Equipment Model, and Operational Boundary plus governed relationship typing for core and namespaced extension relationship codes.

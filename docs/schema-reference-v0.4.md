@@ -31,6 +31,11 @@ The following reusable definitions are defined in `schemas/jsonschema/common.jso
 - `actionStatus`
 - `priorityLevel`
 
+## Lineage note
+
+- `stateLineage` is the shared mechanism for correction, supersession, valid-from, and valid-to semantics across source assertions, derived assertions, inferences, recommendations, and outcomes.
+- Implementations should preserve both prior and revised truth-state records so downstream consumers can reconstruct what was believed at a given time and why it later changed.
+
 ## Compatibility notes
 
 - Existing v0.3 Asset, Relationship, Observation, and Condition fixtures remain valid.

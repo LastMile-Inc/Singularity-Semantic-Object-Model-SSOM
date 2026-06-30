@@ -23,6 +23,8 @@
 - [ ] Outcomes distinguish intended outcome from observed outcome and retain evidence references.
 - [ ] Contradictory source assertions can coexist without forced reconciliation.
 - [ ] Correction or supersession lineage is retained where truth-state records are revised.
+- [ ] Correction or supersession lineage preserves both the prior record and the revised record rather than rewriting history.
+- [ ] Late-arriving evidence can trigger revised assertions, inferences, recommendations, or outcomes while retaining prior provenance and temporal context.
 
 ## Quality, Provenance, and Temporal Integrity Profile
 - [ ] Quality status and validation state are present.

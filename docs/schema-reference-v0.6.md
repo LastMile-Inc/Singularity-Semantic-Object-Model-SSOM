@@ -36,6 +36,11 @@ The following reusable definitions are defined in `schemas/jsonschema/common.jso
 - `measurement_quality` records whether the value is trustworthy, stale, missing, degraded, or estimated.
 - `signal_context` records what was measured, by which device, under what operational basis.
 
+## Unknown-unit handling note
+
+- SSOM permits preservation of raw source measurements even when the source unit is not yet governed or safely mappable.
+- In that case, implementations should preserve original measurement semantics and comparability restrictions rather than inventing unsupported canonical conversions.
+
 ## Compatibility notes
 
 - Existing v0.5 identity lifecycle fixtures remain valid.

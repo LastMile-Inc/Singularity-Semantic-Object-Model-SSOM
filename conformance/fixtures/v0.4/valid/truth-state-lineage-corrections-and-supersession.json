@@ -1,0 +1,520 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:p301-vibration-20260629t090000z",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.4.0",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "metric": "vibration_rms",
+      "value": 5.6,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T09:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P301.VIB_RMS",
+        "lineage_id": "lin-p301-obs-001",
+        "ingest_time": "2026-06-29T09:00:02Z",
+        "processing_time": "2026-06-29T09:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:00:00Z",
+        "source_time": "2026-06-29T09:00:00Z",
+        "receive_time": "2026-06-29T09:00:02Z",
+        "processing_time": "2026-06-29T09:00:03Z",
+        "delivery_classification": "live"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T09:00:00Z"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p301-vibration-late-20260629t091500z",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.4.0",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "metric": "vibration_rms",
+      "value": 7.2,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T09:15:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "historian_backfill",
+        "source_authority_id": "historiand",
+        "source_reference": "hist:P301:VIB:0915",
+        "lineage_id": "lin-p301-obs-late-001",
+        "ingest_time": "2026-06-29T10:20:00Z",
+        "processing_time": "2026-06-29T10:20:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:15:00Z",
+        "source_time": "2026-06-29T09:15:00Z",
+        "receive_time": "2026-06-29T10:20:00Z",
+        "processing_time": "2026-06-29T10:20:01Z",
+        "delivery_classification": "late_arrival"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T10:20:00Z"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p301-vibration-post-action-20260629t160000z",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.4.0",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "metric": "vibration_rms",
+      "value": 4.4,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T16:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P301.VIB_RMS",
+        "lineage_id": "lin-p301-obs-post-001",
+        "ingest_time": "2026-06-29T16:00:01Z",
+        "processing_time": "2026-06-29T16:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:00:00Z",
+        "source_time": "2026-06-29T16:00:00Z",
+        "receive_time": "2026-06-29T16:00:01Z",
+        "processing_time": "2026-06-29T16:00:02Z",
+        "delivery_classification": "live"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T16:00:00Z"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:p301-vibration-recurrence-20260630t060000z",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.4.0",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "metric": "vibration_rms",
+      "value": 6.4,
+      "unit": "mm/s",
+      "event_time": "2026-06-30T06:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:P301.VIB_RMS",
+        "lineage_id": "lin-p301-obs-recurrence-001",
+        "ingest_time": "2026-06-30T06:00:01Z",
+        "processing_time": "2026-06-30T06:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T06:00:00Z",
+        "source_time": "2026-06-30T06:00:00Z",
+        "receive_time": "2026-06-30T06:00:01Z",
+        "processing_time": "2026-06-30T06:00:02Z",
+        "delivery_classification": "live"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-30T06:00:00Z"
+      }
+    }
+  ],
+  "source_assertions": [
+    {
+      "assertion_id": "urn:ssom:assertion:p301-operator-stable-claim-original",
+      "semantic_truth_state": "source_assertion",
+      "ssom_version": "0.4.0",
+      "assertion_type": "operator_assessment",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "asserted_property": "vibration_state",
+      "asserted_value": "stable",
+      "asserted_by": "shift_supervisor_kpatel",
+      "asserted_at": "2026-06-29T09:05:00Z",
+      "assertion_state": "reported",
+      "confidence": 0.58,
+      "evidence_refs": ["urn:ssom:record:p301-vibration-20260629t090000z"],
+      "provenance": {
+        "source_platform": "operator_logbook",
+        "source_authority_id": "manual_entry",
+        "source_reference": "log:P301:0905",
+        "lineage_id": "lin-p301-assert-source-001",
+        "ingest_time": "2026-06-29T09:05:10Z",
+        "processing_time": "2026-06-29T09:05:12Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:05:00Z",
+        "source_time": "2026-06-29T09:05:00Z",
+        "receive_time": "2026-06-29T09:05:10Z",
+        "processing_time": "2026-06-29T09:05:12Z",
+        "delivery_classification": "manual_entry"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T09:05:00Z",
+        "valid_to": "2026-06-29T10:21:00Z",
+        "superseded_by_ref": "urn:ssom:assertion:p301-operator-stable-claim-corrected"
+      }
+    },
+    {
+      "assertion_id": "urn:ssom:assertion:p301-operator-stable-claim-corrected",
+      "semantic_truth_state": "source_assertion",
+      "ssom_version": "0.4.0",
+      "assertion_type": "operator_correction",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "asserted_property": "vibration_state",
+      "asserted_value": "rising",
+      "asserted_by": "shift_supervisor_kpatel",
+      "asserted_at": "2026-06-29T10:21:00Z",
+      "assertion_state": "confirmed",
+      "confidence": 0.81,
+      "evidence_refs": [
+        "urn:ssom:record:p301-vibration-20260629t090000z",
+        "urn:ssom:record:p301-vibration-late-20260629t091500z"
+      ],
+      "provenance": {
+        "source_platform": "operator_logbook",
+        "source_authority_id": "manual_entry",
+        "source_reference": "log:P301:correction:1021",
+        "lineage_id": "lin-p301-assert-source-002",
+        "ingest_time": "2026-06-29T10:21:10Z",
+        "processing_time": "2026-06-29T10:21:12Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:21:00Z",
+        "source_time": "2026-06-29T10:21:00Z",
+        "receive_time": "2026-06-29T10:21:10Z",
+        "processing_time": "2026-06-29T10:21:12Z",
+        "delivery_classification": "manual_entry"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T10:21:00Z",
+        "correction_of_ref": "urn:ssom:assertion:p301-operator-stable-claim-original"
+      }
+    }
+  ],
+  "derived_assertions": [
+    {
+      "assertion_id": "urn:ssom:assertion:p301-trend-initial",
+      "semantic_truth_state": "derived_assertion",
+      "ssom_version": "0.4.0",
+      "assertion_type": "trend_assessment",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "asserted_property": "vibration_trend_state",
+      "asserted_value": "stable_above_baseline",
+      "derived_at": "2026-06-29T09:10:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p301-vibration-20260629t090000z",
+        "urn:ssom:assertion:p301-operator-stable-claim-original"
+      ],
+      "derivation_method": "single_window_trend_rule",
+      "confidence": 0.64,
+      "provenance": {
+        "source_platform": "ssom_mapping_service",
+        "source_authority_id": "truth-state-deriver",
+        "source_reference": "der:P301:trend:initial",
+        "lineage_id": "lin-p301-derived-001",
+        "ingest_time": "2026-06-29T09:10:01Z",
+        "processing_time": "2026-06-29T09:10:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:10:00Z",
+        "source_time": "2026-06-29T09:10:00Z",
+        "receive_time": "2026-06-29T09:10:01Z",
+        "processing_time": "2026-06-29T09:10:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T09:10:00Z",
+        "valid_to": "2026-06-29T10:22:00Z",
+        "superseded_by_ref": "urn:ssom:assertion:p301-trend-revised"
+      }
+    },
+    {
+      "assertion_id": "urn:ssom:assertion:p301-trend-revised",
+      "semantic_truth_state": "derived_assertion",
+      "ssom_version": "0.4.0",
+      "assertion_type": "trend_assessment",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "asserted_property": "vibration_trend_state",
+      "asserted_value": "rising_above_baseline",
+      "derived_at": "2026-06-29T10:22:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p301-vibration-20260629t090000z",
+        "urn:ssom:record:p301-vibration-late-20260629t091500z",
+        "urn:ssom:assertion:p301-operator-stable-claim-corrected"
+      ],
+      "derivation_method": "late_arrival_adjusted_trend_rule",
+      "confidence": 0.86,
+      "provenance": {
+        "source_platform": "ssom_mapping_service",
+        "source_authority_id": "truth-state-deriver",
+        "source_reference": "der:P301:trend:revised",
+        "lineage_id": "lin-p301-derived-002",
+        "ingest_time": "2026-06-29T10:22:01Z",
+        "processing_time": "2026-06-29T10:22:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:22:00Z",
+        "source_time": "2026-06-29T10:22:00Z",
+        "receive_time": "2026-06-29T10:22:01Z",
+        "processing_time": "2026-06-29T10:22:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T10:22:00Z",
+        "supersedes_refs": ["urn:ssom:assertion:p301-trend-initial"]
+      }
+    }
+  ],
+  "inferences": [
+    {
+      "inference_id": "urn:ssom:inference:p301-coupling-watch-initial",
+      "semantic_truth_state": "inference",
+      "ssom_version": "0.4.0",
+      "inference_type": "diagnostic_interpretation",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "conclusion": {
+        "assessment": "monitor_coupling_alignment",
+        "severity": "low"
+      },
+      "evidence_refs": ["urn:ssom:assertion:p301-trend-initial"],
+      "derivation_method": "rule_based_diagnostic_reasoning",
+      "confidence": 0.61,
+      "responsible_party": {
+        "model_id": "lm-diagnostic",
+        "model_version": "2026.06.1"
+      },
+      "inferred_at": "2026-06-29T09:12:00Z",
+      "provenance": {
+        "source_platform": "ssom_reasoner",
+        "source_authority_id": "diagnostic-engine",
+        "source_reference": "inf:P301:initial",
+        "lineage_id": "lin-p301-inf-001",
+        "ingest_time": "2026-06-29T09:12:01Z",
+        "processing_time": "2026-06-29T09:12:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:12:00Z",
+        "source_time": "2026-06-29T09:12:00Z",
+        "receive_time": "2026-06-29T09:12:01Z",
+        "processing_time": "2026-06-29T09:12:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T09:12:00Z",
+        "valid_to": "2026-06-29T10:23:00Z",
+        "superseded_by_ref": "urn:ssom:inference:p301-bearing-watch-revised"
+      }
+    },
+    {
+      "inference_id": "urn:ssom:inference:p301-bearing-watch-revised",
+      "semantic_truth_state": "inference",
+      "ssom_version": "0.4.0",
+      "inference_type": "diagnostic_interpretation",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "conclusion": {
+        "assessment": "probable_bearing_degradation",
+        "severity": "medium"
+      },
+      "evidence_refs": [
+        "urn:ssom:assertion:p301-trend-revised",
+        "urn:ssom:record:p301-vibration-late-20260629t091500z"
+      ],
+      "derivation_method": "late_evidence_adjusted_reasoning",
+      "confidence": 0.82,
+      "responsible_party": {
+        "model_id": "lm-diagnostic",
+        "model_version": "2026.06.2"
+      },
+      "inferred_at": "2026-06-29T10:23:00Z",
+      "provenance": {
+        "source_platform": "ssom_reasoner",
+        "source_authority_id": "diagnostic-engine",
+        "source_reference": "inf:P301:revised",
+        "lineage_id": "lin-p301-inf-002",
+        "ingest_time": "2026-06-29T10:23:01Z",
+        "processing_time": "2026-06-29T10:23:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:23:00Z",
+        "source_time": "2026-06-29T10:23:00Z",
+        "receive_time": "2026-06-29T10:23:01Z",
+        "processing_time": "2026-06-29T10:23:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T10:23:00Z",
+        "supersedes_refs": ["urn:ssom:inference:p301-coupling-watch-initial"]
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:p301-watch-next-shift",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.4.0",
+      "recommendation_type": "monitoring_recommendation",
+      "target_ref": "urn:ssom:asset:pump-p301",
+      "recommended_action": "Inspect pump P-301 during the next operator round.",
+      "rationale": "Initial evidence suggested a watch condition rather than immediate intervention.",
+      "priority": "medium",
+      "confidence": 0.6,
+      "evidence_refs": ["urn:ssom:inference:p301-coupling-watch-initial"],
+      "expected_outcome": {
+        "description": "Gather additional evidence before maintenance action."
+      },
+      "recommended_at": "2026-06-29T09:14:00Z",
+      "provenance": {
+        "source_platform": "ssom_reasoner",
+        "source_authority_id": "maintenance-advisor",
+        "source_reference": "rec:P301:watch",
+        "lineage_id": "lin-p301-rec-001",
+        "ingest_time": "2026-06-29T09:14:01Z",
+        "processing_time": "2026-06-29T09:14:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:14:00Z",
+        "source_time": "2026-06-29T09:14:00Z",
+        "receive_time": "2026-06-29T09:14:01Z",
+        "processing_time": "2026-06-29T09:14:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T09:14:00Z",
+        "valid_to": "2026-06-29T10:24:00Z",
+        "superseded_by_ref": "urn:ssom:recommendation:p301-inspect-now"
+      }
+    },
+    {
+      "recommendation_id": "urn:ssom:recommendation:p301-inspect-now",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.4.0",
+      "recommendation_type": "inspection_recommendation",
+      "target_ref": "urn:ssom:asset:pump-p301",
+      "recommended_action": "Inspect and lubricate Pump P-301 immediately.",
+      "rationale": "Late-arriving historian evidence raised the likelihood of bearing degradation.",
+      "priority": "high",
+      "confidence": 0.83,
+      "evidence_refs": ["urn:ssom:inference:p301-bearing-watch-revised"],
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "recommended_at": "2026-06-29T10:24:00Z",
+      "provenance": {
+        "source_platform": "ssom_reasoner",
+        "source_authority_id": "maintenance-advisor",
+        "source_reference": "rec:P301:inspect-now",
+        "lineage_id": "lin-p301-rec-002",
+        "ingest_time": "2026-06-29T10:24:01Z",
+        "processing_time": "2026-06-29T10:24:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:24:00Z",
+        "source_time": "2026-06-29T10:24:00Z",
+        "receive_time": "2026-06-29T10:24:01Z",
+        "processing_time": "2026-06-29T10:24:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T10:24:00Z",
+        "supersedes_refs": ["urn:ssom:recommendation:p301-watch-next-shift"]
+      }
+    }
+  ],
+  "outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:p301-initial-assessment",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.4.0",
+      "outcome_type": "post_action_assessment",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "action_ref": "urn:ssom:action:p301-lubrication-completed",
+      "intended_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "observed_outcome": {
+        "description": "Immediate post-action observation showed reduced vibration.",
+        "result_class": "successful",
+        "measured_metric": "vibration_rms",
+        "measured_value": 4.4,
+        "unit": "mm/s"
+      },
+      "assessed_at": "2026-06-29T16:05:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p301-vibration-post-action-20260629t160000z",
+        "urn:ssom:recommendation:p301-inspect-now"
+      ],
+      "confidence": 0.86,
+      "provenance": {
+        "source_platform": "ssom_assessment_service",
+        "source_authority_id": "outcome-evaluator",
+        "source_reference": "out:P301:initial",
+        "lineage_id": "lin-p301-out-001",
+        "ingest_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:05:00Z",
+        "source_time": "2026-06-29T16:05:00Z",
+        "receive_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-29T16:05:00Z",
+        "valid_to": "2026-06-30T06:10:00Z",
+        "superseded_by_ref": "urn:ssom:outcome:p301-reassessed-after-recurrence"
+      }
+    },
+    {
+      "outcome_id": "urn:ssom:outcome:p301-reassessed-after-recurrence",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.4.0",
+      "outcome_type": "post_action_assessment",
+      "subject_ref": "urn:ssom:asset:pump-p301",
+      "action_ref": "urn:ssom:action:p301-lubrication-completed",
+      "intended_outcome": {
+        "description": "Reduce vibration RMS below 5.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 5,
+        "unit": "mm/s"
+      },
+      "observed_outcome": {
+        "description": "Later recurrence evidence showed the original assessment was incomplete.",
+        "result_class": "mixed",
+        "measured_metric": "vibration_rms",
+        "measured_value": 6.4,
+        "unit": "mm/s"
+      },
+      "assessed_at": "2026-06-30T06:10:00Z",
+      "evidence_refs": [
+        "urn:ssom:record:p301-vibration-post-action-20260629t160000z",
+        "urn:ssom:record:p301-vibration-recurrence-20260630t060000z",
+        "urn:ssom:outcome:p301-initial-assessment"
+      ],
+      "confidence": 0.82,
+      "provenance": {
+        "source_platform": "ssom_assessment_service",
+        "source_authority_id": "outcome-evaluator",
+        "source_reference": "out:P301:reassessed",
+        "lineage_id": "lin-p301-out-002",
+        "ingest_time": "2026-06-30T06:10:01Z",
+        "processing_time": "2026-06-30T06:10:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T06:10:00Z",
+        "source_time": "2026-06-30T06:10:00Z",
+        "receive_time": "2026-06-30T06:10:01Z",
+        "processing_time": "2026-06-30T06:10:03Z",
+        "delivery_classification": "reconstructed"
+      },
+      "state_lineage": {
+        "valid_from": "2026-06-30T06:10:00Z",
+        "supersedes_refs": ["urn:ssom:outcome:p301-initial-assessment"]
+      }
+    }
+  ]
+}

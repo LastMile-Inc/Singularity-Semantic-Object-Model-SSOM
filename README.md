@@ -137,6 +137,7 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 - Previous schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)
 - Previous schema reference: [docs/schema-reference-v0.5.md](docs/schema-reference-v0.5.md)
 - Relationship vocabulary: [docs/relationship-vocabulary-v0.9.md](docs/relationship-vocabulary-v0.9.md)
+- Integrated lifecycle conformance: [docs/integrated-pump-lifecycle-conformance-v0.9.md](docs/integrated-pump-lifecycle-conformance-v0.9.md)
 - Event and alarm profile: [docs/event-alarm-profile-v0.8.md](docs/event-alarm-profile-v0.8.md)
 - Reliability and maintenance profile: [docs/reliability-maintenance-profile-v0.7.md](docs/reliability-maintenance-profile-v0.7.md)
 - Identity lifecycle examples: [docs/examples-v0.5-identity-lifecycle.md](docs/examples-v0.5-identity-lifecycle.md)
@@ -149,6 +150,7 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 - Previous migration guidance: [docs/migration-v0.5.md](docs/migration-v0.5.md)
 - Previous migration guidance: [docs/migration-v0.4.md](docs/migration-v0.4.md)
 - Standards mapping: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
+- Standards mapping claims are qualified conceptual-alignment statements unless an implementation publishes additional mapping evidence and profile-specific conformance artifacts.
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
 - ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
 - Conformance: [conformance/checklist-v0.9.md](conformance/checklist-v0.9.md)

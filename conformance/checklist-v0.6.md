@@ -25,6 +25,7 @@
 - [ ] Signal context identifies the measurement target and preserves engineering or display unit distinctions where relevant.
 - [ ] Time synchronization context preserves source timestamp, ingestion timestamp, and late-arrival or out-of-order status where relevant.
 - [ ] Implementations do not treat a value as operationally comparable merely because it is numeric.
+- [ ] Raw evidence with unknown or ungoverned source units may be preserved, but it is not marked canonically normalized or safely comparable without governed mapping evidence.
 
 ## Semantic Truth and Decision Lifecycle Profile
 - [ ] Observation semantics remain distinct from Condition, Event, Alarm, Inference, Recommendation, Decision, Action, and Outcome semantics.

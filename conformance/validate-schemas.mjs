@@ -81,6 +81,7 @@ const unitCatalog = {
   STD_G: { dimension: "vibration_acceleration" },
   M_PER_S2: { dimension: "vibration_acceleration" },
   MM_PER_S: { dimension: "vibration_velocity" },
+  IN_PER_S: { dimension: "vibration_velocity" },
   PERCENT: { dimension: "valve_position_fraction_open" },
   MM: { dimension: "valve_travel_length" }
 };
@@ -105,12 +106,19 @@ function getUnitDimension(unitRef, label) {
 function validateMeasurementObservation(testName, relativePath) {
   const observation = validateFixture(testName, "observation.json", relativePath);
 
-  if (observation.original_measurement || observation.canonical_measurement) {
+  if (observation.canonical_measurement) {
     assert(observation.original_measurement, `${testName} must preserve original measurement semantics.`);
     assert(observation.canonical_measurement, `${testName} must preserve canonical measurement semantics.`);
     assert(observation.measurement_quality, `${testName} must include structured measurement quality.`);
     assert(observation.signal_context, `${testName} must include signal semantics.`);
     assert(observation.time_synchronization_context, `${testName} must include time synchronization context.`);
+
+    const sourceUnit = observation.original_measurement.source_unit;
+    const hasGovernedSourceUnit = Boolean(sourceUnit && unitCatalog[sourceUnit.unit_code]);
+    assert(
+      hasGovernedSourceUnit,
+      `${testName} must not receive canonical normalized measurement without a governed unit mapping.`
+    );
 
     const quantityKind = observation.canonical_measurement.quantity_kind;
     const expectedDimension = quantityKindDimensions[quantityKind];
@@ -136,6 +144,29 @@ function validateMeasurementObservation(testName, relativePath) {
       observation.conversion_lineage.canonical_unit.unit_code === observation.canonical_measurement.canonical_unit.unit_code,
       `${testName} conversion lineage must retain the canonical unit.`
     );
+  }
+
+  if (observation.original_measurement && !observation.canonical_measurement) {
+    assert(observation.measurement_quality, `${testName} must include structured measurement quality.`);
+    assert(observation.signal_context, `${testName} must include signal semantics.`);
+    assert(observation.time_synchronization_context, `${testName} must include time synchronization context.`);
+
+    const sourceUnit = observation.original_measurement.source_unit;
+    const hasGovernedUnit = Boolean(sourceUnit && unitCatalog[sourceUnit.unit_code]);
+    if (!hasGovernedUnit) {
+      assert(
+        !observation.conversion_lineage,
+        `${testName} must not receive canonical normalized measurement without a governed unit mapping.`
+      );
+      assert(
+        observation.extensions?.measurement_comparability?.comparable === false,
+        `${testName} unknown-unit raw evidence must be marked non-comparable.`
+      );
+      assert(
+        observation.extensions?.measurement_comparability?.comparable_view_eligible === false,
+        `${testName} unknown-unit raw evidence must not be accepted into comparable analytical views.`
+      );
+    }
   }
 
   if (!observation.calibration_context && observation.extensions && observation.extensions.calibration_note) {
@@ -172,6 +203,79 @@ function intervalBounds(record, startField = "valid_from", endField = "valid_to"
 
 function intervalsOverlap(left, right) {
   return left.start <= right.end && right.start <= left.end;
+}
+
+function validateTruthStateLineageBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["source_assertions", "source-assertion.json", "source assertion"],
+    ["derived_assertions", "derived-assertion.json", "derived assertion"],
+    ["inferences", "inference.json", "inference"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["outcomes", "outcome.json", "outcome"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureTruthStateLineageSemantics(bundle, testName) {
+  const sourceAssertions = new Map((bundle.source_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const derivedAssertions = new Map((bundle.derived_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const inferences = new Map((bundle.inferences || []).map((entry) => [entry.inference_id, entry]));
+  const recommendations = new Map((bundle.recommendations || []).map((entry) => [entry.recommendation_id, entry]));
+  const outcomes = new Map((bundle.outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const observations = new Map((bundle.observations || []).map((entry) => [entry.record_id, entry]));
+
+  const originalSourceAssertion = sourceAssertions.get("urn:ssom:assertion:p301-operator-stable-claim-original");
+  const correctedSourceAssertion = sourceAssertions.get("urn:ssom:assertion:p301-operator-stable-claim-corrected");
+  assert(originalSourceAssertion && correctedSourceAssertion, `${testName} must preserve both original and corrected source assertions.`);
+  assert(correctedSourceAssertion.state_lineage?.correction_of_ref === originalSourceAssertion.assertion_id, `${testName} corrected source assertion must reference the original assertion.`);
+  assert(originalSourceAssertion.state_lineage?.superseded_by_ref === correctedSourceAssertion.assertion_id, `${testName} original source assertion must preserve superseded-by lineage.`);
+  assert(observations.has("urn:ssom:record:p301-vibration-late-20260629t091500z"), `${testName} late-arriving evidence must remain available.`);
+  assert(correctedSourceAssertion.evidence_refs.includes("urn:ssom:record:p301-vibration-late-20260629t091500z"), `${testName} corrected source assertion must preserve the new evidence.`);
+  assert(originalSourceAssertion.evidence_refs.includes("urn:ssom:record:p301-vibration-20260629t090000z"), `${testName} original source assertion evidence must remain intact.`);
+  assert(intervalBounds(originalSourceAssertion.state_lineage).end <= intervalBounds(correctedSourceAssertion.state_lineage).start, `${testName} corrected source assertion must preserve non-overlapping temporal lineage.`);
+
+  const initialDerivedAssertion = derivedAssertions.get("urn:ssom:assertion:p301-trend-initial");
+  const revisedDerivedAssertion = derivedAssertions.get("urn:ssom:assertion:p301-trend-revised");
+  assert(initialDerivedAssertion && revisedDerivedAssertion, `${testName} must preserve both initial and revised derived assertions.`);
+  assert(revisedDerivedAssertion.state_lineage?.supersedes_refs?.includes(initialDerivedAssertion.assertion_id), `${testName} revised derived assertion must preserve supersession lineage.`);
+  assert(initialDerivedAssertion.state_lineage?.superseded_by_ref === revisedDerivedAssertion.assertion_id, `${testName} original derived assertion must preserve superseded-by lineage.`);
+
+  const initialInference = inferences.get("urn:ssom:inference:p301-coupling-watch-initial");
+  const revisedInference = inferences.get("urn:ssom:inference:p301-bearing-watch-revised");
+  assert(initialInference && revisedInference, `${testName} must preserve both initial and revised inferences.`);
+  assert(revisedInference.state_lineage?.supersedes_refs?.includes(initialInference.inference_id), `${testName} revised inference must reference the superseded inference.`);
+  assert(revisedInference.evidence_refs.includes(revisedDerivedAssertion.assertion_id), `${testName} revised inference must identify the current derived interpretation.`);
+
+  const initialRecommendation = recommendations.get("urn:ssom:recommendation:p301-watch-next-shift");
+  const revisedRecommendation = recommendations.get("urn:ssom:recommendation:p301-inspect-now");
+  assert(initialRecommendation && revisedRecommendation, `${testName} must preserve both original and revised recommendations.`);
+  assert(revisedRecommendation.state_lineage?.supersedes_refs?.includes(initialRecommendation.recommendation_id), `${testName} revised recommendation must preserve supersession lineage.`);
+  assert(revisedRecommendation.evidence_refs.includes(revisedInference.inference_id), `${testName} revised recommendation must reference the revised inference.`);
+
+  const initialOutcome = outcomes.get("urn:ssom:outcome:p301-initial-assessment");
+  const reassessedOutcome = outcomes.get("urn:ssom:outcome:p301-reassessed-after-recurrence");
+  assert(initialOutcome && reassessedOutcome, `${testName} must preserve both original and reassessed outcomes.`);
+  assert(reassessedOutcome.state_lineage?.supersedes_refs?.includes(initialOutcome.outcome_id), `${testName} reassessed outcome must preserve supersession lineage.`);
+  assert(reassessedOutcome.evidence_refs.includes(initialOutcome.outcome_id), `${testName} reassessed outcome must preserve prior outcome evidence rather than rewriting history.`);
+  assert(reassessedOutcome.evidence_refs.includes("urn:ssom:record:p301-vibration-recurrence-20260630t060000z"), `${testName} reassessed outcome must preserve additional evidence.`);
+
+  for (const entry of [
+    ...sourceAssertions.values(),
+    ...derivedAssertions.values(),
+    ...inferences.values(),
+    ...recommendations.values(),
+    ...outcomes.values()
+  ]) {
+    assert(entry.provenance, `${testName} revised truth-state records must preserve provenance.`);
+    assert(entry.temporal_integrity, `${testName} revised truth-state records must preserve temporal context.`);
+  }
 }
 
 function validateIdentityBundle(testName, relativePath) {
@@ -670,6 +774,51 @@ function ensureEventAlarmSemantics(bundle, testName) {
   }
 }
 
+function ensureMultiCycleRecurrenceSemantics(bundle, testName) {
+  ensureReliabilityReferences(bundle, testName);
+
+  const conditions = new Map((bundle.conditions || []).map((entry) => [entry.condition_id, entry]));
+  const diagnostics = new Map((bundle.diagnostics || []).map((entry) => [entry.diagnostic_id, entry]));
+  const strategies = new Map((bundle.maintenance_strategies || []).map((entry) => [entry.strategy_id, entry]));
+  const workRequests = new Map((bundle.work_requests || []).map((entry) => [entry.work_request_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+  const workOutcomes = new Map((bundle.work_outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const failureEvents = new Map((bundle.failure_events || []).map((entry) => [entry.failure_event_id, entry]));
+
+  const cycle1Condition = conditions.get("urn:ssom:condition:p501-bearing-cycle1");
+  const cycle2Condition = conditions.get("urn:ssom:condition:p501-bearing-cycle2-recurrence");
+  const cycle2Diagnostic = diagnostics.get("urn:ssom:diagnostic:p501-cycle2-diagnostic");
+  const cycle1Verification = workVerifications.get("urn:ssom:work-verification:p501-cycle1-verification");
+  const cycle1Outcome = workOutcomes.get("urn:ssom:outcome:p501-cycle1-outcome");
+  const cycle2Outcome = workOutcomes.get("urn:ssom:outcome:p501-cycle2-outcome");
+  const cycle1Request = workRequests.get("urn:ssom:work-request:p501-cycle1");
+  const cycle2Request = workRequests.get("urn:ssom:work-request:p501-cycle2");
+
+  assert(cycle1Condition && cycle2Condition, `${testName} must preserve both first-cycle and recurrence conditions.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Condition.condition_id), `${testName} recurrence condition must link to prior condition context.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Verification.verification_id), `${testName} recurrence condition must link to prior verification evidence.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Outcome.outcome_id), `${testName} recurrence condition must link to prior outcome context.`);
+
+  assert(cycle2Diagnostic, `${testName} must preserve a second-cycle diagnostic.`);
+  assert(cycle2Diagnostic.evidence_refs.includes(cycle1Verification.verification_id), `${testName} second diagnostic must link to prior verification evidence.`);
+  assert(cycle2Diagnostic.evidence_refs.includes(cycle1Outcome.outcome_id), `${testName} second diagnostic must link to prior outcome evidence.`);
+
+  assert(cycle1Request && cycle2Request, `${testName} must preserve both work cycles.`);
+  assert(cycle1Request.maintenance_strategy_ref !== cycle2Request.maintenance_strategy_ref, `${testName} recurrence bundle must show a maintenance strategy change decision.`);
+  assert(strategies.has(cycle1Request.maintenance_strategy_ref), `${testName} first-cycle maintenance strategy must exist.`);
+  assert(strategies.has(cycle2Request.maintenance_strategy_ref), `${testName} second-cycle maintenance strategy must exist.`);
+
+  assert(cycle1Outcome && cycle2Outcome, `${testName} must preserve both work outcomes.`);
+  assert(cycle2Outcome.extensions?.comparison_to_prior_outcome_ref === cycle1Outcome.outcome_id, `${testName} second-cycle outcome must compare against the prior outcome.`);
+  assert(cycle2Outcome.extensions?.prior_verification_ref === cycle1Verification.verification_id, `${testName} second-cycle outcome must preserve prior verification linkage.`);
+  assert(cycle2Outcome.extensions?.prior_condition_ref === cycle1Condition.condition_id, `${testName} second-cycle outcome must preserve prior condition linkage.`);
+  assert(cycle2Outcome.recurrence_context?.prior_work_refs.includes("urn:ssom:action:p501-cycle1-work"), `${testName} recurrence must not be represented as isolated text; it must link to prior work.`);
+  assert(cycle2Outcome.recurrence_context?.prior_failure_event_refs.includes("urn:ssom:failure-event:p501-cycle1"), `${testName} recurrence must link to prior failure context.`);
+  assert(cycle2Outcome.reliability_impact?.work_history_refs.includes("urn:ssom:action:p501-cycle1-work"), `${testName} recurrence bundle must preserve prior work history in reliability impact evidence.`);
+  assert(cycle2Outcome.availability_impact, `${testName} recurrence bundle must preserve availability impact evidence.`);
+  assert(failureEvents.has("urn:ssom:failure-event:p501-cycle1") && failureEvents.has("urn:ssom:failure-event:p501-cycle2"), `${testName} recurrence bundle must preserve multi-cycle failure events.`);
+}
+
 function expectInvalidEventAlarmBundle(testName, relativePath, expectedFragment) {
   try {
     const payload = validateEventAlarmBundle(testName, relativePath);
@@ -953,6 +1102,163 @@ function expectInvalidRelationshipBundle(testName, relativePath, expectedFragmen
   }
 }
 
+function validateIntegratedLifecycleBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["asset_classes", "asset-class.json", "asset class"],
+    ["equipment_models", "equipment-model.json", "equipment model"],
+    ["operational_boundaries", "operational-boundary.json", "operational boundary"],
+    ["functional_locations", "functional-location.json", "functional location"],
+    ["assets", "asset.json", "asset"],
+    ["relationships", "relationship.json", "relationship"],
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["source_assertions", "source-assertion.json", "source assertion"],
+    ["derived_assertions", "derived-assertion.json", "derived assertion"],
+    ["inferences", "inference.json", "inference"],
+    ["predictions", "prediction.json", "prediction"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["decisions", "decision.json", "decision"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"],
+    ["work_outcomes", "work-outcome.json", "work outcome"],
+    ["failure_events", "failure-event.json", "failure event"],
+    ["identity_lifecycle_events", "identity-lifecycle-event.json", "identity lifecycle event"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureIntegratedLifecycleSemantics(bundle, testName) {
+  ensureRelationshipSemantics(bundle, testName);
+  ensureUniqueCanonicalIds(bundle.assets || []);
+  ensureAssignmentValidity(bundle.assets || []);
+  ensureNoOverlappingAssignments(bundle.assets || []);
+  ensureSuccessionRelationships(bundle.relationships || []);
+
+  for (const observation of bundle.observations || []) {
+    if (!observation.original_measurement && !observation.canonical_measurement) {
+      continue;
+    }
+    assert(observation.original_measurement, `${testName} must preserve original source measurement.`);
+    assert(observation.canonical_measurement, `${testName} must preserve canonical normalized measurement.`);
+    const quantityKind = observation.canonical_measurement.quantity_kind;
+    const expectedDimension = quantityKindDimensions[quantityKind];
+    assert(expectedDimension, `${testName} must declare a governed quantity kind.`);
+    const sourceDimension = getUnitDimension(observation.original_measurement.source_unit, `${testName} source unit`);
+    const canonicalDimension = getUnitDimension(observation.canonical_measurement.canonical_unit, `${testName} canonical unit`);
+    assert(sourceDimension === expectedDimension, `${testName} must not use incompatible source units.`);
+    assert(canonicalDimension === expectedDimension, `${testName} must not use incompatible canonical units.`);
+  }
+
+  const observations = new Map((bundle.observations || []).map((entry) => [entry.record_id, entry]));
+  const sourceAssertions = new Map((bundle.source_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const derivedAssertions = new Map((bundle.derived_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const inferences = new Map((bundle.inferences || []).map((entry) => [entry.inference_id, entry]));
+  const predictions = new Map((bundle.predictions || []).map((entry) => [entry.prediction_id, entry]));
+  const recommendations = new Map((bundle.recommendations || []).map((entry) => [entry.recommendation_id, entry]));
+  const decisions = new Map((bundle.decisions || []).map((entry) => [entry.decision_id, entry]));
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+  const workOutcomes = new Map((bundle.work_outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const failureEvents = new Map((bundle.failure_events || []).map((entry) => [entry.failure_event_id, entry]));
+
+  const originalPump = (bundle.assets || []).find((asset) => asset.asset_id === "urn:ssom:asset:pump-p101-v1");
+  const replacementPump = (bundle.assets || []).find((asset) => asset.asset_id === "urn:ssom:asset:pump-p101-v2");
+  assert(originalPump && replacementPump, `${testName} must include original and replacement Pump P-101 assets.`);
+  assert(originalPump.asset_id !== replacementPump.asset_id, `${testName} original and replacement pumps must have different canonical SSOM asset IDs.`);
+
+  const originalTag = (originalPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "engineering_tag");
+  const replacementTag = (replacementPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "engineering_tag");
+  assert(originalTag && replacementTag, `${testName} must preserve engineering tag assignments for both pump assets.`);
+  assert(originalTag.identifier_value === "P-101" && replacementTag.identifier_value === "P-101", `${testName} engineering tag P-101 must be preserved across replacement.`);
+  assert(!intervalsOverlap(intervalBounds(originalTag), intervalBounds(replacementTag)), `${testName} engineering tag P-101 overlaps across assets.`);
+
+  const originalFloc = (originalPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "functional_location_reference");
+  const replacementFloc = (replacementPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "functional_location_reference");
+  assert(originalFloc && replacementFloc, `${testName} must preserve functional location references across replacement.`);
+  assert(originalFloc.identifier_value === replacementFloc.identifier_value, `${testName} functional location continuity must be preserved.`);
+
+  const contradictoryAssertions = (bundle.source_assertions || []).filter((entry) => entry.contradiction_group === "p101-health-20260629");
+  assert(contradictoryAssertions.length >= 2, `${testName} must preserve contradictory source assertions.`);
+  assert(
+    contradictoryAssertions.some((entry) => entry.asserted_value === "running_normal") &&
+      contradictoryAssertions.some((entry) => entry.asserted_value === "bearing_degradation_suspected"),
+    `${testName} contradictory evidence must coexist without forced reconciliation.`
+  );
+
+  assert(derivedAssertions.has("urn:ssom:assertion:p101-vibration-trend-velocity"), `${testName} must preserve a derived vibration trend assertion.`);
+  assert(inferences.has("urn:ssom:inference:p101-bearing-degradation"), `${testName} must preserve a diagnostic inference.`);
+  assert(predictions.has("urn:ssom:prediction:p101-bearing-failure-risk-14d"), `${testName} must preserve a forward-looking prediction.`);
+  assert(recommendations.has("urn:ssom:recommendation:p101-bearing-intervention"), `${testName} must preserve a recommendation.`);
+  assert(decisions.has("urn:ssom:decision:p101-approve-bearing-work"), `${testName} must preserve a decision distinct from the recommendation.`);
+
+  const workExecution = workExecutions.get("urn:ssom:action:p101-bearing-work-completed");
+  const workVerification = workVerifications.get("urn:ssom:work-verification:p101-bearing-postwork");
+  const workOutcome = workOutcomes.get("urn:ssom:outcome:p101-bearing-work-outcome");
+  assert(workExecution && workVerification && workOutcome, `${testName} must preserve execution, verification, and outcome states.`);
+  assert(workVerification.work_execution_ref === workExecution.action_id, `${testName} work verification must reference the work execution.`);
+  assert(workOutcome.work_execution_ref === workExecution.action_id, `${testName} work outcome must reference the work execution.`);
+  assert(workOutcome.verification_refs.includes(workVerification.verification_id), `${testName} work outcome must reference verification evidence.`);
+
+  const postWorkObservation = observations.get("urn:ssom:record:p101-vibration-mmps-postwork-20260629t154500z");
+  const recurrenceObservation = observations.get("urn:ssom:record:p101-vibration-mmps-recurrence-20260703t070000z");
+  assert(postWorkObservation && recurrenceObservation, `${testName} must preserve post-work and recurrence observations.`);
+  assert(postWorkObservation.canonical_measurement.canonical_value < recurrenceObservation.canonical_measurement.canonical_value, `${testName} post-work reduction must remain distinct from later recurrence.`);
+  assert(workOutcome.outcome_disposition === "ineffective", `${testName} short-term improvement must not be treated as sustained success.`);
+  assert(workOutcome.reliability_impact?.direction === "unchanged", `${testName} later evidence must preserve non-sustained reliability improvement.`);
+  assert(workOutcome.recurrence_context?.prior_work_refs.includes(workExecution.action_id), `${testName} recurrence must link to earlier work.`);
+  assert(workOutcome.recurrence_context?.prior_failure_event_refs.some((ref) => failureEvents.has(ref)), `${testName} recurrence must link to failure context.`);
+
+  const replacementRelationship = (bundle.relationships || []).find((entry) => entry.relationship_id === "urn:ssom:relationship:p101-v2-replaces-p101-v1");
+  assert(replacementRelationship, `${testName} must preserve replacement lineage.`);
+  assert(replacementRelationship.from_ref === replacementPump.asset_id && replacementRelationship.to_ref === originalPump.asset_id, `${testName} replacement lineage must point from replacement to original.`);
+
+  const identityEvent = (bundle.identity_lifecycle_events || []).find((entry) => entry.event_id === "urn:ssom:identity-event:p101-replacement-20260704");
+  assert(identityEvent, `${testName} must preserve the replacement identity lifecycle event.`);
+  assert(identityEvent.subject_refs.includes(originalPump.asset_id), `${testName} identity event must reference the original asset.`);
+  assert(identityEvent.resulting_asset_refs.includes(replacementPump.asset_id), `${testName} identity event must reference the replacement asset.`);
+
+  for (const entry of [
+    ...(bundle.observations || []),
+    ...(bundle.source_assertions || []),
+    ...(bundle.derived_assertions || []),
+    ...(bundle.inferences || []),
+    ...(bundle.predictions || []),
+    ...(bundle.recommendations || []),
+    ...(bundle.decisions || []),
+    ...(bundle.work_requests || []),
+    ...(bundle.work_plans || []),
+    ...(bundle.work_executions || []),
+    ...(bundle.work_verifications || []),
+    ...(bundle.work_outcomes || []),
+    ...(bundle.failure_events || []),
+    ...(bundle.identity_lifecycle_events || [])
+  ]) {
+    assert(entry.provenance, `${testName} all integrated records must preserve provenance.`);
+    assert(entry.temporal_integrity, `${testName} all integrated records must preserve temporal context.`);
+  }
+}
+
+function expectInvalidIntegratedLifecycleBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIntegratedLifecycleBundle(testName, relativePath);
+    ensureIntegratedLifecycleSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 const results = [];
 
 const registryPayload = validateRegistryFile(
@@ -1204,6 +1510,13 @@ expectInvalid(
 );
 results.push("derived statements must retain evidence references");
 
+const truthStateLineageBundle = validateTruthStateLineageBundle(
+  "truth-state correction and supersession lineage",
+  "conformance/fixtures/v0.4/valid/truth-state-lineage-corrections-and-supersession.json"
+);
+ensureTruthStateLineageSemantics(truthStateLineageBundle, "truth-state correction and supersession lineage");
+results.push("truth-state correction and supersession lineage preserves original evidence, temporal context, provenance, and current interpretation state");
+
 const replacementBundle = validateIdentityBundle(
   "pump replacement identity lifecycle",
   "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json"
@@ -1363,6 +1676,12 @@ const lateArrivalCondition = validateFixture(
 assert(lateArrivalCondition.evidence_refs.includes(lateArrivalObservation.record_id), "Late-arriving condition reinterpretation must retain late-data evidence refs.");
 results.push("structured measurement semantics preserve source, canonical, quality, calibration, signal, and timing context");
 
+validateMeasurementObservation(
+  "unknown-unit raw evidence",
+  "conformance/fixtures/v0.6/valid/observation-vibration-unknown-unit-raw-evidence.json"
+);
+results.push("unknown-unit raw evidence may be preserved without unsafe comparability or unsupported canonical normalization");
+
 expectInvalidMeasurementObservation(
   "incompatible quantity kind conversion",
   "conformance/fixtures/v0.6/invalid/observation-incompatible-quantity-kind.json",
@@ -1399,6 +1718,13 @@ expectInvalidMeasurementObservation(
   "free-form calibration note"
 );
 results.push("calibration status cannot be represented only as a free-form note");
+
+expectInvalidMeasurementObservation(
+  "unknown-unit false comparability",
+  "conformance/fixtures/v0.6/invalid/observation-vibration-unknown-unit-false-comparable.json",
+  "must not receive canonical normalized measurement without a governed unit mapping"
+);
+results.push("unknown-unit evidence cannot be falsely normalized or marked safely comparable without a governed mapping");
 
 const motorBundle = validateReliabilityBundle(
   "motor bearing degradation work chain",
@@ -1460,6 +1786,13 @@ assert(outcomeClasses.includes("neutral"), "Neutral outcome disposition must be 
 assert(outcomeClasses.includes("inconclusive"), "Inconclusive outcome disposition must be supported.");
 assert(outcomeClasses.some((entry) => entry === "negative" || entry === "ineffective"), "Negative or ineffective outcome disposition must be supported.");
 results.push("completed action may have neutral, negative or ineffective, inconclusive, or positive outcome dispositions");
+
+const multicycleRecurrenceBundle = validateReliabilityBundle(
+  "multi-cycle recurrence and work history bundle",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-pump-multicycle-recurrence.json"
+);
+ensureMultiCycleRecurrenceSemantics(multicycleRecurrenceBundle, "multi-cycle recurrence and work history bundle");
+results.push("multi-cycle recurrence links prior condition, failure, work, verification, outcome, and maintenance strategy change context explicitly");
 
 expectInvalidReliabilityBundle(
   "verified outcome without verification evidence",
@@ -1637,6 +1970,20 @@ expectInvalidRelationshipBundle(
   "has an invalid validity period"
 );
 results.push("time-bounded relationships must preserve valid temporal intervals");
+
+const integratedLifecycleBundle = validateIntegratedLifecycleBundle(
+  "integrated pump p101 lifecycle bundle",
+  "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+);
+ensureIntegratedLifecycleSemantics(integratedLifecycleBundle, "integrated pump p101 lifecycle bundle");
+results.push("integrated Pump P-101 lifecycle preserves measurement safety, contradictory evidence, work verification, recurrence, and replacement continuity together");
+
+expectInvalidIntegratedLifecycleBundle(
+  "integrated pump p101 overlapping engineering tag reuse",
+  "conformance/fixtures/v0.9/invalid/integrated-bundle-pump-p101-overlapping-tag-reuse.json",
+  "overlaps across assets"
+);
+results.push("integrated lifecycle rejects overlapping engineering-tag reuse across original and replacement assets");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {

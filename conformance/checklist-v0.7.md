@@ -14,6 +14,8 @@
 - [ ] Work Outcome preserves both intended and observed outcome.
 - [ ] Reliability claims reference asset class, operating context, measurement evidence, work history, and outcome evidence.
 - [ ] Recurring failures can link to prior work and prior failure history.
+- [ ] Multi-cycle recurrence retains explicit links to prior condition, prior verification, prior outcome, prior failure event, and prior work history.
+- [ ] Recurrence can justify a governed maintenance-strategy change rather than being preserved only as narrative text.
 - [ ] Parts, labor, service interruption, and warranty context are representable where relevant.
 
 ## Standards Discipline

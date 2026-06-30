@@ -48,6 +48,11 @@ The following reusable definitions are defined in `schemas/jsonschema/common.jso
 - `work-outcome.json` reuses `outcome.json` as the assessed-result foundation.
 - Recommendations and Decisions remain the upstream intent and approval semantics for work; they are not duplicated.
 
+## Recurrence note
+
+- `recurrenceContext`, `reliabilityImpact`, and the work-history reference fields are intended to preserve explicit multi-cycle evidence, not just a textual claim that a failure repeated.
+- Reliable recurrence reasoning should link prior condition, prior work, prior verification, prior outcome, and any resulting maintenance-strategy change when those records exist.
+
 ## Compatibility notes
 
 - Existing v0.6 measurement-safety fixtures remain valid.

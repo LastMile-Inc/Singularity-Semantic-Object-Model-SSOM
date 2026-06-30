@@ -133,7 +133,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 12. **Implementation portability.** SSOM MUST support multiple serializations and storage patterns.
 13. **Truth-state separation.** SSOM MUST distinguish observation, assertion, inference, prediction, recommendation, decision, action, and outcome semantics.
 14. **Identity continuity.** SSOM MUST preserve canonical Asset identity separately from external identifiers, time-bound assignments, and succession semantics.
-15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context.
+15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context. Raw measurements with ungoverned or unknown source units MAY be preserved as evidence, but they MUST NOT be treated as canonically normalized or safely comparable without governed mapping evidence.
 16. **Verified operational outcome.** SSOM MUST distinguish work request, work execution, work verification, and work outcome semantics so a completed action is not silently treated as proof of restored function.
 17. **Event and alarm discipline.** SSOM MUST distinguish an Event from an Alarm, MUST preserve original source alarm state separately from canonical alarm state, and MUST retain explicit suppression or shelving context when alarm visibility is intentionally altered.
 18. **Boundary clarity.** SSOM MUST distinguish Asset instances from Asset Classes, Equipment Models, Functional Locations, and non-serialized operational boundaries such as Systems, Process Segments, Production Units, and Control Entities.
@@ -1197,7 +1197,7 @@ Implementations moving from v0.8.0 to v0.9.0 SHOULD:
 
 ## 13. Open questions
 
-- Alignment with OPC UA companion specifications and Asset Administration Shell mappings
+- Future traceable mappings to OPC UA companion specifications and Asset Administration Shell models when profile-specific evidence is published
 - Community governance and extension registry process
 - Relationship vocabulary expansion
 - Condition taxonomy governance
