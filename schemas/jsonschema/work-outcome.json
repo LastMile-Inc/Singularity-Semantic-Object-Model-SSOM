@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/work-outcome.json",
+  "title": "SSOM Work Outcome",
+  "description": "A specialization of Outcome for work results, including verification linkage, recurrence, and reliability or operational impacts.",
+  "allOf": [
+    {
+      "$ref": "outcome.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "outcome_type",
+        "work_execution_ref",
+        "verification_refs",
+        "outcome_disposition"
+      ],
+      "properties": {
+        "outcome_type": {
+          "const": "work_outcome"
+        },
+        "work_execution_ref": {
+          "type": "string"
+        },
+        "verification_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        },
+        "outcome_disposition": {
+          "$ref": "common.json#/$defs/workOutcomeDisposition"
+        },
+        "reliability_impact": {
+          "$ref": "common.json#/$defs/reliabilityImpact"
+        },
+        "availability_impact": {
+          "$ref": "common.json#/$defs/impactAssessment"
+        },
+        "operational_impact": {
+          "$ref": "common.json#/$defs/impactAssessment"
+        },
+        "recurrence_context": {
+          "$ref": "common.json#/$defs/recurrenceContext"
+        },
+        "warranty_coverage": {
+          "$ref": "common.json#/$defs/warrantyCoverage"
+        }
+      },
+      "additionalProperties": true
+    }
+  ]
+}

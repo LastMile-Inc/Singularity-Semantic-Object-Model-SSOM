@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/work-plan.json",
+  "title": "SSOM Work Plan",
+  "description": "A prepared plan for work execution including intended steps, parts, labor, interruption expectation, and verification approach.",
+  "type": "object",
+  "required": [
+    "work_plan_id",
+    "subject_ref",
+    "work_request_ref",
+    "plan_status",
+    "planned_actions",
+    "planned_verification_method",
+    "expected_outcome",
+    "planned_start",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "work_plan_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:work-plan:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "work_request_ref": {
+      "type": "string"
+    },
+    "plan_status": {
+      "$ref": "common.json#/$defs/workPlanStatus"
+    },
+    "planned_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "planned_verification_method": {
+      "type": "string"
+    },
+    "expected_outcome": {
+      "$ref": "common.json#/$defs/expectedOutcome"
+    },
+    "required_parts": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/materialUsage"
+      }
+    },
+    "labor_requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/laborParticipation"
+      }
+    },
+    "expected_service_interruption": {
+      "$ref": "common.json#/$defs/serviceInterruption"
+    },
+    "planned_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "planned_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

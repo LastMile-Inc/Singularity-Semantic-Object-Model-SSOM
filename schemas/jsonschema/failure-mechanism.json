@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/failure-mechanism.json",
+  "title": "SSOM Failure Mechanism",
+  "description": "The physical or logical process that produces a failure mode. A mechanism is not the same as the failure mode or failure cause.",
+  "type": "object",
+  "required": [
+    "failure_mechanism_id",
+    "subject_ref",
+    "failure_mechanism_ref",
+    "evidence_refs",
+    "inferred_at",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "failure_mechanism_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:failure-mechanism:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "failure_mechanism_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "derivation_method": {
+      "type": "string"
+    },
+    "inferred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

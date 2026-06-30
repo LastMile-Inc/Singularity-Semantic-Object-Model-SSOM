@@ -320,6 +320,123 @@ function expectInvalidIdentityBundle(testName, relativePath, expectedFragment) {
   }
 }
 
+function validateSchemaEntries(testName, schemaFile, entries, label) {
+  const validate = ajv.getSchema(schemaFile);
+  for (const [index, entry] of entries.entries()) {
+    const valid = validate(entry);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} ${label} ${index + 1} failed validation\n${detail}`);
+    }
+  }
+}
+
+function validateReliabilityBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["symptoms", "symptom.json", "symptom"],
+    ["failure_modes", "failure-mode.json", "failure mode"],
+    ["failure_mechanisms", "failure-mechanism.json", "failure mechanism"],
+    ["failure_causes", "failure-cause.json", "failure cause"],
+    ["failure_events", "failure-event.json", "failure event"],
+    ["diagnostics", "diagnostic.json", "diagnostic"],
+    ["prognostics", "prognostic.json", "prognostic"],
+    ["maintenance_strategies", "maintenance-strategy.json", "maintenance strategy"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["decisions", "decision.json", "decision"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"],
+    ["work_outcomes", "work-outcome.json", "work outcome"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureReliabilityReferences(bundle, testName) {
+  const knownIds = new Set();
+  const collect = (entries, idField) => {
+    for (const entry of entries || []) {
+      knownIds.add(entry[idField]);
+    }
+  };
+
+  collect(bundle.observations, "record_id");
+  collect(bundle.conditions, "condition_id");
+  collect(bundle.symptoms, "symptom_id");
+  collect(bundle.failure_modes, "failure_mode_id");
+  collect(bundle.failure_mechanisms, "failure_mechanism_id");
+  collect(bundle.failure_causes, "failure_cause_id");
+  collect(bundle.failure_events, "failure_event_id");
+  collect(bundle.diagnostics, "diagnostic_id");
+  collect(bundle.prognostics, "prognostic_id");
+  collect(bundle.maintenance_strategies, "strategy_id");
+  collect(bundle.recommendations, "recommendation_id");
+  collect(bundle.decisions, "decision_id");
+  collect(bundle.work_requests, "work_request_id");
+  collect(bundle.work_plans, "work_plan_id");
+  collect(bundle.work_executions, "action_id");
+  collect(bundle.work_verifications, "verification_id");
+  collect(bundle.work_outcomes, "outcome_id");
+
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+
+  for (const verification of bundle.work_verifications || []) {
+    assert(workExecutions.has(verification.work_execution_ref), `${testName} work verification must reference an existing work execution.`);
+  }
+
+  for (const outcome of bundle.work_outcomes || []) {
+    assert(workExecutions.has(outcome.work_execution_ref), `${testName} work outcome must reference an existing work execution.`);
+    assert(outcome.action_ref === outcome.work_execution_ref, `${testName} work outcome must reuse the action reference of the work execution.`);
+    for (const verificationRef of outcome.verification_refs || []) {
+      const verification = workVerifications.get(verificationRef);
+      assert(verification, `${testName} work outcome must reference work verification evidence.`);
+      assert(
+        verification.work_execution_ref === outcome.work_execution_ref,
+        `${testName} work outcome verification evidence must validate the same work execution.`
+      );
+    }
+    if (outcome.reliability_impact) {
+      for (const measurementRef of outcome.reliability_impact.measurement_evidence_refs) {
+        assert(knownIds.has(measurementRef), `${testName} reliability impact must reference known measurement or evidence records.`);
+      }
+      for (const workRef of outcome.reliability_impact.work_history_refs) {
+        assert(knownIds.has(workRef), `${testName} reliability impact must reference known work history.`);
+      }
+    }
+  }
+
+  for (const diagnostic of bundle.diagnostics || []) {
+    if (diagnostic.extensions && diagnostic.extensions.failure_summary_text) {
+      assert(
+        diagnostic.failure_mode_ref || diagnostic.failure_mechanism_ref || diagnostic.failure_cause_ref || diagnostic.symptom_refs,
+        `${testName} failure mode, mechanism, and cause cannot be collapsed into one uncontrolled text field.`
+      );
+    }
+  }
+}
+
+function expectInvalidReliabilityBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateReliabilityBundle(testName, relativePath);
+    ensureReliabilityReferences(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 const results = [];
 
 const pump = validateFixture(
@@ -758,6 +875,88 @@ expectInvalidMeasurementObservation(
   "free-form calibration note"
 );
 results.push("calibration status cannot be represented only as a free-form note");
+
+const motorBundle = validateReliabilityBundle(
+  "motor bearing degradation work chain",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-motor-bearing-degradation.json"
+);
+ensureReliabilityReferences(motorBundle, "motor bearing degradation work chain");
+assert(motorBundle.work_outcomes[0].outcome_disposition === "positive", "Motor bearing outcome must be positive.");
+assert(motorBundle.work_outcomes[0].reliability_impact.direction === "improved", "Motor bearing outcome must preserve reliability improvement.");
+results.push("motor-bearing degradation can be traced from observation through diagnostic, work verification, and positive outcome");
+
+const pumpSealBundle = validateReliabilityBundle(
+  "pump seal ineffective repair",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json"
+);
+ensureReliabilityReferences(pumpSealBundle, "pump seal ineffective repair");
+assert(pumpSealBundle.work_outcomes[0].outcome_disposition === "ineffective", "Pump seal scenario must record an ineffective outcome.");
+assert(pumpSealBundle.work_outcomes[0].recurrence_context.recurrence_status === "open", "Pump seal recurrence must remain open.");
+results.push("completed work may still produce ineffective or unresolved reliability outcomes");
+
+const vfdBundle = validateReliabilityBundle(
+  "vfd replacement restoration",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-vfd-replacement-restoration.json"
+);
+ensureReliabilityReferences(vfdBundle, "vfd replacement restoration");
+assert(vfdBundle.work_outcomes[0].operational_impact.direction === "improved", "VFD replacement must preserve production or operational improvement.");
+results.push("replacement work can preserve mechanism, configuration restoration, verification, and production impact reduction");
+
+const safetyBundle = validateReliabilityBundle(
+  "safety proof test evidence",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-safety-proof-test.json"
+);
+ensureReliabilityReferences(safetyBundle, "safety proof test evidence");
+assert(safetyBundle.work_outcomes[0].outcome_disposition === "inconclusive", "Safety proof-test bundle must avoid overclaiming compliance as a positive outcome.");
+assert(!safetyBundle.work_outcomes[0].extensions?.functional_safety_compliance_claim, "Safety proof-test bundle must not make a false compliance claim.");
+results.push("safety-related maintenance may preserve verification evidence without claiming functional-safety compliance");
+
+const noActionBundle = validateReliabilityBundle(
+  "recommendation and decision without action",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-recommendation-decision-no-action.json"
+);
+ensureReliabilityReferences(noActionBundle, "recommendation and decision without action");
+assert((noActionBundle.work_executions || []).length === 0, "Recommendation to decision flow must not require action.");
+results.push("a recommendation can lead to a decision without necessarily leading to action");
+
+const neutralBundle = validateReliabilityBundle(
+  "neutral completed action outcome",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-neutral-outcome.json"
+);
+ensureReliabilityReferences(neutralBundle, "neutral completed action outcome");
+assert(neutralBundle.work_outcomes[0].outcome_disposition === "neutral", "Neutral outcome bundle must preserve a neutral disposition.");
+const outcomeClasses = [
+  motorBundle.work_outcomes[0].outcome_disposition,
+  pumpSealBundle.work_outcomes[0].outcome_disposition,
+  safetyBundle.work_outcomes[0].outcome_disposition,
+  neutralBundle.work_outcomes[0].outcome_disposition
+];
+assert(outcomeClasses.includes("positive"), "Positive outcome disposition must be supported.");
+assert(outcomeClasses.includes("neutral"), "Neutral outcome disposition must be supported.");
+assert(outcomeClasses.includes("inconclusive"), "Inconclusive outcome disposition must be supported.");
+assert(outcomeClasses.some((entry) => entry === "negative" || entry === "ineffective"), "Negative or ineffective outcome disposition must be supported.");
+results.push("completed action may have neutral, negative or ineffective, inconclusive, or positive outcome dispositions");
+
+expectInvalidReliabilityBundle(
+  "verified outcome without verification evidence",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-missing-verification-link.json",
+  "must reference work verification evidence"
+);
+results.push("work execution cannot be represented as verified outcome without verification evidence");
+
+expectInvalidReliabilityBundle(
+  "work outcome missing observed outcome",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-work-outcome-missing-observed.json",
+  "must have required property 'observed_outcome'"
+);
+results.push("work outcome must distinguish intended outcome from observed outcome");
+
+expectInvalidReliabilityBundle(
+  "collapsed failure semantics into free text",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-diagnostic-freeform-collapse.json",
+  "must match a schema in anyOf"
+);
+results.push("failure mode, mechanism, and cause cannot be collapsed into one uncontrolled text field when structured references are available");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {

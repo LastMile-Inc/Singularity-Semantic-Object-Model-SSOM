@@ -1,0 +1,490 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:mtr101-vibration-pre",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "metric": "vibration_rms",
+      "value": 8.4,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T08:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:M101.VIB_RMS",
+        "lineage_id": "lin-m101-vib-pre",
+        "ingest_time": "2026-06-29T08:00:05Z",
+        "processing_time": "2026-06-29T08:00:06Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:00:00Z",
+        "source_time": "2026-06-29T08:00:00Z",
+        "receive_time": "2026-06-29T08:00:05Z",
+        "processing_time": "2026-06-29T08:00:06Z",
+        "delivery_classification": "live"
+      }
+    },
+    {
+      "record_id": "urn:ssom:record:mtr101-vibration-post",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "metric": "vibration_rms",
+      "value": 3.2,
+      "unit": "mm/s",
+      "event_time": "2026-06-29T16:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "condition_monitor",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "tag:M101.VIB_RMS",
+        "lineage_id": "lin-m101-vib-post",
+        "ingest_time": "2026-06-29T16:00:05Z",
+        "processing_time": "2026-06-29T16:00:06Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:00:00Z",
+        "source_time": "2026-06-29T16:00:00Z",
+        "receive_time": "2026-06-29T16:00:05Z",
+        "processing_time": "2026-06-29T16:00:06Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "symptoms": [
+    {
+      "symptom_id": "urn:ssom:symptom:mtr101-high-vibration",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "symptom_type": "abnormal_vibration",
+      "symptom_ref": { "scheme": "ssom.failure", "code": "high_vibration", "display_name": "High vibration" },
+      "first_observed_at": "2026-06-29T08:00:00Z",
+      "evidence_refs": ["urn:ssom:record:mtr101-vibration-pre"],
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "condition-engine",
+        "source_reference": "symp-m101-vib",
+        "lineage_id": "lin-symp-m101-vib",
+        "ingest_time": "2026-06-29T08:01:00Z",
+        "processing_time": "2026-06-29T08:01:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:01:00Z",
+        "receive_time": "2026-06-29T08:01:00Z",
+        "processing_time": "2026-06-29T08:01:01Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "failure_modes": [
+    {
+      "failure_mode_id": "urn:ssom:failure-mode:mtr101-bearing-degradation",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "affected_function": "deliver rotational power within vibration tolerance",
+      "classified_at": "2026-06-29T08:05:00Z",
+      "evidence_refs": ["urn:ssom:symptom:mtr101-high-vibration"],
+      "provenance": {
+        "source_platform": "reliability",
+        "source_authority_id": "reliability-engineer",
+        "source_reference": "fm-m101-001",
+        "lineage_id": "lin-fm-m101-001",
+        "ingest_time": "2026-06-29T08:05:01Z",
+        "processing_time": "2026-06-29T08:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:05:00Z",
+        "receive_time": "2026-06-29T08:05:01Z",
+        "processing_time": "2026-06-29T08:05:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "failure_mechanisms": [
+    {
+      "failure_mechanism_id": "urn:ssom:failure-mechanism:mtr101-lubrication-breakdown",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "failure_mechanism_ref": { "scheme": "ssom.failure", "code": "lubrication_breakdown", "display_name": "Lubrication breakdown" },
+      "evidence_refs": ["urn:ssom:record:mtr101-vibration-pre", "urn:ssom:symptom:mtr101-high-vibration"],
+      "derivation_method": "vibration trend and spectrum review",
+      "inferred_at": "2026-06-29T08:10:00Z",
+      "confidence": 0.83,
+      "provenance": {
+        "source_platform": "diagnostics",
+        "source_authority_id": "bearing-model",
+        "source_reference": "diag-m101-001",
+        "lineage_id": "lin-mech-m101-001",
+        "ingest_time": "2026-06-29T08:10:01Z",
+        "processing_time": "2026-06-29T08:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:10:00Z",
+        "receive_time": "2026-06-29T08:10:01Z",
+        "processing_time": "2026-06-29T08:10:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:mtr101-bearing-rooted",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "diagnostic_type": "bearing_health_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "Outboard bearing degradation is the most probable source of elevated vibration.",
+      "symptom_refs": ["urn:ssom:symptom:mtr101-high-vibration"],
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "failure_mechanism_ref": { "scheme": "ssom.failure", "code": "lubrication_breakdown", "display_name": "Lubrication breakdown" },
+      "evidence_refs": ["urn:ssom:record:mtr101-vibration-pre"],
+      "diagnosed_at": "2026-06-29T08:12:00Z",
+      "confidence": 0.86,
+      "provenance": {
+        "source_platform": "diagnostics",
+        "source_authority_id": "reliability-team",
+        "source_reference": "diag-m101-002",
+        "lineage_id": "lin-diagnostic-m101-002",
+        "ingest_time": "2026-06-29T08:12:01Z",
+        "processing_time": "2026-06-29T08:12:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:12:00Z",
+        "receive_time": "2026-06-29T08:12:01Z",
+        "processing_time": "2026-06-29T08:12:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "prognostics": [
+    {
+      "prognostic_id": "urn:ssom:prognostic:mtr101-failure-risk-14d",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "prognostic_type": "remaining_useful_life_projection",
+      "forecast": "Bearing condition is likely to breach alarm limits within 14 days if untreated.",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "bearing_degradation", "display_name": "Bearing degradation" },
+      "prediction_horizon": { "target_time": "2026-07-13T08:12:00Z" },
+      "evidence_refs": ["urn:ssom:diagnostic:mtr101-bearing-rooted"],
+      "predicted_at": "2026-06-29T08:13:00Z",
+      "confidence": 0.78,
+      "responsible_party": { "model_id": "rul-bearing-v3", "model_version": "2026.06.1" },
+      "prognostic_status": "projected",
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "prognostics-service",
+        "source_reference": "prog-m101-001",
+        "lineage_id": "lin-prog-m101-001",
+        "ingest_time": "2026-06-29T08:13:01Z",
+        "processing_time": "2026-06-29T08:13:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:13:00Z",
+        "receive_time": "2026-06-29T08:13:01Z",
+        "processing_time": "2026-06-29T08:13:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "maintenance_strategies": [
+    {
+      "strategy_id": "urn:ssom:maintenance-strategy:mtr101-condition-based",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "strategy_type": "condition_based",
+      "objective": "Intervene only when verified vibration evidence shows degradation beyond baseline.",
+      "target_failure_mode_refs": ["urn:ssom:failure-mode:mtr101-bearing-degradation"],
+      "evidence_refs": ["urn:ssom:diagnostic:mtr101-bearing-rooted"],
+      "effective_from": "2026-06-29T08:14:00Z",
+      "provenance": {
+        "source_platform": "reliability",
+        "source_authority_id": "reliability-program",
+        "source_reference": "ms-m101-001",
+        "lineage_id": "lin-ms-m101-001",
+        "ingest_time": "2026-06-29T08:14:01Z",
+        "processing_time": "2026-06-29T08:14:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:14:00Z",
+        "receive_time": "2026-06-29T08:14:01Z",
+        "processing_time": "2026-06-29T08:14:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:mtr101-replace-bearing",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.7.0",
+      "recommendation_type": "maintenance_recommendation",
+      "target_ref": "urn:ssom:asset:motor-m101",
+      "recommended_action": "Replace the outboard bearing and relubricate the housing.",
+      "rationale": "Diagnostic evidence ties elevated vibration to bearing degradation and lubrication breakdown.",
+      "priority": "high",
+      "confidence": 0.84,
+      "evidence_refs": ["urn:ssom:diagnostic:mtr101-bearing-rooted", "urn:ssom:prognostic:mtr101-failure-risk-14d"],
+      "expected_outcome": {
+        "description": "Reduce vibration RMS below 4.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "recommended_at": "2026-06-29T08:15:00Z",
+      "provenance": {
+        "source_platform": "reliability",
+        "source_authority_id": "advisor",
+        "source_reference": "rec-m101-001",
+        "lineage_id": "lin-rec-m101-001",
+        "ingest_time": "2026-06-29T08:15:01Z",
+        "processing_time": "2026-06-29T08:15:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:15:00Z",
+        "receive_time": "2026-06-29T08:15:01Z",
+        "processing_time": "2026-06-29T08:15:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "urn:ssom:decision:mtr101-approve-bearing-work",
+      "semantic_truth_state": "decision",
+      "ssom_version": "0.7.0",
+      "decision_type": "maintenance_approval",
+      "decision_status": "approved",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "context_refs": ["urn:ssom:recommendation:mtr101-replace-bearing"],
+      "evidence_refs": ["urn:ssom:diagnostic:mtr101-bearing-rooted"],
+      "decision_actor": "maintenance_supervisor",
+      "decision_time": "2026-06-29T08:20:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "supervisor",
+        "source_reference": "dec-m101-001",
+        "lineage_id": "lin-dec-m101-001",
+        "ingest_time": "2026-06-29T08:20:01Z",
+        "processing_time": "2026-06-29T08:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:20:00Z",
+        "receive_time": "2026-06-29T08:20:01Z",
+        "processing_time": "2026-06-29T08:20:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:mtr101-bearing-work",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "request_type": "corrective_work",
+      "request_status": "approved",
+      "requested_action": "Replace degraded outboard bearing.",
+      "recommendation_ref": "urn:ssom:recommendation:mtr101-replace-bearing",
+      "decision_ref": "urn:ssom:decision:mtr101-approve-bearing-work",
+      "maintenance_strategy_ref": "urn:ssom:maintenance-strategy:mtr101-condition-based",
+      "basis_refs": ["urn:ssom:diagnostic:mtr101-bearing-rooted"],
+      "requested_at": "2026-06-29T08:21:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr-m101-001",
+        "lineage_id": "lin-wr-m101-001",
+        "ingest_time": "2026-06-29T08:21:01Z",
+        "processing_time": "2026-06-29T08:21:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:21:00Z",
+        "receive_time": "2026-06-29T08:21:01Z",
+        "processing_time": "2026-06-29T08:21:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:mtr101-bearing-work-plan",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "work_request_ref": "urn:ssom:work-request:mtr101-bearing-work",
+      "plan_status": "approved",
+      "planned_actions": ["Isolate motor", "Replace outboard bearing", "Relubricate", "Run verification test"],
+      "planned_verification_method": "post-maintenance vibration test",
+      "expected_outcome": {
+        "description": "Restore vibration to acceptable operating range.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "required_parts": [
+        {
+          "material_ref": { "scheme": "catalog", "code": "BRG-6312", "display_name": "6312 bearing" },
+          "quantity": 1
+        }
+      ],
+      "labor_requirements": [
+        {
+          "participant_type": "employee",
+          "participant_ref": "team:rotating-equipment",
+          "role": "mechanic",
+          "labor_hours": 4
+        }
+      ],
+      "planned_start": "2026-06-29T12:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-m101-001",
+        "lineage_id": "lin-wp-m101-001",
+        "ingest_time": "2026-06-29T08:25:01Z",
+        "processing_time": "2026-06-29T08:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:25:00Z",
+        "receive_time": "2026-06-29T08:25:01Z",
+        "processing_time": "2026-06-29T08:25:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:mtr101-bearing-work-completed",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:motor-m101",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:mtr101-bearing-work-plan"],
+      "executed_at": "2026-06-29T14:30:00Z",
+      "work_request_ref": "urn:ssom:work-request:mtr101-bearing-work",
+      "work_plan_ref": "urn:ssom:work-plan:mtr101-bearing-work-plan",
+      "verification_required": true,
+      "parts_used": [
+        {
+          "material_ref": { "scheme": "catalog", "code": "BRG-6312", "display_name": "6312 bearing" },
+          "quantity": 1,
+          "serial_number": "BRG-6312-8891"
+        }
+      ],
+      "labor_participation": [
+        {
+          "participant_type": "employee",
+          "participant_ref": "person:mechanic-17",
+          "role": "lead_mechanic",
+          "labor_hours": 3.5
+        }
+      ],
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "technician",
+        "source_reference": "we-m101-001",
+        "lineage_id": "lin-we-m101-001",
+        "ingest_time": "2026-06-29T14:30:01Z",
+        "processing_time": "2026-06-29T14:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T14:30:00Z",
+        "receive_time": "2026-06-29T14:30:01Z",
+        "processing_time": "2026-06-29T14:30:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:mtr101-bearing-verification",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "work_execution_ref": "urn:ssom:action:mtr101-bearing-work-completed",
+      "verification_status": "verified",
+      "verification_method": "post-maintenance vibration test",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:record:mtr101-vibration-post"],
+      "verified_at": "2026-06-29T16:05:00Z",
+      "provenance": {
+        "source_platform": "reliability",
+        "source_authority_id": "analyst",
+        "source_reference": "wv-m101-001",
+        "lineage_id": "lin-wv-m101-001",
+        "ingest_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:05:00Z",
+        "receive_time": "2026-06-29T16:05:01Z",
+        "processing_time": "2026-06-29T16:05:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:mtr101-bearing-work-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:motor-m101",
+      "action_ref": "urn:ssom:action:mtr101-bearing-work-completed",
+      "decision_ref": "urn:ssom:decision:mtr101-approve-bearing-work",
+      "work_execution_ref": "urn:ssom:action:mtr101-bearing-work-completed",
+      "verification_refs": ["urn:ssom:work-verification:mtr101-bearing-verification"],
+      "outcome_disposition": "positive",
+      "intended_outcome": {
+        "description": "Reduce vibration RMS below 4.0 mm/s.",
+        "target_metric": "vibration_rms",
+        "target_value": 4,
+        "unit": "mm/s"
+      },
+      "observed_outcome": {
+        "description": "Observed vibration RMS dropped to 3.2 mm/s after bearing replacement.",
+        "result_class": "improved",
+        "measured_metric": "vibration_rms",
+        "measured_value": 3.2,
+        "unit": "mm/s"
+      },
+      "assessed_at": "2026-06-29T16:06:00Z",
+      "evidence_refs": ["urn:ssom:record:mtr101-vibration-post", "urn:ssom:work-verification:mtr101-bearing-verification"],
+      "confidence": 0.9,
+      "reliability_impact": {
+        "direction": "improved",
+        "description": "Bearing-related reliability improved after intervention.",
+        "asset_class": "electric_motor",
+        "operating_context": {
+          "asset_class": "electric_motor",
+          "operating_mode": "steady_state",
+          "load_band": "70_percent"
+        },
+        "measurement_evidence_refs": ["urn:ssom:record:mtr101-vibration-pre", "urn:ssom:record:mtr101-vibration-post"],
+        "work_history_refs": ["urn:ssom:action:mtr101-bearing-work-completed"],
+        "assessment_basis": "before_after_vibration_comparison"
+      },
+      "availability_impact": {
+        "direction": "improved",
+        "description": "Avoided near-term forced outage."
+      },
+      "operational_impact": {
+        "direction": "improved",
+        "description": "Restored stable motor operation."
+      },
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "reliability-team",
+        "source_reference": "wo-m101-001",
+        "lineage_id": "lin-wo-m101-001",
+        "ingest_time": "2026-06-29T16:06:01Z",
+        "processing_time": "2026-06-29T16:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T16:06:00Z",
+        "receive_time": "2026-06-29T16:06:01Z",
+        "processing_time": "2026-06-29T16:06:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ]
+}

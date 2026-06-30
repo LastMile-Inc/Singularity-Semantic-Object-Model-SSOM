@@ -1,0 +1,32 @@
+{
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:bad-freeform-collapse",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "diagnostic_type": "bad_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "Bearing failure due to multiple reasons.",
+      "evidence_refs": ["urn:ssom:record:p101-discharge-pressure-20260629t100900z"],
+      "diagnosed_at": "2026-06-29T13:00:00Z",
+      "confidence": 0.7,
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "bad-agent",
+        "source_reference": "bad-diag",
+        "lineage_id": "lin-bad-diag",
+        "ingest_time": "2026-06-29T13:00:01Z",
+        "processing_time": "2026-06-29T13:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T13:00:00Z",
+        "receive_time": "2026-06-29T13:00:01Z",
+        "processing_time": "2026-06-29T13:00:02Z",
+        "delivery_classification": "reconstructed"
+      },
+      "extensions": {
+        "failure_summary_text": "mode=wear; mechanism=lube loss; cause=misalignment"
+      }
+    }
+  ]
+}

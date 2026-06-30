@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/work-request.json",
+  "title": "SSOM Work Request",
+  "description": "A governed request for work. A work request is not work execution.",
+  "type": "object",
+  "required": [
+    "work_request_id",
+    "subject_ref",
+    "request_type",
+    "request_status",
+    "requested_action",
+    "basis_refs",
+    "requested_at",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "work_request_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:work-request:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "request_type": {
+      "type": "string"
+    },
+    "request_status": {
+      "$ref": "common.json#/$defs/workRequestStatus"
+    },
+    "requested_action": {
+      "type": "string"
+    },
+    "recommendation_ref": {
+      "type": "string"
+    },
+    "decision_ref": {
+      "type": "string"
+    },
+    "maintenance_strategy_ref": {
+      "type": "string"
+    },
+    "basis_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "requested_by": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "priority": {
+      "$ref": "common.json#/$defs/priorityLevel"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

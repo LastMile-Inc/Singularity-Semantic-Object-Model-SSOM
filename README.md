@@ -1,8 +1,8 @@
 # SSOM RFCs
 
-The **Standardized Semantic Object Model (SSOM)** is a draft, vendor-neutral, evidence-aware semantic standard for industrial operations data. SSOM models industrial **Assets** as the canonical lifecycle entities for identity, identifier continuity, relationships, condition, and a governed semantic truth-state lifecycle from observation through outcome.
+The **Standardized Semantic Object Model (SSOM)** is a draft, vendor-neutral, evidence-aware semantic standard for industrial operations data. SSOM models industrial **Assets** as the canonical lifecycle entities for identity, identifier continuity, relationships, condition, measurement safety, and a governed operational truth-state lifecycle from observation through verified work outcome.
 
-SSOM standardizes **meaning**, not transport, control behavior, workflow execution engines, dashboard behavior, cloud deployment, or vendor-specific product implementation. SSOM now includes a generic foundation for Recommendations, Decisions, Actions, and Outcomes, but detailed maintenance, failure, work-execution, Event, and Alarm profiles remain planned profile scope until dedicated schemas are published.
+SSOM standardizes **meaning**, not transport, control behavior, workflow execution engines, dashboard behavior, cloud deployment, or vendor-specific product implementation. SSOM reuses the generic Recommendation, Decision, Action, and Outcome foundation for maintenance and reliability semantics, and now adds first-class schemas for failure, work verification, and measurable work outcome. Event and Alarm profiles remain planned scope until dedicated schemas are published.
 
 ## Why SSOM exists
 
@@ -76,7 +76,9 @@ SSOM allows one Asset to have many identifiers at the same time, and it allows t
 - Relationships and topology
 - Observations and telemetry
 - Quantity kind, unit reference, conversion lineage, calibration context, and signal semantics for measurement safety
+- Symptom, failure mode, failure mechanism, failure cause, failure event, diagnostic, and prognostic semantics
 - Source assertions and derived assertions
+- Maintenance strategy, work request, work plan, work execution, work verification, and work outcome semantics
 - Inference and prediction records
 - Recommendations, decisions, generic actions, and outcomes
 - Conditions
@@ -92,7 +94,8 @@ Planned profile scope, not yet backed by dedicated schemas in this repository:
 
 - Event semantics
 - Alarm semantics
-- Detailed work-execution and maintenance profiles
+
+SSOM can now distinguish whether work was requested, planned, executed, verified, and measurably effective. A completed work record is not treated as proof of restored function.
 
 ## What SSOM does not standardize
 
@@ -127,26 +130,29 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 
 ## Current draft version
 
-- SSOM v0.6.0 draft: additive measurement, quantity, unit, signal, and calibration safety update
+- SSOM v0.7.0 draft: additive failure, maintenance, work verification, and measurable outcome update
 - RFC-0001: Draft / Experimental foundation
-- RFC-0002: Draft / Standards Track Proposal for v0.6.0
+- RFC-0002: Draft / Standards Track Proposal for v0.7.0
 
 ## Read next
 
 - Core specification: [RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md](RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md)
 - JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/identity-lifecycle-event.json](schemas/jsonschema/identity-lifecycle-event.json), [schemas/jsonschema/observation.json](schemas/jsonschema/observation.json), [schemas/jsonschema/source-assertion.json](schemas/jsonschema/source-assertion.json), [schemas/jsonschema/outcome.json](schemas/jsonschema/outcome.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
-- Schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)
+- Schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
+- Previous schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)
 - Previous schema reference: [docs/schema-reference-v0.5.md](docs/schema-reference-v0.5.md)
+- Reliability and maintenance profile: [docs/reliability-maintenance-profile-v0.7.md](docs/reliability-maintenance-profile-v0.7.md)
 - Identity lifecycle examples: [docs/examples-v0.5-identity-lifecycle.md](docs/examples-v0.5-identity-lifecycle.md)
 - Truth-state examples: [docs/examples-v0.4-semantic-truth-lifecycle.md](docs/examples-v0.4-semantic-truth-lifecycle.md)
 - Examples: [docs/examples-v0.3-equipment-device-roles.md](docs/examples-v0.3-equipment-device-roles.md)
-- Migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)
+- Migration guidance: [docs/migration-v0.7.md](docs/migration-v0.7.md)
+- Previous migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)
 - Previous migration guidance: [docs/migration-v0.5.md](docs/migration-v0.5.md)
 - Previous migration guidance: [docs/migration-v0.4.md](docs/migration-v0.4.md)
 - Standards mapping: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
 - ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
-- Conformance: [conformance/checklist-v0.6.md](conformance/checklist-v0.6.md)
+- Conformance: [conformance/checklist-v0.7.md](conformance/checklist-v0.7.md)
 
 ## Participation
 

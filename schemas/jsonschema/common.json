@@ -616,6 +616,361 @@
       },
       "additionalProperties": true
     },
+    "governedTermReference": {
+      "type": "object",
+      "required": [
+        "scheme",
+        "code"
+      ],
+      "properties": {
+        "scheme": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "diagnosticStatus": {
+      "type": "string",
+      "enum": [
+        "suspected",
+        "confirmed",
+        "ruled_out",
+        "superseded"
+      ]
+    },
+    "prognosticStatus": {
+      "type": "string",
+      "enum": [
+        "projected",
+        "watch",
+        "escalated",
+        "expired",
+        "superseded"
+      ]
+    },
+    "failureEventStatus": {
+      "type": "string",
+      "enum": [
+        "detected",
+        "confirmed",
+        "active",
+        "mitigated",
+        "resolved"
+      ]
+    },
+    "maintenanceStrategyType": {
+      "type": "string",
+      "enum": [
+        "corrective",
+        "preventive",
+        "predictive",
+        "condition_based",
+        "run_to_failure",
+        "proof_test"
+      ]
+    },
+    "workRequestStatus": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "approved",
+        "rejected",
+        "deferred",
+        "cancelled"
+      ]
+    },
+    "workPlanStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "revised",
+        "cancelled"
+      ]
+    },
+    "verificationStatus": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "rejected",
+        "inconclusive",
+        "pending"
+      ]
+    },
+    "restorationStatus": {
+      "type": "string",
+      "enum": [
+        "restored",
+        "not_restored",
+        "partially_restored",
+        "inconclusive"
+      ]
+    },
+    "workOutcomeDisposition": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative",
+        "inconclusive",
+        "ineffective",
+        "unresolved"
+      ]
+    },
+    "recurrenceStatus": {
+      "type": "string",
+      "enum": [
+        "none",
+        "suspected",
+        "confirmed",
+        "open",
+        "closed"
+      ]
+    },
+    "materialUsage": {
+      "type": "object",
+      "required": [
+        "material_ref",
+        "quantity"
+      ],
+      "properties": {
+        "material_ref": {
+          "$ref": "common.json#/$defs/governedTermReference"
+        },
+        "quantity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "serial_number": {
+          "type": "string"
+        },
+        "batch_id": {
+          "type": "string"
+        },
+        "warranty_reference": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "laborParticipation": {
+      "type": "object",
+      "required": [
+        "participant_type",
+        "participant_ref"
+      ],
+      "properties": {
+        "participant_type": {
+          "type": "string",
+          "enum": [
+            "employee",
+            "contractor",
+            "vendor",
+            "team"
+          ]
+        },
+        "participant_ref": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "labor_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "organization": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "serviceInterruption": {
+      "type": "object",
+      "required": [
+        "interruption_type",
+        "duration_hours"
+      ],
+      "properties": {
+        "interruption_type": {
+          "type": "string",
+          "enum": [
+            "full_outage",
+            "partial_outage",
+            "degraded_service",
+            "planned_shutdown",
+            "none"
+          ]
+        },
+        "duration_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "production_loss_estimate": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "operatingContextSnapshot": {
+      "type": "object",
+      "required": [
+        "asset_class"
+      ],
+      "properties": {
+        "asset_class": {
+          "type": "string"
+        },
+        "operating_mode": {
+          "type": "string"
+        },
+        "load_band": {
+          "type": "string"
+        },
+        "environmental_context": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "impactAssessment": {
+      "type": "object",
+      "required": [
+        "direction",
+        "description"
+      ],
+      "properties": {
+        "direction": {
+          "type": "string",
+          "enum": [
+            "improved",
+            "unchanged",
+            "degraded",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "magnitude": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "reliabilityImpact": {
+      "type": "object",
+      "required": [
+        "direction",
+        "description",
+        "asset_class",
+        "operating_context",
+        "measurement_evidence_refs",
+        "work_history_refs"
+      ],
+      "properties": {
+        "direction": {
+          "type": "string",
+          "enum": [
+            "improved",
+            "unchanged",
+            "degraded",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "asset_class": {
+          "type": "string"
+        },
+        "operating_context": {
+          "$ref": "common.json#/$defs/operatingContextSnapshot"
+        },
+        "measurement_evidence_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        },
+        "work_history_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        },
+        "magnitude": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "assessment_basis": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "warrantyCoverage": {
+      "type": "object",
+      "required": [
+        "coverage_status"
+      ],
+      "properties": {
+        "coverage_status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "expired",
+            "unknown"
+          ]
+        },
+        "coverage_reference": {
+          "type": "string"
+        },
+        "coverage_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "recurrenceContext": {
+      "type": "object",
+      "required": [
+        "recurrence_status"
+      ],
+      "properties": {
+        "recurrence_status": {
+          "$ref": "common.json#/$defs/recurrenceStatus"
+        },
+        "prior_failure_event_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        },
+        "prior_work_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
     "classificationAssertion": {
       "type": "object",
       "required": [

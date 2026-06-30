@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Added: Reliability Work and Outcome Semantics
+
+- Added dedicated schemas for Symptom, Failure Mode, Failure Mechanism, Failure Cause, Failure Event, Diagnostic, Prognostic, Maintenance Strategy, Work Request, Work Plan, Work Execution, Work Verification, and Work Outcome.
+- Added v0.7 bundle fixtures for motor-bearing degradation, ineffective pump seal replacement, VFD replacement with configuration restoration, safety-related proof-test evidence, recommendation-to-decision without action, and neutral post-work outcome.
+- Added semantic validation proving verified work outcomes require verification evidence, work outcomes preserve intended versus observed results, structured failure semantics cannot collapse into free-form text, and completed work may lead to positive, neutral, inconclusive, or ineffective outcomes.
+
+### Changed: Reliability And Maintenance Scope
+
+- RFC-0002 and README now distinguish failure mode, failure mechanism, failure cause, work request, work execution, work verification, and measurable work outcome.
+- RFC-0002 and README now explicitly state that a completed work execution is not proof of restored function.
+- Standards mapping language now uses qualified ISO 14224-like and MIMOSA-like alignment language only.
+
 ### Added: Measurement and Unit Safety Semantics
 
 - Added structured Observation semantics for original source measurement, canonical normalized measurement, governed unit references, conversion lineage, structured measurement quality, calibration context, signal context, and time-synchronization context.

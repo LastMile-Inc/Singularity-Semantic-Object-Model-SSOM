@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/symptom.json",
+  "title": "SSOM Symptom",
+  "description": "A directly observed operational symptom. A symptom is not automatically a diagnosis.",
+  "type": "object",
+  "required": [
+    "symptom_id",
+    "subject_ref",
+    "symptom_type",
+    "symptom_ref",
+    "first_observed_at",
+    "evidence_refs",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "symptom_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:symptom:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "symptom_type": {
+      "type": "string"
+    },
+    "symptom_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "description": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "first_observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

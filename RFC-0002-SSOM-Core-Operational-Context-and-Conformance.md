@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.6.0
+- **Intended Version:** SSOM v0.7.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -20,6 +20,8 @@ SSOM v0.4.0 adds a formally governed semantic truth and decision lifecycle that 
 SSOM v0.5.0 adds a formally governed asset identity lifecycle that distinguishes canonical Asset identity, external identifiers, identifier assignments, scope, authority, aliases, succession, and identity-affecting lifecycle events.
 
 SSOM v0.6.0 adds measurement-safety semantics so Observations can preserve original source measurement, canonical normalized measurement, governed unit and quantity references, conversion lineage, quality state, calibration context, signal context, and time-synchronization context.
+
+SSOM v0.7.0 adds first-class failure, maintenance, work verification, and work outcome semantics so implementations can represent whether an intervention addressed the relevant failure mechanism, restored intended function, reduced risk, improved reliability, or failed to produce improvement.
 
 ## 1. Motivation
 
@@ -61,7 +63,19 @@ SSOM specifies transport-independent semantics for:
 17. Quality
 18. Temporal Integrity
 19. Policy Evidence
-20. Extension and conformance metadata
+20. Symptom
+21. Failure Mode
+22. Failure Mechanism
+23. Failure Cause
+24. Failure Event
+25. Diagnostic
+26. Prognostic
+27. Maintenance Strategy
+28. Work Request
+29. Work Plan
+30. Work Verification
+31. Work Outcome
+32. Extension and conformance metadata
 
 Event and Alarm labels remain reserved profile scope in the Canonical Operational Record envelope, but dedicated Event and Alarm schemas are not normative in this repository version.
 
@@ -112,6 +126,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 13. **Truth-state separation.** SSOM MUST distinguish observation, assertion, inference, prediction, recommendation, decision, action, and outcome semantics.
 14. **Identity continuity.** SSOM MUST preserve canonical Asset identity separately from external identifiers, time-bound assignments, and succession semantics.
 15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context.
+16. **Verified operational outcome.** SSOM MUST distinguish work request, work execution, work verification, and work outcome semantics so a completed action is not silently treated as proof of restored function.
 
 ## 5. Core semantic objects
 
@@ -215,7 +230,7 @@ Core `equipment_roles[]` values are:
 - `facility_equipment`
 - `production_equipment`
 
-Equipment classifications commonly support operational concepts such as functional purpose, process role, maintainability, reliability context, availability, criticality, performance, capacity, operating envelope, production impact, safety impact, and energy impact. Detailed failure-mode, maintenance strategy, and work-history semantics remain planned profile scope until dedicated schemas are published.
+Equipment classifications commonly support operational concepts such as functional purpose, process role, maintainability, reliability context, availability, criticality, performance, capacity, operating envelope, production impact, safety impact, and energy impact.
 
 Examples include pumps, compressors, chillers, boilers, turbines, conveyors, packaging machines, production skids, robot cells, reactor vessels, air-handling units, motor control centers, electrical switchgear, production lines, and water-treatment systems.
 
@@ -666,6 +681,237 @@ Required fields:
 - at least one of `action_ref` or `decision_ref`
 - `provenance`
 - `temporal_integrity`
+
+### 5.7 Reliability, Failure, and Work Lifecycle
+
+SSOM v0.7.0 defines first-class reliability and maintenance semantics around the existing Recommendation, Decision, Action, and Outcome foundation.
+
+The expected semantic chain is:
+
+Observation or Event or Condition -> Diagnostic or Failure Hypothesis -> Recommendation -> Decision -> Work Request -> Work Plan -> Work Execution -> Work Verification -> Work Outcome -> Reliability or Availability or Operational Impact
+
+#### 5.7.1 Normative reliability and work rules
+
+1. A failure mode MUST remain distinguishable from a failure mechanism.
+2. A failure mechanism MUST remain distinguishable from a failure cause.
+3. A symptom MUST NOT be treated automatically as a diagnosis.
+4. A work request MUST remain distinguishable from work execution.
+5. A completed work execution MUST NOT be treated automatically as proof of restored function.
+6. Work verification MUST identify the evidence used to validate or reject restoration.
+7. A work outcome MUST preserve both intended outcome and observed outcome.
+8. A recurring failure MUST be linkable to prior work and prior failure history.
+9. Reliability claims MUST remain traceable to asset class, operating context, measurement evidence, work history, and outcome evidence.
+10. ISO 14224-like terminology MAY be mapped to SSOM, but no compliance claim is implied without explicit supporting evidence.
+
+#### 5.7.2 Symptom
+
+A **Symptom** is a directly observed operational symptom such as abnormal vibration, visible leakage, abnormal temperature rise, or unstable control response.
+
+Required fields:
+
+- `symptom_id`
+- `subject_ref`
+- `symptom_type`
+- `symptom_ref`
+- `first_observed_at`
+- `evidence_refs`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.3 Failure Mode
+
+A **Failure Mode** is the way an asset or function fails, such as bearing degradation, seal leakage, or drive trip.
+
+Required fields:
+
+- `failure_mode_id`
+- `subject_ref`
+- `failure_mode_ref`
+- `affected_function`
+- `classified_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.4 Failure Mechanism
+
+A **Failure Mechanism** is the physical or logical process that produces the failure mode, such as lubrication breakdown, erosion, capacitor degradation, corrosion, or configuration drift.
+
+Required fields:
+
+- `failure_mechanism_id`
+- `subject_ref`
+- `failure_mechanism_ref`
+- `evidence_refs`
+- `inferred_at`
+- `confidence`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.5 Failure Cause
+
+A **Failure Cause** is the attributed causal factor that explains why the failure mode or mechanism occurred.
+
+Required fields:
+
+- `failure_cause_id`
+- `subject_ref`
+- `failure_cause_ref`
+- `evidence_refs`
+- `determined_at`
+- `confidence`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.6 Failure Event
+
+A **Failure Event** is a time-bound loss or degradation event for an intended function.
+
+Required fields:
+
+- `failure_event_id`
+- `subject_ref`
+- `failure_mode_ref`
+- `event_status`
+- `occurred_at`
+- `evidence_refs`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.7 Diagnostic
+
+A **Diagnostic** is a reasoned diagnosis or failure hypothesis derived from evidence.
+
+Required fields:
+
+- `diagnostic_id`
+- `subject_ref`
+- `diagnostic_type`
+- `diagnostic_status`
+- `conclusion`
+- `evidence_refs`
+- `diagnosed_at`
+- `confidence`
+- `provenance`
+- `temporal_integrity`
+
+At least one structured diagnostic anchor such as symptom reference, failure-mode reference, failure-mechanism reference, or failure-cause reference MUST be present when those distinctions are known.
+
+#### 5.7.8 Prognostic
+
+A **Prognostic** is a future-oriented projection of degradation progression, remaining useful life, or near-term failure risk.
+
+Required fields:
+
+- `prognostic_id`
+- `subject_ref`
+- `prognostic_type`
+- `forecast`
+- `prediction_horizon`
+- `evidence_refs`
+- `predicted_at`
+- `confidence`
+- `responsible_party`
+- `prognostic_status`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.9 Maintenance Strategy
+
+A **Maintenance Strategy** is a governed maintenance intent such as corrective, preventive, predictive, condition-based, run-to-failure, or proof-test strategy.
+
+Required fields:
+
+- `strategy_id`
+- `subject_ref`
+- `strategy_type`
+- `objective`
+- `evidence_refs`
+- `effective_from`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.10 Work Request
+
+A **Work Request** is a governed request for work derived from evidence, recommendation, decision, or maintenance strategy context.
+
+Required fields:
+
+- `work_request_id`
+- `subject_ref`
+- `request_type`
+- `request_status`
+- `requested_action`
+- `basis_refs`
+- `requested_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.11 Work Plan
+
+A **Work Plan** is a prepared plan for work execution including intended steps, parts, labor, interruption expectation, and verification approach.
+
+Required fields:
+
+- `work_plan_id`
+- `subject_ref`
+- `work_request_ref`
+- `plan_status`
+- `planned_actions`
+- `planned_verification_method`
+- `expected_outcome`
+- `planned_start`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.12 Work Execution
+
+A **Work Execution** is a specialization of Action for maintenance or repair work.
+
+It reuses the generic Action semantics and adds work-specific context such as work request, work plan, parts used, labor participation, service interruption, and warranty coverage.
+
+#### 5.7.13 Work Verification
+
+A **Work Verification** is the post-work validation or rejection step that determines whether restoration evidence actually supports the intended claim.
+
+Required fields:
+
+- `verification_id`
+- `subject_ref`
+- `work_execution_ref`
+- `verification_status`
+- `verification_method`
+- `restoration_status`
+- `evidence_refs`
+- `verified_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.7.14 Work Outcome
+
+A **Work Outcome** is a specialization of Outcome for work results, including verification linkage, recurrence, and reliability or operational impact.
+
+It reuses the generic Outcome semantics and adds work-specific verification references, outcome disposition, recurrence context, warranty context, and impact semantics.
+
+Normative machine-readable artifacts for the reliability and work lifecycle are:
+
+- `schemas/jsonschema/symptom.json`
+- `schemas/jsonschema/failure-mode.json`
+- `schemas/jsonschema/failure-mechanism.json`
+- `schemas/jsonschema/failure-cause.json`
+- `schemas/jsonschema/failure-event.json`
+- `schemas/jsonschema/diagnostic.json`
+- `schemas/jsonschema/prognostic.json`
+- `schemas/jsonschema/maintenance-strategy.json`
+- `schemas/jsonschema/work-request.json`
+- `schemas/jsonschema/work-plan.json`
+- `schemas/jsonschema/work-execution.json`
+- `schemas/jsonschema/work-verification.json`
+- `schemas/jsonschema/work-outcome.json`
+- `schemas/jsonschema/recommendation.json`
+- `schemas/jsonschema/decision.json`
+- `schemas/jsonschema/action.json`
+- `schemas/jsonschema/outcome.json`
+- `schemas/jsonschema/common.json`
 
 ### 5.7 Event and Alarm planned profile scope
 

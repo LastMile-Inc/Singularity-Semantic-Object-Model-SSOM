@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/prognostic.json",
+  "title": "SSOM Prognostic",
+  "description": "A future-oriented maintenance or failure progression projection tied to evidence and an explicit responsible party.",
+  "type": "object",
+  "required": [
+    "prognostic_id",
+    "subject_ref",
+    "prognostic_type",
+    "forecast",
+    "prediction_horizon",
+    "evidence_refs",
+    "predicted_at",
+    "confidence",
+    "responsible_party",
+    "prognostic_status",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "prognostic_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:prognostic:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "prognostic_type": {
+      "type": "string"
+    },
+    "forecast": {
+      "type": "string"
+    },
+    "failure_mode_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "prediction_horizon": {
+      "$ref": "common.json#/$defs/predictionHorizon"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "predicted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "responsible_party": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "prognostic_status": {
+      "$ref": "common.json#/$defs/prognosticStatus"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,150 @@
+{
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:fan301-cleaning",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:fan-f301",
+      "request_type": "preventive_work",
+      "request_status": "approved",
+      "requested_action": "Clean fan housing and inspect fasteners.",
+      "basis_refs": ["urn:ssom:record:fan301-vibration-baseline"],
+      "requested_at": "2026-06-29T09:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr-f301-001",
+        "lineage_id": "lin-wr-f301-001",
+        "ingest_time": "2026-06-29T09:00:01Z",
+        "processing_time": "2026-06-29T09:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:00:00Z",
+        "receive_time": "2026-06-29T09:00:01Z",
+        "processing_time": "2026-06-29T09:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:fan301-cleaning-plan",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:fan-f301",
+      "work_request_ref": "urn:ssom:work-request:fan301-cleaning",
+      "plan_status": "approved",
+      "planned_actions": ["Clean housing", "Inspect fasteners", "Verify fan operation"],
+      "planned_verification_method": "post-clean inspection",
+      "expected_outcome": { "description": "Maintain current fan condition." },
+      "planned_start": "2026-06-29T10:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-f301-001",
+        "lineage_id": "lin-wp-f301-001",
+        "ingest_time": "2026-06-29T09:05:01Z",
+        "processing_time": "2026-06-29T09:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:05:00Z",
+        "receive_time": "2026-06-29T09:05:01Z",
+        "processing_time": "2026-06-29T09:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:fan301-cleaning-completed",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:fan-f301",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:fan301-cleaning-plan"],
+      "executed_at": "2026-06-29T10:45:00Z",
+      "work_request_ref": "urn:ssom:work-request:fan301-cleaning",
+      "work_plan_ref": "urn:ssom:work-plan:fan301-cleaning-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "technician",
+        "source_reference": "we-f301-001",
+        "lineage_id": "lin-we-f301-001",
+        "ingest_time": "2026-06-29T10:45:01Z",
+        "processing_time": "2026-06-29T10:45:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:45:00Z",
+        "receive_time": "2026-06-29T10:45:01Z",
+        "processing_time": "2026-06-29T10:45:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:fan301-cleaning-check",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:fan-f301",
+      "work_execution_ref": "urn:ssom:action:fan301-cleaning-completed",
+      "verification_status": "verified",
+      "verification_method": "visual inspection",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:action:fan301-cleaning-completed"],
+      "verified_at": "2026-06-29T11:00:00Z",
+      "provenance": {
+        "source_platform": "operations",
+        "source_authority_id": "operator",
+        "source_reference": "wv-f301-001",
+        "lineage_id": "lin-wv-f301-001",
+        "ingest_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:00:00Z",
+        "receive_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:fan301-cleaning-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:fan-f301",
+      "action_ref": "urn:ssom:action:fan301-cleaning-completed",
+      "work_execution_ref": "urn:ssom:action:fan301-cleaning-completed",
+      "verification_refs": ["urn:ssom:work-verification:fan301-cleaning-check"],
+      "outcome_disposition": "neutral",
+      "intended_outcome": { "description": "Maintain current fan condition." },
+      "observed_outcome": {
+        "description": "Fan condition remained stable with no measurable improvement or degradation.",
+        "result_class": "unchanged"
+      },
+      "assessed_at": "2026-06-29T11:05:00Z",
+      "evidence_refs": ["urn:ssom:work-verification:fan301-cleaning-check"],
+      "confidence": 0.71,
+      "availability_impact": {
+        "direction": "unchanged",
+        "description": "No availability change was measured."
+      },
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "maintenance-analyst",
+        "source_reference": "wo-f301-001",
+        "lineage_id": "lin-wo-f301-001",
+        "ingest_time": "2026-06-29T11:05:01Z",
+        "processing_time": "2026-06-29T11:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:05:00Z",
+        "receive_time": "2026-06-29T11:05:01Z",
+        "processing_time": "2026-06-29T11:05:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:p201-seal-leak-post",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "metric": "seal_leak_rate",
+      "value": 2.4,
+      "unit": "L/h",
+      "event_time": "2026-06-29T18:00:00Z",
+      "quality": { "status": "good", "validation_status": "valid" },
+      "provenance": {
+        "source_platform": "operator_rounds",
+        "source_authority_id": "operations",
+        "source_reference": "rounds:p201-leak",
+        "lineage_id": "lin-p201-leak-post",
+        "ingest_time": "2026-06-29T18:00:01Z",
+        "processing_time": "2026-06-29T18:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T18:00:00Z",
+        "receive_time": "2026-06-29T18:00:01Z",
+        "processing_time": "2026-06-29T18:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "symptoms": [
+    {
+      "symptom_id": "urn:ssom:symptom:p201-visible-leak",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "symptom_type": "visible_leakage",
+      "symptom_ref": { "scheme": "ssom.failure", "code": "seal_leakage", "display_name": "Seal leakage" },
+      "first_observed_at": "2026-06-29T12:00:00Z",
+      "evidence_refs": ["urn:ssom:record:p201-seal-leak-post"],
+      "provenance": {
+        "source_platform": "operator_rounds",
+        "source_authority_id": "operations",
+        "source_reference": "symp-p201-leak",
+        "lineage_id": "lin-symp-p201-leak",
+        "ingest_time": "2026-06-29T12:00:01Z",
+        "processing_time": "2026-06-29T12:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:00:00Z",
+        "receive_time": "2026-06-29T12:00:01Z",
+        "processing_time": "2026-06-29T12:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "failure_modes": [
+    {
+      "failure_mode_id": "urn:ssom:failure-mode:p201-seal-leak",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "mechanical_seal_leak", "display_name": "Mechanical seal leak" },
+      "affected_function": "contain pumped fluid without external leakage",
+      "classified_at": "2026-06-29T12:05:00Z",
+      "provenance": {
+        "source_platform": "maintenance",
+        "source_authority_id": "planner",
+        "source_reference": "fm-p201-seal",
+        "lineage_id": "lin-fm-p201-seal",
+        "ingest_time": "2026-06-29T12:05:01Z",
+        "processing_time": "2026-06-29T12:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:05:00Z",
+        "receive_time": "2026-06-29T12:05:01Z",
+        "processing_time": "2026-06-29T12:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "failure_causes": [
+    {
+      "failure_cause_id": "urn:ssom:failure-cause:p201-misaligned-seal-seat",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "failure_cause_ref": { "scheme": "ssom.failure", "code": "misaligned_seal_seat", "display_name": "Misaligned seal seat" },
+      "evidence_refs": ["urn:ssom:symptom:p201-visible-leak"],
+      "determined_at": "2026-06-29T12:10:00Z",
+      "confidence": 0.61,
+      "provenance": {
+        "source_platform": "maintenance",
+        "source_authority_id": "technician",
+        "source_reference": "fc-p201-001",
+        "lineage_id": "lin-fc-p201-001",
+        "ingest_time": "2026-06-29T12:10:01Z",
+        "processing_time": "2026-06-29T12:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:10:00Z",
+        "receive_time": "2026-06-29T12:10:01Z",
+        "processing_time": "2026-06-29T12:10:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "failure_events": [
+    {
+      "failure_event_id": "urn:ssom:failure-event:p201-seal-loss",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "mechanical_seal_leak", "display_name": "Mechanical seal leak" },
+      "failure_cause_ref": { "scheme": "ssom.failure", "code": "misaligned_seal_seat", "display_name": "Misaligned seal seat" },
+      "event_status": "active",
+      "occurred_at": "2026-06-29T12:00:00Z",
+      "service_interruption": { "interruption_type": "degraded_service", "duration_hours": 4 },
+      "evidence_refs": ["urn:ssom:symptom:p201-visible-leak"],
+      "provenance": {
+        "source_platform": "operations",
+        "source_authority_id": "shift-lead",
+        "source_reference": "fe-p201-001",
+        "lineage_id": "lin-fe-p201-001",
+        "ingest_time": "2026-06-29T12:11:01Z",
+        "processing_time": "2026-06-29T12:11:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:11:00Z",
+        "receive_time": "2026-06-29T12:11:01Z",
+        "processing_time": "2026-06-29T12:11:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:p201-seal-repair-check",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "diagnostic_type": "seal_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "Seal replacement did not correct the underlying seat alignment issue.",
+      "symptom_refs": ["urn:ssom:symptom:p201-visible-leak"],
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "mechanical_seal_leak", "display_name": "Mechanical seal leak" },
+      "failure_cause_ref": { "scheme": "ssom.failure", "code": "misaligned_seal_seat", "display_name": "Misaligned seal seat" },
+      "evidence_refs": ["urn:ssom:record:p201-seal-leak-post"],
+      "diagnosed_at": "2026-06-29T18:10:00Z",
+      "confidence": 0.74,
+      "provenance": {
+        "source_platform": "maintenance",
+        "source_authority_id": "analyst",
+        "source_reference": "diag-p201-001",
+        "lineage_id": "lin-diag-p201-001",
+        "ingest_time": "2026-06-29T18:10:01Z",
+        "processing_time": "2026-06-29T18:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T18:10:00Z",
+        "receive_time": "2026-06-29T18:10:01Z",
+        "processing_time": "2026-06-29T18:10:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:p201-seal-replace",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "request_type": "corrective_work",
+      "request_status": "approved",
+      "requested_action": "Replace the mechanical seal.",
+      "basis_refs": ["urn:ssom:failure-event:p201-seal-loss"],
+      "requested_at": "2026-06-29T12:20:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr-p201-001",
+        "lineage_id": "lin-wr-p201-001",
+        "ingest_time": "2026-06-29T12:20:01Z",
+        "processing_time": "2026-06-29T12:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:20:00Z",
+        "receive_time": "2026-06-29T12:20:01Z",
+        "processing_time": "2026-06-29T12:20:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:p201-seal-replace-plan",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "work_request_ref": "urn:ssom:work-request:p201-seal-replace",
+      "plan_status": "approved",
+      "planned_actions": ["Replace mechanical seal", "Restart pump", "Verify leakage"],
+      "planned_verification_method": "visual and leak-rate confirmation",
+      "expected_outcome": {
+        "description": "Reduce leak rate to zero.",
+        "target_metric": "seal_leak_rate",
+        "target_value": 0,
+        "unit": "L/h"
+      },
+      "planned_start": "2026-06-29T13:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-p201-001",
+        "lineage_id": "lin-wp-p201-001",
+        "ingest_time": "2026-06-29T12:25:01Z",
+        "processing_time": "2026-06-29T12:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:25:00Z",
+        "receive_time": "2026-06-29T12:25:01Z",
+        "processing_time": "2026-06-29T12:25:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:p201-seal-replace-completed",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p201",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:p201-seal-replace-plan"],
+      "executed_at": "2026-06-29T14:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:p201-seal-replace",
+      "work_plan_ref": "urn:ssom:work-plan:p201-seal-replace-plan",
+      "verification_required": true,
+      "service_interruption": { "interruption_type": "planned_shutdown", "duration_hours": 2 },
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "technician",
+        "source_reference": "we-p201-001",
+        "lineage_id": "lin-we-p201-001",
+        "ingest_time": "2026-06-29T14:00:01Z",
+        "processing_time": "2026-06-29T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T14:00:00Z",
+        "receive_time": "2026-06-29T14:00:01Z",
+        "processing_time": "2026-06-29T14:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:p201-seal-post-check",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "work_execution_ref": "urn:ssom:action:p201-seal-replace-completed",
+      "verification_status": "rejected",
+      "verification_method": "post-work leak-rate measurement",
+      "restoration_status": "not_restored",
+      "evidence_refs": ["urn:ssom:record:p201-seal-leak-post"],
+      "verified_at": "2026-06-29T18:05:00Z",
+      "provenance": {
+        "source_platform": "operations",
+        "source_authority_id": "operator",
+        "source_reference": "wv-p201-001",
+        "lineage_id": "lin-wv-p201-001",
+        "ingest_time": "2026-06-29T18:05:01Z",
+        "processing_time": "2026-06-29T18:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T18:05:00Z",
+        "receive_time": "2026-06-29T18:05:01Z",
+        "processing_time": "2026-06-29T18:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:p201-seal-work-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "action_ref": "urn:ssom:action:p201-seal-replace-completed",
+      "work_execution_ref": "urn:ssom:action:p201-seal-replace-completed",
+      "verification_refs": ["urn:ssom:work-verification:p201-seal-post-check"],
+      "outcome_disposition": "ineffective",
+      "intended_outcome": {
+        "description": "Eliminate seal leakage.",
+        "target_metric": "seal_leak_rate",
+        "target_value": 0,
+        "unit": "L/h"
+      },
+      "observed_outcome": {
+        "description": "Leakage persisted after work completion.",
+        "result_class": "unsuccessful",
+        "measured_metric": "seal_leak_rate",
+        "measured_value": 2.4,
+        "unit": "L/h"
+      },
+      "assessed_at": "2026-06-29T18:06:00Z",
+      "evidence_refs": ["urn:ssom:record:p201-seal-leak-post", "urn:ssom:work-verification:p201-seal-post-check"],
+      "confidence": 0.8,
+      "reliability_impact": {
+        "direction": "unchanged",
+        "description": "No measurable reliability improvement was achieved.",
+        "asset_class": "centrifugal_pump",
+        "operating_context": {
+          "asset_class": "centrifugal_pump",
+          "operating_mode": "normal_operation"
+        },
+        "measurement_evidence_refs": ["urn:ssom:record:p201-seal-leak-post"],
+        "work_history_refs": ["urn:ssom:action:p201-seal-replace-completed"],
+        "assessment_basis": "post_work_leak_rate"
+      },
+      "recurrence_context": {
+        "recurrence_status": "open",
+        "prior_failure_event_refs": ["urn:ssom:failure-event:p201-seal-loss"],
+        "prior_work_refs": ["urn:ssom:action:p201-seal-replace-completed"]
+      },
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "maintenance-analyst",
+        "source_reference": "wo-p201-001",
+        "lineage_id": "lin-wo-p201-001",
+        "ingest_time": "2026-06-29T18:06:01Z",
+        "processing_time": "2026-06-29T18:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T18:06:00Z",
+        "receive_time": "2026-06-29T18:06:01Z",
+        "processing_time": "2026-06-29T18:06:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ]
+}

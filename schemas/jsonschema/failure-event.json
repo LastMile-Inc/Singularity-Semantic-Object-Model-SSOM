@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/failure-event.json",
+  "title": "SSOM Failure Event",
+  "description": "A time-bound loss or degradation event for an intended function, with explicit failure-mode anchoring and optional mechanism, cause, and interruption impacts.",
+  "type": "object",
+  "required": [
+    "failure_event_id",
+    "subject_ref",
+    "failure_mode_ref",
+    "event_status",
+    "occurred_at",
+    "evidence_refs",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "failure_event_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:failure-event:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "failure_mode_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "failure_mechanism_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "failure_cause_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "event_status": {
+      "$ref": "common.json#/$defs/failureEventStatus"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "service_interruption": {
+      "$ref": "common.json#/$defs/serviceInterruption"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

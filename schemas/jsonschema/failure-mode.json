@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/failure-mode.json",
+  "title": "SSOM Failure Mode",
+  "description": "A distinct way in which an asset or function fails. A failure mode is not the same as a failure mechanism or failure cause.",
+  "type": "object",
+  "required": [
+    "failure_mode_id",
+    "subject_ref",
+    "failure_mode_ref",
+    "affected_function",
+    "classified_at",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "failure_mode_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:failure-mode:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "failure_mode_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "affected_function": {
+      "type": "string"
+    },
+    "classified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

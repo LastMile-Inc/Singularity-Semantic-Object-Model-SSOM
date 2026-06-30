@@ -1,0 +1,89 @@
+{
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:chw201-fouling-watch",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:heat-exchanger-hx201",
+      "diagnostic_type": "fouling_watch",
+      "diagnostic_status": "suspected",
+      "conclusion": "Fouling may be increasing, but immediate maintenance action is not yet justified.",
+      "failure_mode_ref": { "scheme": "ssom.failure", "code": "heat_transfer_loss", "display_name": "Heat transfer loss" },
+      "evidence_refs": ["urn:ssom:record:t101-temperature-fahrenheit-normalized"],
+      "diagnosed_at": "2026-06-29T11:00:00Z",
+      "confidence": 0.62,
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "reliability-analyst",
+        "source_reference": "diag-hx201-001",
+        "lineage_id": "lin-diag-hx201-001",
+        "ingest_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:00:00Z",
+        "receive_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:hx201-clean-watch",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.7.0",
+      "recommendation_type": "monitoring_recommendation",
+      "target_ref": "urn:ssom:asset:heat-exchanger-hx201",
+      "recommended_action": "Continue monitoring and defer cleaning until additional evidence accumulates.",
+      "rationale": "Current evidence is not strong enough to justify an outage.",
+      "priority": "medium",
+      "confidence": 0.6,
+      "evidence_refs": ["urn:ssom:diagnostic:chw201-fouling-watch"],
+      "expected_outcome": { "description": "Avoid unnecessary maintenance action." },
+      "recommended_at": "2026-06-29T11:05:00Z",
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "advisor",
+        "source_reference": "rec-hx201-001",
+        "lineage_id": "lin-rec-hx201-001",
+        "ingest_time": "2026-06-29T11:05:01Z",
+        "processing_time": "2026-06-29T11:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:05:00Z",
+        "receive_time": "2026-06-29T11:05:01Z",
+        "processing_time": "2026-06-29T11:05:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "urn:ssom:decision:hx201-defer-cleaning",
+      "semantic_truth_state": "decision",
+      "ssom_version": "0.7.0",
+      "decision_type": "maintenance_deferral",
+      "decision_status": "deferred",
+      "subject_ref": "urn:ssom:asset:heat-exchanger-hx201",
+      "context_refs": ["urn:ssom:recommendation:hx201-clean-watch"],
+      "evidence_refs": ["urn:ssom:diagnostic:chw201-fouling-watch"],
+      "decision_actor": "area_supervisor",
+      "decision_time": "2026-06-29T11:10:00Z",
+      "rationale": "Keep monitoring until confidence improves.",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "supervisor",
+        "source_reference": "dec-hx201-001",
+        "lineage_id": "lin-dec-hx201-001",
+        "ingest_time": "2026-06-29T11:10:01Z",
+        "processing_time": "2026-06-29T11:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:10:00Z",
+        "receive_time": "2026-06-29T11:10:01Z",
+        "processing_time": "2026-06-29T11:10:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}
