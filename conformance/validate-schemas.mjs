@@ -1048,6 +1048,101 @@ function validateIndustryProfileInvalidMatrix(testName, relativePath) {
   return validateFixture(testName, "industry-profile-invalid-matrix.json", relativePath);
 }
 
+function validateLastMilePlatformOperationsProfile(testName, relativePath) {
+  return validateFixture(testName, "last-mile-platform-operations-profile.json", relativePath);
+}
+
+function ensureLastMilePlatformOperationsProfileSemantics(bundle, testName) {
+  const tenantIds = new Set((bundle.tenant_control_planes || []).map((entry) => entry.tenant_id));
+  const prohibitedSharedClasses = new Set(["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]);
+
+  assert(bundle.boundary_statement.toLowerCase().includes("portable ssom core"), `${testName} must explicitly preserve the portable SSOM Core boundary.`);
+
+  for (const relativePath of bundle.portable_core_dependency_refs || []) {
+    assertWorkspacePathExists(relativePath, testName, "portable-core dependency reference");
+  }
+
+  assert(tenantIds.size === (bundle.tenant_control_planes || []).length, `${testName} must not duplicate tenant control-plane identifiers.`);
+
+  for (const tenantPlane of bundle.tenant_control_planes || []) {
+    assert(tenantPlane.raw_evidence_storage_allowed === false, `${testName} tenant control planes must reject raw evidence as shared or workflow-primary storage.`);
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(tenantPlane.prohibited_projection_classes.includes(prohibitedClass), `${testName} tenant control plane ${tenantPlane.tenant_id} must prohibit ${prohibitedClass}.`);
+    }
+    for (const projectionClass of tenantPlane.allowed_projection_classes || []) {
+      assert(!prohibitedSharedClasses.has(projectionClass), `${testName} tenant control plane ${tenantPlane.tenant_id} must not allow prohibited raw evidence classes.`);
+    }
+    for (const relativePath of tenantPlane.workflow_projection_refs || []) {
+      assertWorkspacePathExists(relativePath, testName, "tenant workflow projection reference");
+    }
+  }
+
+  for (const plane of bundle.rights_and_learning_planes || []) {
+    for (const tenantRef of plane.tenant_refs || []) {
+      assert(tenantIds.has(tenantRef), `${testName} rights or learning plane ${plane.plane_id} must reference known tenants.`);
+    }
+    for (const allowedInput of plane.allowed_training_inputs || []) {
+      assert(!prohibitedSharedClasses.has(allowedInput), `${testName} learning plane ${plane.plane_id} must not allow raw evidence training inputs.`);
+      assert(allowedInput !== "unapproved_cross_tenant_ground_truth", `${testName} learning plane ${plane.plane_id} must not allow unapproved cross-tenant ground truth.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(plane.prohibited_training_inputs.includes(prohibitedClass), `${testName} learning plane ${plane.plane_id} must prohibit ${prohibitedClass}.`);
+    }
+    if (plane.plane_kind === "master_learning" && (plane.tenant_refs || []).length > 1) {
+      assert((plane.approval_refs || []).length > 0, `${testName} cross-tenant master-learning planes must carry approval references.`);
+    }
+  }
+
+  for (const policy of bundle.workload_isolation_policies || []) {
+    for (const tenantRef of policy.tenant_refs || []) {
+      assert(tenantIds.has(tenantRef), `${testName} workload isolation policy ${policy.policy_id} must reference known tenants.`);
+    }
+    for (const sharedSurface of policy.allowed_shared_surfaces || []) {
+      assert(!prohibitedSharedClasses.has(sharedSurface), `${testName} workload isolation policy ${policy.policy_id} must not allow prohibited shared surface ${sharedSurface}.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(policy.prohibited_shared_surfaces.includes(prohibitedClass), `${testName} workload isolation policy ${policy.policy_id} must prohibit ${prohibitedClass}.`);
+    }
+  }
+
+  for (const surface of bundle.observability_agent_surfaces || []) {
+    if (surface.tenant_scope !== "multi_tenant_shared") {
+      assert(surface.tenant_scope === "platform" || tenantIds.has(surface.tenant_scope), `${testName} observability surface ${surface.surface_id} must reference a known tenant scope or platform scope.`);
+    }
+    for (const exposedClass of surface.exposed_data_classes || []) {
+      assert(!prohibitedSharedClasses.has(exposedClass), `${testName} observability surface ${surface.surface_id} must not expose prohibited raw evidence classes.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(surface.prohibited_data_classes.includes(prohibitedClass), `${testName} observability surface ${surface.surface_id} must prohibit ${prohibitedClass}.`);
+    }
+    for (const relativePath of surface.evidence_refs || []) {
+      assertWorkspacePathExists(relativePath, testName, "observability evidence reference");
+    }
+  }
+
+  for (const binding of bundle.master_profile_bindings || []) {
+    assert(tenantIds.has(binding.tenant_id), `${testName} master-profile binding ${binding.binding_id} must reference a known tenant.`);
+    for (const relativePath of [...(binding.ssom_profile_refs || []), ...(binding.projection_refs || [])]) {
+      assertWorkspacePathExists(relativePath, testName, "master-profile binding reference");
+    }
+  }
+
+  assert((bundle.governance_controls?.data_boundary_notes || []).some((note) => note.toLowerCase().includes("portable ssom core")), `${testName} governance controls must restate the portable-core boundary.`);
+}
+
+function expectInvalidLastMilePlatformOperationsProfile(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateLastMilePlatformOperationsProfile(testName, relativePath);
+    ensureLastMilePlatformOperationsProfileSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 function ensureCandidateSpecificationPackageSemantics(testName) {
   const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
   const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
@@ -1140,6 +1235,7 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
       "schemas/jsonschema/ai-comparability-proof-bundle.json",
       "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
       "schemas/jsonschema/industry-profile-invalid-matrix.json",
+      "schemas/jsonschema/last-mile-platform-operations-profile.json",
       "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json",
       "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
       "docs/standards-crosswalk-matrix-v0.9.json",
@@ -1204,6 +1300,8 @@ function ensureReleaseDiscoveryIntegrity(testName) {
     "schemas/jsonschema/ai-comparability-proof-bundle.json",
     "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
     "schemas/jsonschema/industry-profile-invalid-matrix.json",
+    "schemas/jsonschema/last-mile-platform-operations-profile.json",
+    "docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md",
     "docs/servicenow-serving-projection-profile-v0.9.md",
     "docs/functional-safety-foundation-profile-v0.9.md",
     "docs/ot-cybersecurity-foundation-profile-v0.9.md",
@@ -1218,6 +1316,12 @@ function ensureReleaseDiscoveryIntegrity(testName) {
     "conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json",
     "conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json",
     "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
+    "conformance/fixtures/v1.0/valid/last-mile-platform-profile-multi-tenant-control-plane.json",
+    "conformance/fixtures/v1.0/valid/last-mile-platform-profile-master-learning-observability.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-cross-tenant-shared-raw-evidence.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-master-learning-unapproved-inputs.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-agent-raw-evidence-mirror.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-binding-unknown-tenant.json",
     "docs/standards-crosswalk-matrix-v0.9.json",
     "docs/source-system-mapping-guidance-v0.9.json",
     "docs/transformation-loss-register-v0.9.json",
@@ -3077,6 +3181,15 @@ ensureServicenowOutcomeFeedbackSemantics(servicenowOutcomeFeedbackBundle, "Servi
 results.push("ServiceNow outcome-feedback proofs close the loop from recommendation to workflow execution to verification to updated condition or follow-up recommendation without crossing tenant boundaries");
 
 for (const [label, relativePath] of [
+  ["Last Mile multi-tenant control-plane profile", "conformance/fixtures/v1.0/valid/last-mile-platform-profile-multi-tenant-control-plane.json"],
+  ["Last Mile master-learning and observability profile", "conformance/fixtures/v1.0/valid/last-mile-platform-profile-master-learning-observability.json"]
+]) {
+  const platformProfile = validateLastMilePlatformOperationsProfile(label, relativePath);
+  ensureLastMilePlatformOperationsProfileSemantics(platformProfile, label);
+}
+results.push("the proprietary Last Mile platform-operations profile remains tenant-isolated, approval-gated, and explicitly outside portable SSOM Core semantics");
+
+for (const [label, relativePath] of [
   ["process manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"],
   ["discrete manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"],
   ["utilities and electric power industry profile", "conformance/fixtures/v0.9/valid/industry-profile-utilities-electric-power.json"],
@@ -3155,6 +3268,34 @@ expectInvalidServicenowOutcomeFeedbackBundle(
   "must not cross tenant boundaries in workflow projections"
 );
 results.push("ServiceNow outcome-feedback proofs reject cross-tenant workflow closure projections");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile cross-tenant raw-evidence sharing",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-cross-tenant-shared-raw-evidence.json",
+  "must not allow prohibited shared surface raw_historian_samples"
+);
+results.push("the proprietary Last Mile platform profile rejects raw evidence as a cross-tenant shared surface");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile unapproved master-learning inputs",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-master-learning-unapproved-inputs.json",
+  "must not allow unapproved cross-tenant ground truth"
+);
+results.push("the proprietary Last Mile platform profile rejects unapproved cross-tenant master-learning inputs");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile agent raw-evidence mirror",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-agent-raw-evidence-mirror.json",
+  "must not expose prohibited raw evidence classes"
+);
+results.push("the proprietary Last Mile platform profile rejects raw-evidence mirroring into observability or agent surfaces");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile unknown tenant binding",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-binding-unknown-tenant.json",
+  "must reference a known tenant"
+);
+results.push("the proprietary Last Mile platform profile rejects bindings to unknown tenants");
 
 expectInvalidCyberFoundationBundle(
   "cyber managed asset requirement for cyber foundation bundle",

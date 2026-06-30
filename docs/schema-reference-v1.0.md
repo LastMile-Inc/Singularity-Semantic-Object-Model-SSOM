@@ -136,6 +136,12 @@ These are release-relevant to the v1.0 promotion program, but they are not part 
 
 - `docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md`
 - `schemas/jsonschema/last-mile-platform-operations-profile.json`
+- `conformance/fixtures/v1.0/valid/last-mile-platform-profile-multi-tenant-control-plane.json`
+- `conformance/fixtures/v1.0/valid/last-mile-platform-profile-master-learning-observability.json`
+- `conformance/fixtures/v1.0/invalid/last-mile-platform-profile-cross-tenant-shared-raw-evidence.json`
+- `conformance/fixtures/v1.0/invalid/last-mile-platform-profile-master-learning-unapproved-inputs.json`
+- `conformance/fixtures/v1.0/invalid/last-mile-platform-profile-agent-raw-evidence-mirror.json`
+- `conformance/fixtures/v1.0/invalid/last-mile-platform-profile-binding-unknown-tenant.json`
 - `conformance/fixtures/v1.0/valid/`
 - `conformance/fixtures/v1.0/invalid/`
 - `reference-validation/`

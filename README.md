@@ -127,6 +127,8 @@ The BigQuery artifacts in this repository define a provider-specific reference a
 
 The repository now includes a candidate-specification package and release-readiness assessment intended for disciplined external review. Those artifacts preserve draft status and qualified-claims boundaries; they do not position SSOM as a definitive or certified OT standard.
 
+The repository also includes a proprietary Last Mile platform-operations profile surface. That profile is optional, product-specific, and explicitly outside portable SSOM Core semantics.
+
 Legacy note:
 
 The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
@@ -149,6 +151,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - ServiceNow serving projection profile: [docs/servicenow-serving-projection-profile-v0.9.md](docs/servicenow-serving-projection-profile-v0.9.md)
 - Functional safety foundation profile: [docs/functional-safety-foundation-profile-v0.9.md](docs/functional-safety-foundation-profile-v0.9.md)
 - OT cybersecurity foundation profile: [docs/ot-cybersecurity-foundation-profile-v0.9.md](docs/ot-cybersecurity-foundation-profile-v0.9.md)
+- Last Mile platform-operations profile: [docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md](docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md)
 - Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
 - v1.0 promotion discovery surface: [docs/schema-reference-v1.0.md](docs/schema-reference-v1.0.md)
 - Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)

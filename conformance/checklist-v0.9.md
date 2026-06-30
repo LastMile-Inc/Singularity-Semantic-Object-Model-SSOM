@@ -63,6 +63,13 @@
 - [ ] ServiceNow outcome-feedback proof bundles preserve recommendation-to-execution-to-verification-to-updated-context closure without cross-tenant leakage.
 - [ ] Invalid proof bundles reject unsupported cyber relationship codes, raw telemetry workflow projection, non-comparable feature inclusion, non-managed cyber assets, and duplicate industry-profile role declarations.
 
+## Proprietary Last Mile Platform Profile Boundary
+- [ ] The Last Mile platform-operations profile remains explicitly distinct from portable SSOM Core semantics.
+- [ ] Tenant control planes reject raw evidence as shared or workflow-primary storage.
+- [ ] Master-learning planes require approval-backed, policy-cleared comparable inputs rather than raw cross-tenant evidence.
+- [ ] Observability and agent surfaces reject raw historian, high-frequency telemetry, and raw OPC UA payload mirroring.
+- [ ] Master-profile bindings may depend on SSOM profile outputs without rebinding unknown tenants or redefining SSOM Core objects.
+
 ## Industry Profiles
 - [ ] Process manufacturing, discrete manufacturing, utilities and electric power, water and wastewater, and facilities and data centers each have a bounded profile scaffold.
 - [ ] Each industry profile defines scope, required or optional roles, measurement expectations, event or alarm expectations, reliability or work requirements, safety or cyber applicability, ServiceNow implications, standards applicability, exclusions, and an end-to-end example.

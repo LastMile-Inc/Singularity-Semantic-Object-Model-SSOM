@@ -1,0 +1,81 @@
+{
+  "profile_id": "last-mile-platform-operations-master-profile",
+  "profile_version": "1.0.0-draft",
+  "profile_label": "Last Mile Master Learning And Observability",
+  "boundary_statement": "Master-learning and observability remain proprietary operating-layer controls and do not redefine portable SSOM Core objects.",
+  "portable_core_dependency_refs": [
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "docs/industry-profile-index-v0.9.md",
+    "docs/servicenow-serving-projection-profile-v0.9.md"
+  ],
+  "tenant_control_planes": [
+    {
+      "tenant_id": "tenant-gamma",
+      "region": "europe-west1",
+      "isolation_domain_id": "iso-eu-gamma",
+      "allowed_projection_classes": ["current_condition_summary", "workflow_refs", "aggregate_benchmark_scores"],
+      "prohibited_projection_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "workflow_projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"],
+      "raw_evidence_storage_allowed": false
+    }
+  ],
+  "rights_and_learning_planes": [
+    {
+      "plane_id": "master-learning-plane-gamma",
+      "plane_kind": "master_learning",
+      "scope": "tenant-local-and-benchmark-opt-in",
+      "tenant_refs": ["tenant-gamma"],
+      "allowed_training_inputs": ["policy_cleared_comparable_benchmark_features", "curated_outcome_feedback_signals"],
+      "prohibited_training_inputs": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads", "unapproved_cross_tenant_ground_truth"],
+      "approval_refs": ["approval:master-learning:gamma-2026-06-29"],
+      "model_promotion_policy": "promotion requires validation evidence, approval, and rollback coverage"
+    }
+  ],
+  "workload_isolation_policies": [
+    {
+      "policy_id": "regional-partitioned-benchmark",
+      "isolation_level": "regional_partitioned",
+      "tenant_refs": ["tenant-gamma"],
+      "allowed_shared_surfaces": ["aggregate_benchmark_scores"],
+      "prohibited_shared_surfaces": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads", "tenant_workflow_payloads"]
+    }
+  ],
+  "observability_agent_surfaces": [
+    {
+      "surface_id": "platform-observer-gamma",
+      "agent_type": "platform_observer",
+      "tenant_scope": "tenant-gamma",
+      "exposed_data_classes": ["projection_freshness", "job_health", "aggregate_benchmark_scores"],
+      "prohibited_data_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "evidence_refs": [
+        "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json",
+        "conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json"
+      ]
+    }
+  ],
+  "master_profile_bindings": [
+    {
+      "binding_id": "binding-tenant-gamma",
+      "tenant_id": "tenant-gamma",
+      "platform_profile_role": "benchmark_and_workflow_consumer",
+      "ssom_profile_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "docs/servicenow-serving-projection-profile-v0.9.md"
+      ],
+      "projection_refs": [
+        "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json",
+        "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+      ]
+    }
+  ],
+  "governance_controls": {
+    "change_control_ref": "chg:last-mile-master-learning-gamma-2026-06-29",
+    "security_review_ref": "sec:last-mile-master-learning-gamma-2026-06-29",
+    "data_boundary_notes": [
+      "Portable SSOM Core semantics remain upstream dependencies and are not redefined here.",
+      "Benchmark sharing is aggregate-only and policy cleared.",
+      "Platform observability remains bounded to job health and curated feature summaries.",
+      "Tenant-local workflow payloads are not promoted to shared benchmark surfaces."
+    ]
+  }
+}
