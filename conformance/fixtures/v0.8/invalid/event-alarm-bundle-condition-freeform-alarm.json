@@ -1,0 +1,60 @@
+{
+  "conditions": [
+    {
+      "condition_id": "urn:ssom:condition:freeform-alarm-only",
+      "ssom_version": "0.8.0",
+      "condition_type": "temperature_issue",
+      "subject_ref": "urn:ssom:asset:reactor-05",
+      "lifecycle_state": "detected",
+      "severity": "high",
+      "confidence": 0.73,
+      "detected_at": "2026-06-30T16:00:00Z",
+      "evidence_refs": ["urn:ssom:record:reactor05-temp-reading"],
+      "provenance": {
+        "source_platform": "analytics",
+        "source_authority_id": "engineer",
+        "source_reference": "cond-freeform-001",
+        "lineage_id": "lin-cond-freeform-001",
+        "ingest_time": "2026-06-30T16:00:01Z",
+        "processing_time": "2026-06-30T16:00:02Z"
+      },
+      "quality_summary": {
+        "status": "good",
+        "validation_status": "valid"
+      },
+      "extensions": {
+        "uncontrolled_alarm_text": "HIGH TEMP ALARM ACTIVE"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:reactor05-temp-reading",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:reactor-05",
+      "metric": "reactor_temperature",
+      "value": 241,
+      "unit": "degC",
+      "event_time": "2026-06-30T15:59:30Z",
+      "quality": {
+        "status": "good",
+        "validation_status": "valid"
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "obs-reactor05-temp-001",
+        "lineage_id": "lin-obs-reactor05-temp-001",
+        "ingest_time": "2026-06-30T15:59:31Z",
+        "processing_time": "2026-06-30T15:59:32Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T15:59:30Z",
+        "receive_time": "2026-06-30T15:59:31Z",
+        "processing_time": "2026-06-30T15:59:32Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

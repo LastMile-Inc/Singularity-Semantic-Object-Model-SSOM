@@ -1,0 +1,42 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:pt101-communication-loss",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pt-101",
+      "event_type": "communication_loss",
+      "event_category": "communication",
+      "event_time": "2026-06-30T10:15:00Z",
+      "event_description": "PT-101 stopped communicating with the historian collector.",
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "quality_code": "comm_fail",
+          "source_state": "offline"
+        }
+      },
+      "state_transition": {
+        "from_state": "online",
+        "to_state": "offline",
+        "transition_type": "state_change",
+        "event_time": "2026-06-30T10:15:00Z",
+        "confidence": 0.91
+      },
+      "provenance": {
+        "source_platform": "historian-collector",
+        "source_authority_id": "edge-gateway",
+        "source_reference": "evt-pt101-comm-001",
+        "lineage_id": "lin-evt-pt101-comm-001",
+        "ingest_time": "2026-06-30T10:15:04Z",
+        "processing_time": "2026-06-30T10:15:05Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T10:15:00Z",
+        "receive_time": "2026-06-30T10:15:04Z",
+        "processing_time": "2026-06-30T10:15:05Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

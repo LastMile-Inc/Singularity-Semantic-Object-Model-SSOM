@@ -6,3 +6,4 @@
 - [SSOM v0.5 Conformance Checklist](checklist-v0.5.md)
 - [SSOM v0.6 Conformance Checklist](checklist-v0.6.md)
 - [SSOM v0.7 Conformance Checklist](checklist-v0.7.md)
+- [SSOM v0.8 Conformance Checklist](checklist-v0.8.md)

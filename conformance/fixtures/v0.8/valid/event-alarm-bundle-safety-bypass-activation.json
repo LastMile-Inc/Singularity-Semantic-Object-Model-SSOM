@@ -1,0 +1,160 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:sif201-bypass-activated",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-201",
+      "event_type": "safety_bypass_activated",
+      "event_category": "safety",
+      "event_time": "2026-06-30T13:10:00Z",
+      "event_description": "Safety bypass was activated during transmitter replacement work.",
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "bypass_key": "BYP-201",
+          "source_state": "ENABLED"
+        }
+      },
+      "state_transition": {
+        "from_state": "disabled",
+        "to_state": "enabled",
+        "transition_type": "state_change",
+        "event_time": "2026-06-30T13:10:00Z",
+        "confidence": 0.97
+      },
+      "provenance": {
+        "source_platform": "sis",
+        "source_authority_id": "safety-system",
+        "source_reference": "evt-sif201-byp-001",
+        "lineage_id": "lin-evt-sif201-byp-001",
+        "ingest_time": "2026-06-30T13:10:01Z",
+        "processing_time": "2026-06-30T13:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T13:10:00Z",
+        "receive_time": "2026-06-30T13:10:01Z",
+        "processing_time": "2026-06-30T13:10:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:sif201-transmitter-replacement",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-201",
+      "request_type": "instrument_replacement",
+      "request_status": "approved",
+      "requested_action": "Replace faulty trip transmitter and restore bypass to disabled state.",
+      "basis_refs": ["urn:ssom:event:sif201-bypass-activated"],
+      "requested_at": "2026-06-30T13:11:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "maintenance-supervisor",
+        "source_reference": "wr-sif201-001",
+        "lineage_id": "lin-wr-sif201-001",
+        "ingest_time": "2026-06-30T13:11:01Z",
+        "processing_time": "2026-06-30T13:11:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T13:11:00Z",
+        "receive_time": "2026-06-30T13:11:01Z",
+        "processing_time": "2026-06-30T13:11:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:sif201-transmitter-replacement-plan",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-201",
+      "work_request_ref": "urn:ssom:work-request:sif201-transmitter-replacement",
+      "plan_status": "approved",
+      "planned_actions": ["Activate bypass under permit", "Replace transmitter", "Restore bypass"],
+      "planned_verification_method": "Safety system proof of restored trip permissive",
+      "expected_outcome": {
+        "description": "Perform transmitter replacement while preserving explicit evidence of temporary bypass activation."
+      },
+      "planned_start": "2026-06-30T13:20:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-sif201-001",
+        "lineage_id": "lin-wp-sif201-001",
+        "ingest_time": "2026-06-30T13:12:01Z",
+        "processing_time": "2026-06-30T13:12:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T13:12:00Z",
+        "receive_time": "2026-06-30T13:12:01Z",
+        "processing_time": "2026-06-30T13:12:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:sif201-transmitter-replacement-execution",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.8.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:sif-201",
+      "action_status": "in_progress",
+      "basis_refs": ["urn:ssom:work-plan:sif201-transmitter-replacement-plan"],
+      "executed_at": "2026-06-30T13:25:00Z",
+      "work_request_ref": "urn:ssom:work-request:sif201-transmitter-replacement",
+      "work_plan_ref": "urn:ssom:work-plan:sif201-transmitter-replacement-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "instrument-technician",
+        "source_reference": "wx-sif201-001",
+        "lineage_id": "lin-wx-sif201-001",
+        "ingest_time": "2026-06-30T13:25:01Z",
+        "processing_time": "2026-06-30T13:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T13:25:00Z",
+        "receive_time": "2026-06-30T13:25:01Z",
+        "processing_time": "2026-06-30T13:25:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "state_transitions": [
+    {
+      "transition_id": "urn:ssom:state-transition:sif201-bypass-enabled",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-201",
+      "state_subject_type": "asset",
+      "from_state": "disabled",
+      "to_state": "enabled",
+      "transition_type": "state_change",
+      "event_time": "2026-06-30T13:10:00Z",
+      "valid_from": "2026-06-30T13:10:00Z",
+      "valid_to": "2026-06-30T14:10:00Z",
+      "confidence": 0.97,
+      "source_ref": "urn:ssom:event:sif201-bypass-activated",
+      "evidence_refs": [
+        "urn:ssom:event:sif201-bypass-activated",
+        "urn:ssom:action:sif201-transmitter-replacement-execution"
+      ],
+      "provenance": {
+        "source_platform": "sis",
+        "source_authority_id": "safety-system",
+        "source_reference": "st-sif201-byp-001",
+        "lineage_id": "lin-st-sif201-byp-001",
+        "ingest_time": "2026-06-30T13:10:01Z",
+        "processing_time": "2026-06-30T13:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T13:10:00Z",
+        "receive_time": "2026-06-30T13:10:01Z",
+        "processing_time": "2026-06-30T13:10:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

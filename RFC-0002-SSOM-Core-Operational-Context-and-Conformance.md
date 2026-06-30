@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.7.0
+- **Intended Version:** SSOM v0.8.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -22,6 +22,8 @@ SSOM v0.5.0 adds a formally governed asset identity lifecycle that distinguishes
 SSOM v0.6.0 adds measurement-safety semantics so Observations can preserve original source measurement, canonical normalized measurement, governed unit and quantity references, conversion lineage, quality state, calibration context, signal context, and time-synchronization context.
 
 SSOM v0.7.0 adds first-class failure, maintenance, work verification, and work outcome semantics so implementations can represent whether an intervention addressed the relevant failure mechanism, restored intended function, reduced risk, improved reliability, or failed to produce improvement.
+
+SSOM v0.8.0 adds first-class event, alarm, and state-transition semantics so implementations can preserve time-bound operational occurrences, governed alarm lifecycle, source-state mappings, maintenance suppression windows, late-arriving evidence, and verification of false or transient alarms without collapsing those semantics into free text.
 
 ## 1. Motivation
 
@@ -57,27 +59,28 @@ SSOM specifies transport-independent semantics for:
 11. Decision
 12. Action
 13. Outcome
-14. Condition
-15. Operational Context
-16. Provenance
-17. Quality
-18. Temporal Integrity
-19. Policy Evidence
-20. Symptom
-21. Failure Mode
-22. Failure Mechanism
-23. Failure Cause
-24. Failure Event
-25. Diagnostic
-26. Prognostic
-27. Maintenance Strategy
-28. Work Request
-29. Work Plan
-30. Work Verification
-31. Work Outcome
-32. Extension and conformance metadata
-
-Event and Alarm labels remain reserved profile scope in the Canonical Operational Record envelope, but dedicated Event and Alarm schemas are not normative in this repository version.
+14. Event
+15. Alarm
+16. State Transition
+17. Condition
+18. Operational Context
+19. Provenance
+20. Quality
+21. Temporal Integrity
+22. Policy Evidence
+23. Symptom
+24. Failure Mode
+25. Failure Mechanism
+26. Failure Cause
+27. Failure Event
+28. Diagnostic
+29. Prognostic
+30. Maintenance Strategy
+31. Work Request
+32. Work Plan
+33. Work Verification
+34. Work Outcome
+35. Extension and conformance metadata
 
 ### 2.2 SSOM does not cover
 
@@ -127,6 +130,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 14. **Identity continuity.** SSOM MUST preserve canonical Asset identity separately from external identifiers, time-bound assignments, and succession semantics.
 15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context.
 16. **Verified operational outcome.** SSOM MUST distinguish work request, work execution, work verification, and work outcome semantics so a completed action is not silently treated as proof of restored function.
+17. **Event and alarm discipline.** SSOM MUST distinguish an Event from an Alarm, MUST preserve original source alarm state separately from canonical alarm state, and MUST retain explicit suppression or shelving context when alarm visibility is intentionally altered.
 
 ## 5. Core semantic objects
 
@@ -907,15 +911,66 @@ Normative machine-readable artifacts for the reliability and work lifecycle are:
 - `schemas/jsonschema/work-execution.json`
 - `schemas/jsonschema/work-verification.json`
 - `schemas/jsonschema/work-outcome.json`
+- `schemas/jsonschema/event.json`
+- `schemas/jsonschema/alarm.json`
+- `schemas/jsonschema/state-transition.json`
 - `schemas/jsonschema/recommendation.json`
 - `schemas/jsonschema/decision.json`
 - `schemas/jsonschema/action.json`
 - `schemas/jsonschema/outcome.json`
 - `schemas/jsonschema/common.json`
 
-### 5.7 Event and Alarm planned profile scope
+### 5.7 Event, Alarm, and State Transition
 
-Event and Alarm labels remain reserved for future profile work. Implementations MAY use the Canonical Operational Record envelope to label records as `event` or `alarm`, but dedicated machine-readable Event and Alarm schemas are not normative in SSOM v0.4.0.
+An **Event** is a time-bound operational occurrence, detected change, or stateful happening relevant to an Asset, Device, Process Segment, work context, or safety context.
+
+An Event is not automatically an Alarm. An Event records that something happened. An Alarm records that governed attention or suppression semantics apply.
+
+Required Event fields:
+
+- `event_id`
+- `subject_ref`
+- `event_type`
+- `event_category`
+- `event_time`
+- `provenance`
+- `temporal_integrity`
+
+An Event MAY preserve a source payload, MAY include an inline state transition, and MAY reference prior evidence when it arrives late or corrects a previous interpretation.
+
+An **Alarm** is a governed operational alert condition that requires, permits, suppresses, shelves, escalates, or otherwise drives human or automated attention.
+
+An Alarm is not merely a string field in an Observation or Condition. An Alarm MUST retain canonical alarm state and SHOULD retain original source alarm state where available.
+
+Required Alarm fields:
+
+- `alarm_id`
+- `subject_ref`
+- `alarm_type`
+- `alarm_state`
+- `raised_at`
+- `derivation_type`
+- `provenance`
+- `temporal_integrity`
+
+Core canonical alarm states are `active`, `acknowledged`, `cleared`, `suppressed`, `shelved`, and `unknown`.
+
+Suppression or shelving MUST retain explicit provenance and a valid period. When an implementation maps vendor-specific alarm states, the original source alarm state SHOULD be preserved alongside the canonical mapped state.
+
+A **State Transition** is a separately addressable change from one declared state to another with event time, confidence, evidence, and optional valid period. State Transition exists so implementations can preserve lifecycle changes without overloading Event or Alarm text.
+
+Required State Transition fields:
+
+- `transition_id`
+- `subject_ref`
+- `state_subject_type`
+- `from_state`
+- `to_state`
+- `transition_type`
+- `event_time`
+- `confidence`
+- `provenance`
+- `temporal_integrity`
 
 ### 5.8 Condition
 
@@ -997,7 +1052,7 @@ A **Canonical Operational Record (COR)** is an implementation profile that packa
 
 The COR is not a separate competing semantic object. It is a practical interchange envelope.
 
-Where dedicated truth-state or identity-lifecycle schemas exist, `record_type` MUST align with the packaged semantic object. Event and Alarm remain reserved COR labels until dedicated schemas are published.
+Where dedicated truth-state, identity-lifecycle, event, alarm, or state-transition schemas exist, `record_type` MUST align with the packaged semantic object.
 
 ```json
 {
@@ -1034,7 +1089,7 @@ urn:ssom:ext:<organization-or-community>:<domain>:<name>
 
 ### 7.3 Profiles
 
-SSOM v0.5.0 defines:
+SSOM v0.8.0 defines:
 
 1. Core Asset and Relationship Profile
 2. Asset Identity and Continuity Profile
@@ -1043,19 +1098,18 @@ SSOM v0.5.0 defines:
 5. Semantic Truth and Decision Lifecycle Profile
 6. Quality, Provenance, and Temporal Integrity Profile
 7. Condition Profile
-8. Analytical Warehouse Profile
-
-An Event and Alarm profile remains planned profile scope until dedicated schemas are published.
+8. Event, Alarm, and State Transition Profile
+9. Analytical Warehouse Profile
 
 An implementation MAY support a subset but MUST declare supported profiles.
 
 ## 8. Serialization and schema strategy
 
-SSOM v0.5.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
+SSOM v0.8.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
 
 JSON Schema is selected because it supports broad API, cloud, event, and validation tooling.
 
-XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.5.0. Placeholder XML artifacts remain informative until a compatibility update is published.
+XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.8.0. Placeholder XML artifacts remain informative until a compatibility update is published.
 
 ## 9. Compatibility and versioning
 
@@ -1065,11 +1119,11 @@ XML Schema artifacts MAY be retained for compatibility. In this repository, the 
 - Implementations MUST include `ssom_version`.
 - Consumers MUST reject or quarantine unsupported major versions.
 - Consumers SHOULD preserve unknown extension fields where safe.
-- SSOM v0.5.0 is an additive, backward-compatible extension of the v0.4.0 draft.
+- SSOM v0.8.0 is an additive, backward-compatible extension of the v0.7.0 draft.
 
 ## 10. Conformance
 
-An SSOM v0.5.0 implementation MUST:
+An SSOM v0.8.0 implementation MUST:
 
 1. Validate claimed profiles against normative JSON Schemas.
 2. Preserve identity, provenance, quality, and temporal information.
@@ -1092,6 +1146,10 @@ An SSOM v0.5.0 implementation MUST:
 19. Preserve identifier scope, authority, provenance, confidence, verification status, and validity periods where identifier continuity matters.
 20. Allow replacement, recommission, split, merge, and source-system migration scenarios without reusing canonical Asset IDs.
 21. Distinguish Functional Location from Asset identity.
+22. Distinguish Event, Alarm, and State Transition semantics from Observation, Condition, Recommendation, and generic Action records.
+23. Preserve alarm suppression or shelving provenance and valid interval where visibility is intentionally altered.
+24. Preserve source alarm state and canonical mapped alarm state when both are available.
+25. Preserve event time separately from ingest, receive, and processing time for late-arriving operational evidence.
 
 ## 11. Security and privacy considerations
 
@@ -1099,17 +1157,17 @@ Operational records can expose sensitive facility, topology, production, equipme
 
 Implementations SHOULD minimize sensitive content, keep credentials outside semantic records, apply purpose and retention metadata, protect source references that reveal proprietary topology, control access to high-resolution telemetry and media references, avoid placing private application authorization logic inside SSOM, and support deletion or tombstone references where required.
 
-## 12. Migration from v0.4
+## 12. Migration from v0.7
 
-Implementations moving from v0.4.0 to v0.5.0 SHOULD:
+Implementations moving from v0.7.0 to v0.8.0 SHOULD:
 
-1. retain existing Assets, Relationships, Observations, Conditions, and truth-state records without re-identifying them;
-2. preserve existing source references while adding governed `identifier_assignments[]` where identity continuity matters;
-3. treat engineering tags, historian paths, CMDB CI numbers, and OPC UA node IDs as time-bound assignments rather than globally immutable identities;
-4. model functional location as a distinct relationship target or object, not as canonical Asset identity;
-5. emit identity lifecycle events for replacement, recommission, split, merge, relocation, or source-system migration scenarios when those distinctions matter;
-6. keep application-private state out of the standard; and
-7. avoid implying that identifier reuse over time means canonical Asset reuse.
+1. retain existing Assets, Relationships, Observations, Conditions, truth-state records, identity lifecycle records, and reliability or work records without re-identifying them;
+2. emit typed Event records for operational occurrences rather than collapsing them into generic Condition or extension text;
+3. emit typed Alarm records when governed attention, acknowledgment, suppression, shelving, or clearance semantics apply;
+4. preserve original source alarm state alongside canonical mapped alarm state when source systems use vendor-specific alarm vocabulary;
+5. emit explicit State Transition records or inline transition objects when operational state changes matter independently of the enclosing Event or Alarm;
+6. preserve late-arriving event evidence by keeping event time separate from receive and processing time; and
+7. keep application-private alarm workflow details out of the standard while preserving normative provenance and lifecycle evidence.
 
 ## 13. Open questions
 

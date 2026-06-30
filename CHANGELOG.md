@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added: Event, Alarm, and State-Transition Semantics
+
+- Added dedicated schemas for Event, Alarm, and State Transition plus shared event-category, alarm-state, threshold, suppression, source-payload, and transition definitions.
+- Added v0.8 fixtures for VFD fault event-to-alarm-to-recommendation flow, communication-loss event without alarm, threshold-breach alarm, maintenance suppression, safety bypass activation, late-arriving historian event evidence, and false-alarm verification after instrument drift.
+- Added semantic validation proving event and alarm records stay distinct from free-form Observation or Condition text, alarm lifecycle transitions remain valid, suppression or shelving retains provenance and valid interval, late-arrival timing is preserved, and source payload preservation remains possible.
+
+### Changed: Scope and Positioning
+
+- README and RFC-0002 now treat Event, Alarm, and State Transition as first-class schema-backed semantics rather than planned profile scope.
+- Canonical Operational Record envelope now includes `state_transition` as a governed `record_type`.
+
 ### Added: Reliability Work and Outcome Semantics
 
 - Added dedicated schemas for Symptom, Failure Mode, Failure Mechanism, Failure Cause, Failure Event, Diagnostic, Prognostic, Maintenance Strategy, Work Request, Work Plan, Work Execution, Work Verification, and Work Outcome.
@@ -46,8 +57,7 @@
 
 ### Changed: Scope and Positioning
 
-- README and RFC-0002 now distinguish observations, assertions, inferences, predictions, recommendations, decisions, actions, and outcomes explicitly.
-- README and RFC-0002 now label Event and Alarm semantics as planned profile scope until dedicated schemas are published.
+- README and RFC-0002 now distinguish observations, assertions, inferences, predictions, recommendations, decisions, actions, outcomes, events, alarms, and state transitions explicitly.
 - README no longer claims that SSOM already standardizes detailed work history or full AI reasoning behavior.
 
 ## v0.3.0 - 2026-06-29

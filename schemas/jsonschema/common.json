@@ -971,6 +971,204 @@
       },
       "additionalProperties": true
     },
+    "eventCategory": {
+      "type": "string",
+      "enum": [
+        "operational_occurrence",
+        "state_transition",
+        "fault",
+        "communication",
+        "work_lifecycle",
+        "safety",
+        "data_quality",
+        "asset_lifecycle"
+      ]
+    },
+    "eventSourcePayload": {
+      "type": "object",
+      "required": [
+        "payload_format"
+      ],
+      "properties": {
+        "payload_format": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "payload_reference": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "alarmState": {
+      "type": "string",
+      "enum": [
+        "active",
+        "acknowledged",
+        "cleared",
+        "suppressed",
+        "shelved",
+        "unknown"
+      ]
+    },
+    "alarmStateTransitionType": {
+      "type": "string",
+      "enum": [
+        "raised",
+        "acknowledged",
+        "cleared",
+        "suppressed",
+        "unsuppressed",
+        "shelved",
+        "unshelved",
+        "reclassified",
+        "state_change"
+      ]
+    },
+    "stateTransitionContext": {
+      "type": "object",
+      "required": [
+        "from_state",
+        "to_state",
+        "transition_type",
+        "event_time",
+        "confidence"
+      ],
+      "properties": {
+        "from_state": {
+          "type": "string"
+        },
+        "to_state": {
+          "type": "string"
+        },
+        "transition_type": {
+          "$ref": "common.json#/$defs/alarmStateTransitionType"
+        },
+        "event_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confidence": {
+          "$ref": "common.json#/$defs/confidenceScore"
+        },
+        "source_event_ref": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "$ref": "common.json#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "thresholdReference": {
+      "type": "object",
+      "required": [
+        "threshold_type",
+        "threshold_value"
+      ],
+      "properties": {
+        "threshold_type": {
+          "type": "string",
+          "enum": [
+            "high",
+            "high_high",
+            "low",
+            "low_low",
+            "deviation",
+            "rate_of_change",
+            "custom"
+          ]
+        },
+        "threshold_value": {},
+        "unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "setpoint_value": {},
+        "setpoint_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "source_reference": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "alarmDerivationType": {
+      "type": "string",
+      "enum": [
+        "observation_threshold_breach",
+        "event_driven",
+        "condition_driven",
+        "rule_evaluation",
+        "source_alarm_projection"
+      ]
+    },
+    "alarmLifecycleContext": {
+      "type": "object",
+      "required": [
+        "canonical_alarm_state"
+      ],
+      "properties": {
+        "canonical_alarm_state": {
+          "$ref": "common.json#/$defs/alarmState"
+        },
+        "original_source_alarm_state": {
+          "type": "string"
+        },
+        "state_transitions": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/stateTransitionContext"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "suppressionContext": {
+      "type": "object",
+      "required": [
+        "suppression_reason",
+        "provenance"
+      ],
+      "properties": {
+        "suppression_reason": {
+          "type": "string"
+        },
+        "shelving_reason": {
+          "type": "string"
+        },
+        "policy_reference": {
+          "type": "string"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "work_context_ref": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "common.json#/$defs/provenance"
+        }
+      },
+      "additionalProperties": true
+    },
     "classificationAssertion": {
       "type": "object",
       "required": [

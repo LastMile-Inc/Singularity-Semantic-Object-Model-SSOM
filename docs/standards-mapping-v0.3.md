@@ -9,6 +9,7 @@ This note describes how SSOM v0.3.0 is aligned with, maps to, or supports intero
 | ISA-95 / IEC 62264 | Equipment hierarchy, production and operations context, process and control structures |
 | MIMOSA / CCOM / OSA-EAI | Asset lifecycle, condition, maintenance, reliability, and asset registry semantics |
 | OPC UA | Device identity, interfaces, measurements, alarms, events, historical data, and control semantics |
+| ISA-18.2 / IEC 62682 | Alarm philosophy, alarm lifecycle, suppression or shelving discipline, and operator attention semantics |
 | The Open Group O-PAS | Open, secure, interoperable process-automation principles and supplier-neutral architectures |
 | ISO 14224 | Equipment taxonomy, failure, maintenance, reliability, and comparable performance semantics |
 | ISO 55000 | Lifecycle value, asset management, criticality, risk, and operational consequence |
@@ -22,6 +23,7 @@ This note describes how SSOM v0.3.0 is aligned with, maps to, or supports intero
 - Identity lifecycle semantics align with MIMOSA-style lifecycle continuity, ISA-95 location and equipment distinctions, OPC UA node and namespace change handling, and IEC 81346-style structural context.
 - Measurement-safety semantics are designed to map to governed quantity and unit references, including UCUM-compatible unit codes or approved source-specific unit vocabularies, without claiming a new universal unit system.
 - Reliability and work semantics are designed to support ISO 14224-like terminology for failure mode, failure mechanism, failure cause, maintenance activity, and outcome tracking when the implementation supplies explicit mappings and evidence.
+- Event, alarm, and state-transition semantics are designed to support alarm-management interoperability by preserving original source alarm state, canonical mapped alarm state, acknowledgment, suppression, shelving, clearance, and associated evidence without claiming conformance to an external alarm-management program by default.
 - SSOM serves as the semantic bridge between equipment, devices, systems, process context, evidence, condition, work, and operational outcome.
 - SSOM asset forms and classification assertions are designed to preserve relevant semantics from engineering, operations, maintenance, and cybersecurity sources without collapsing them into a single source-specific taxonomy.
 
@@ -32,6 +34,7 @@ This note describes how SSOM v0.3.0 is aligned with, maps to, or supports intero
 - SSOM **supports MIMOSA-like maintenance and work-history interoperability** through maintenance strategy, work request, work execution, verification, and work outcome semantics, but it does not claim direct MIMOSA conformance from this repository alone.
 - SSOM **supports interoperability with** OPC UA by preserving device-oriented identity, interface, telemetry, diagnostics, control semantics, and node or namespace identity change over time.
 - SSOM **supports governed measurement interoperability with** OPC UA, historian, and telemetry ecosystems by preserving source unit, canonical unit, quantity kind, conversion lineage, signal context, and late-arrival timing context.
+- SSOM **supports qualified interoperability with** ISA-18.2 and IEC 62682 style alarm-management programs through typed Alarm and State Transition semantics, but it does not claim alarm rationalization or lifecycle governance compliance from schema support alone.
 - SSOM is **designed to preserve relevant semantics from** O-PAS-oriented open and interoperable automation architectures without prescribing a control-system product model.
 - SSOM **is designed to map to ISO 14224-like terminology** for reliability, failure, maintenance, and consequence semantics when the implementation provides explicit mapping evidence. It does not claim ISO 14224 compliance by default.
 - SSOM is **aligned with** ISO 55000 concepts when representing lifecycle value, criticality, consequence, and operational asset-management context.

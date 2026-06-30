@@ -437,6 +437,241 @@ function expectInvalidReliabilityBundle(testName, relativePath, expectedFragment
   }
 }
 
+function validateEventAlarmBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["events", "event.json", "event"],
+    ["alarms", "alarm.json", "alarm"],
+    ["state_transitions", "state-transition.json", "state transition"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureKnownRefs(refs, knownIds, testName, message) {
+  for (const ref of refs || []) {
+    assert(knownIds.has(ref), `${testName} ${message}`);
+  }
+}
+
+function ensureEventAlarmSemantics(bundle, testName) {
+  const knownIds = new Set();
+  const collect = (entries, idField) => {
+    for (const entry of entries || []) {
+      knownIds.add(entry[idField]);
+    }
+  };
+
+  collect(bundle.observations, "record_id");
+  collect(bundle.conditions, "condition_id");
+  collect(bundle.events, "event_id");
+  collect(bundle.alarms, "alarm_id");
+  collect(bundle.state_transitions, "transition_id");
+  collect(bundle.recommendations, "recommendation_id");
+  collect(bundle.work_requests, "work_request_id");
+  collect(bundle.work_plans, "work_plan_id");
+  collect(bundle.work_executions, "action_id");
+  collect(bundle.work_verifications, "verification_id");
+
+  const eventIds = new Set((bundle.events || []).map((entry) => entry.event_id));
+  const observationIds = new Set((bundle.observations || []).map((entry) => entry.record_id));
+  const conditionIds = new Set((bundle.conditions || []).map((entry) => entry.condition_id));
+  const workIds = new Set([
+    ...(bundle.work_requests || []).map((entry) => entry.work_request_id),
+    ...(bundle.work_plans || []).map((entry) => entry.work_plan_id),
+    ...(bundle.work_executions || []).map((entry) => entry.action_id)
+  ]);
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+
+  for (const observation of bundle.observations || []) {
+    assert(
+      !observation.extensions?.uncontrolled_alarm_text,
+      `${testName} alarm semantics must not be represented solely as uncontrolled string content in Observation.`
+    );
+  }
+
+  for (const condition of bundle.conditions || []) {
+    assert(
+      !condition.extensions?.uncontrolled_alarm_text,
+      `${testName} alarm semantics must not be represented solely as uncontrolled string content in Condition.`
+    );
+  }
+
+  for (const event of bundle.events || []) {
+    if (event.related_refs) {
+      ensureKnownRefs(event.related_refs, knownIds, testName, `event ${event.event_id} must reference known prior evidence.`);
+    }
+    if (event.source_payload) {
+      assert(
+        event.source_payload.payload || event.source_payload.payload_reference,
+        `${testName} event ${event.event_id} must preserve source payload content or a durable payload reference.`
+      );
+    }
+    if (event.state_transition) {
+      assert(
+        event.state_transition.from_state !== event.state_transition.to_state,
+        `${testName} event ${event.event_id} state transition must change state.`
+      );
+      assert(
+        event.state_transition.event_time === event.event_time,
+        `${testName} event ${event.event_id} state transition must preserve the same event time as the event.`
+      );
+      if (event.state_transition.valid_from && event.state_transition.valid_to) {
+        intervalBounds(event.state_transition);
+      }
+      ensureKnownRefs(
+        event.state_transition.evidence_refs,
+        knownIds,
+        testName,
+        `event ${event.event_id} state transition must reference known evidence.`
+      );
+    }
+    if (event.temporal_integrity.delivery_classification === "late_arrival") {
+      const eventTime = parseTimestamp(event.temporal_integrity.event_time, `${event.event_id} event_time`);
+      const receiveTime = parseTimestamp(event.temporal_integrity.receive_time, `${event.event_id} receive_time`);
+      assert(receiveTime > eventTime, `${testName} late-arriving event ${event.event_id} must preserve later receive time than event time.`);
+    }
+  }
+
+  for (const transition of bundle.state_transitions || []) {
+    assert(transition.from_state !== transition.to_state, `${testName} state transition ${transition.transition_id} must change state.`);
+    if (transition.valid_from && transition.valid_to) {
+      intervalBounds(transition);
+    }
+    if (transition.source_ref) {
+      assert(knownIds.has(transition.source_ref), `${testName} state transition ${transition.transition_id} must reference a known source record.`);
+    }
+    ensureKnownRefs(
+      transition.evidence_refs,
+      knownIds,
+      testName,
+      `state transition ${transition.transition_id} must reference known evidence.`
+    );
+  }
+
+  for (const alarm of bundle.alarms || []) {
+    if (alarm.event_ref) {
+      assert(eventIds.has(alarm.event_ref), `${testName} alarm ${alarm.alarm_id} must reference a known event.`);
+    }
+    if (alarm.observation_ref) {
+      assert(observationIds.has(alarm.observation_ref), `${testName} alarm ${alarm.alarm_id} must reference a known observation.`);
+    }
+    if (alarm.condition_ref) {
+      assert(conditionIds.has(alarm.condition_ref), `${testName} alarm ${alarm.alarm_id} must reference a known condition.`);
+    }
+    if (alarm.source_payload) {
+      assert(
+        alarm.source_payload.payload || alarm.source_payload.payload_reference,
+        `${testName} alarm ${alarm.alarm_id} must preserve source payload content or a durable payload reference.`
+      );
+    }
+    if (alarm.lifecycle) {
+      assert(
+        alarm.lifecycle.canonical_alarm_state === alarm.alarm_state,
+        `${testName} alarm ${alarm.alarm_id} lifecycle state must match the canonical alarm state.`
+      );
+      let previousTransitionTime = Number.NEGATIVE_INFINITY;
+      const transitions = alarm.lifecycle.state_transitions || [];
+      for (const transition of transitions) {
+        assert(
+          transition.from_state !== transition.to_state,
+          `${testName} alarm ${alarm.alarm_id} transition history must change state.`
+        );
+        const transitionTime = parseTimestamp(transition.event_time, `${alarm.alarm_id} transition event_time`);
+        assert(
+          transitionTime >= previousTransitionTime,
+          `${testName} alarm ${alarm.alarm_id} transition history must remain time-ordered.`
+        );
+        previousTransitionTime = transitionTime;
+        if (transition.valid_from && transition.valid_to) {
+          intervalBounds(transition);
+        }
+        if (transition.source_event_ref) {
+          assert(
+            eventIds.has(transition.source_event_ref),
+            `${testName} alarm ${alarm.alarm_id} transition must reference a known source event.`
+          );
+        }
+        ensureKnownRefs(
+          transition.evidence_refs,
+          knownIds,
+          testName,
+          `alarm ${alarm.alarm_id} transition must reference known evidence.`
+        );
+      }
+      if (transitions.length > 0) {
+        assert(
+          transitions[transitions.length - 1].to_state === alarm.alarm_state,
+          `${testName} alarm ${alarm.alarm_id} final transition state must match the canonical alarm state.`
+        );
+      }
+    }
+    if (alarm.alarm_state === "suppressed" || alarm.alarm_state === "shelved") {
+      assert(alarm.suppression_context, `${testName} alarm ${alarm.alarm_id} must retain suppression or shelving context.`);
+      assert(alarm.suppression_context.valid_from, `${testName} alarm ${alarm.alarm_id} suppression or shelving must retain a valid-from timestamp.`);
+      assert(alarm.suppression_context.valid_to, `${testName} alarm ${alarm.alarm_id} suppression or shelving must retain a valid-to timestamp.`);
+      intervalBounds(alarm.suppression_context);
+      if (alarm.suppression_context.work_context_ref) {
+        assert(
+          workIds.has(alarm.suppression_context.work_context_ref),
+          `${testName} alarm ${alarm.alarm_id} suppression work context must reference known work context.`
+        );
+      }
+    }
+    if (alarm.cleared_at) {
+      assert(alarm.alarm_state === "cleared", `${testName} alarm ${alarm.alarm_id} cleared_at requires canonical cleared state.`);
+    }
+  }
+
+  for (const request of bundle.work_requests || []) {
+    ensureKnownRefs(request.basis_refs, knownIds, testName, `work request ${request.work_request_id} must reference known basis records.`);
+  }
+
+  const workPlans = new Map((bundle.work_plans || []).map((entry) => [entry.work_plan_id, entry]));
+  for (const execution of bundle.work_executions || []) {
+    assert(workIds.has(execution.work_request_ref), `${testName} work execution ${execution.action_id} must reference known work request context.`);
+    assert(workPlans.has(execution.work_plan_ref), `${testName} work execution ${execution.action_id} must reference known work plan context.`);
+    ensureKnownRefs(execution.basis_refs, knownIds, testName, `work execution ${execution.action_id} must reference known basis records.`);
+  }
+
+  for (const verification of bundle.work_verifications || []) {
+    assert(
+      workExecutions.has(verification.work_execution_ref),
+      `${testName} work verification ${verification.verification_id} must reference an existing work execution.`
+    );
+    ensureKnownRefs(
+      verification.evidence_refs,
+      knownIds,
+      testName,
+      `work verification ${verification.verification_id} must reference known evidence.`
+    );
+  }
+}
+
+function expectInvalidEventAlarmBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateEventAlarmBundle(testName, relativePath);
+    ensureEventAlarmSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 const results = [];
 
 const pump = validateFixture(
@@ -957,6 +1192,92 @@ expectInvalidReliabilityBundle(
   "must match a schema in anyOf"
 );
 results.push("failure mode, mechanism, and cause cannot be collapsed into one uncontrolled text field when structured references are available");
+
+const vfdEventAlarmBundle = validateEventAlarmBundle(
+  "vfd fault event and alarm recommendation chain",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json"
+);
+ensureEventAlarmSemantics(vfdEventAlarmBundle, "vfd fault event and alarm recommendation chain");
+assert(vfdEventAlarmBundle.alarms[0].event_ref === vfdEventAlarmBundle.events[0].event_id, "VFD alarm must be linked to the VFD fault event.");
+assert(vfdEventAlarmBundle.recommendations[0].evidence_refs.includes(vfdEventAlarmBundle.alarms[0].alarm_id), "VFD recommendation must preserve alarm evidence.");
+results.push("fault events may lead to governed alarms and downstream recommendations without collapsing those semantics");
+
+const commsLossBundle = validateEventAlarmBundle(
+  "pt communication loss event without alarm",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-pt-communication-loss.json"
+);
+ensureEventAlarmSemantics(commsLossBundle, "pt communication loss event without alarm");
+assert((commsLossBundle.alarms || []).length === 0, "Communication-loss event scenario must remain event-only when no governed alarm exists.");
+results.push("communication-loss events can be represented without implicitly creating an alarm");
+
+const highTempBundle = validateEventAlarmBundle(
+  "high temperature threshold alarm",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-high-temperature-threshold.json"
+);
+ensureEventAlarmSemantics(highTempBundle, "high temperature threshold alarm");
+assert(highTempBundle.alarms[0].derivation_type === "observation_threshold_breach", "High-temperature alarm must preserve threshold-breach derivation.");
+results.push("threshold-breach alarms preserve the triggering observation, threshold, and canonical alarm state");
+
+const maintenanceSuppressionBundle = validateEventAlarmBundle(
+  "alarm suppression during maintenance",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json"
+);
+ensureEventAlarmSemantics(maintenanceSuppressionBundle, "alarm suppression during maintenance");
+assert(maintenanceSuppressionBundle.alarms[0].alarm_state === "suppressed", "Maintenance suppression scenario must end in suppressed state.");
+results.push("alarm suppression during maintenance retains provenance, valid period, and explicit work context");
+
+const safetyBypassBundle = validateEventAlarmBundle(
+  "safety bypass activation with work context",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json"
+);
+ensureEventAlarmSemantics(safetyBypassBundle, "safety bypass activation with work context");
+assert(safetyBypassBundle.events[0].event_category === "safety", "Safety bypass scenario must remain a safety event.");
+results.push("safety bypass activation events preserve state transition evidence and linked work context");
+
+const lateArrivalBundle = validateEventAlarmBundle(
+  "late arriving historian event with prior evidence",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json"
+);
+ensureEventAlarmSemantics(lateArrivalBundle, "late arriving historian event with prior evidence");
+assert(lateArrivalBundle.events[0].temporal_integrity.delivery_classification === "late_arrival", "Late historian scenario must preserve late-arrival classification.");
+results.push("late-arriving historian events preserve event time, receive time, and prior evidence references");
+
+const falseAlarmBundle = validateEventAlarmBundle(
+  "false alarm linked to instrument drift and verification",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json"
+);
+ensureEventAlarmSemantics(falseAlarmBundle, "false alarm linked to instrument drift and verification");
+assert(falseAlarmBundle.alarms[0].alarm_state === "cleared", "False alarm scenario must end with a cleared alarm state.");
+assert(falseAlarmBundle.work_verifications[0].verification_status === "verified", "False alarm scenario must preserve later verification evidence.");
+results.push("false alarms can be linked to instrument drift and later verification without erasing the original alarm evidence");
+
+expectInvalidEventAlarmBundle(
+  "alarm semantics collapsed into condition free text",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-condition-freeform-alarm.json",
+  "must not be represented solely as uncontrolled string content in Condition"
+);
+results.push("alarm semantics cannot be represented solely as uncontrolled string content in Condition");
+
+expectInvalidEventAlarmBundle(
+  "alarm semantics collapsed into observation free text",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-observation-freeform-alarm.json",
+  "must not be represented solely as uncontrolled string content in Observation"
+);
+results.push("alarm semantics cannot be represented solely as uncontrolled string content in Observation");
+
+expectInvalidEventAlarmBundle(
+  "invalid alarm lifecycle transition chain",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-invalid-transition.json",
+  "final transition state must match the canonical alarm state"
+);
+results.push("alarm lifecycle transition chains must remain state-consistent and time-ordered");
+
+expectInvalidEventAlarmBundle(
+  "suppression without valid interval",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-suppression-missing-validity.json",
+  "must retain a valid-from timestamp"
+);
+results.push("suppression and shelving require provenance and an explicit valid interval");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {
