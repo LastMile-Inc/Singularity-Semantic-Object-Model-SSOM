@@ -1,0 +1,148 @@
+{
+  "manifest_id": "urn:ssom:capability-manifest:ssom-rfc-v0.9-core-profiles",
+  "manifest_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "implementation": {
+    "name": "SSOM RFC Reference Validation Surface",
+    "implementation_class": "validation_harness",
+    "repository_scope": "public_rfc_repo",
+    "notes": "Declares the schema-backed and fixture-backed capability surface maintained in this repository."
+  },
+  "supported_profiles": [
+    {
+      "profile_id": "truth-state-lineage-profile",
+      "profile_version": "0.4.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.4/valid/truth-state-lineage-corrections-and-supersession.json",
+        "conformance/validate-schemas.mjs"
+      ]
+    },
+    {
+      "profile_id": "identity-lifecycle-profile",
+      "profile_version": "0.5.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json",
+        "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+      ]
+    },
+    {
+      "profile_id": "measurement-safety-profile",
+      "profile_version": "0.6.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json",
+        "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+      ]
+    },
+    {
+      "profile_id": "reliability-maintenance-profile",
+      "profile_version": "0.7.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+        "conformance/fixtures/v0.7/valid/reliability-bundle-pump-multicycle-recurrence.json"
+      ]
+    },
+    {
+      "profile_id": "event-alarm-profile",
+      "profile_version": "0.8.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json"
+      ]
+    },
+    {
+      "profile_id": "relationship-governance-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+        "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json"
+      ]
+    },
+    {
+      "profile_id": "integrated-lifecycle-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+        "docs/integrated-pump-lifecycle-conformance-v0.9.md"
+      ]
+    },
+    {
+      "profile_id": "servicenow-coexistence-projection-profile",
+      "profile_version": "0.9.0",
+      "support_level": "projected",
+      "projection_surface": "docs/servicenow-coexistence.md",
+      "evidence_refs": [
+        "docs/servicenow-coexistence.md",
+        "conformance/checklist-v0.9.md"
+      ],
+      "notes": "Projection support is documented only where the profile support surface is explicitly described."
+    }
+  ],
+  "conformance_artifacts": {
+    "schema_validation": {
+      "command": "npm run validate",
+      "result": "pass",
+      "evidence_ref": "conformance/validate-schemas.mjs"
+    },
+    "fixture_validation": {
+      "command": "npm run validate",
+      "result": "pass",
+      "evidence_ref": "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+    },
+    "review_artifacts": [
+      "docs/reviews/SSOM_P0_Closure_Verification.md"
+    ]
+  },
+  "compatibility": {
+    "semantic_version": "0.9.0",
+    "backward_compatibility": "additive",
+    "legacy_artifacts": [
+      {
+        "path": "schemas/ssom-core.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "schemas/ssom-relationships.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "schemas/ssom-telemetry.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "reference-implementation/bigquery/schema.sql",
+        "status": "example_only",
+        "compatibility_note": "Reference SQL is illustrative and does not define normative SSOM semantics."
+      }
+    ]
+  },
+  "standards_mapping_claims": [
+    {
+      "standard_ref": "ISA-95",
+      "claim_scope": "conceptual_alignment",
+      "qualification": "Core operational boundaries and relationships preserve alignment intent only; formal hierarchy or profile-complete conformance is not claimed by this repository."
+    },
+    {
+      "standard_ref": "ISO 14224",
+      "claim_scope": "conceptual_alignment",
+      "qualification": "Reliability semantics are framed as qualified alignment statements until field-level crosswalk artifacts are published."
+    }
+  ],
+  "provenance": {
+    "source_platform": "repo-maintainer",
+    "source_authority_id": "ssom-maintainer",
+    "source_reference": "capability-manifest-v0.9",
+    "lineage_id": "lin-capability-manifest-v0.9",
+    "ingest_time": "2026-06-30T18:00:00Z",
+    "processing_time": "2026-06-30T18:00:01Z"
+  }
+}

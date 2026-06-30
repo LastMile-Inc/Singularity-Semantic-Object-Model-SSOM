@@ -1,1 +1,6 @@
-<!-- Placeholder for ssom-relationships.xsd -->
+<!--
+Deprecated non-normative compatibility marker.
+
+Relationship semantics are maintained through schemas/jsonschema/relationship.json,
+schemas/jsonschema/relationship-registry.json, and schemas/registry/core-relationship-vocabulary.json.
+-->

@@ -1,0 +1,134 @@
+{
+  "artifact_id": "urn:ssom:standards-mapping:claims-matrix:v0.9",
+  "artifact_type": "standards_claims_matrix",
+  "artifact_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "primary_source_refs": [
+    {
+      "source_id": "mimosa-overview",
+      "organization": "MIMOSA",
+      "title": "What is MIMOSA?",
+      "url": "https://www.mimosa.org/what-is-mimosa/"
+    },
+    {
+      "source_id": "isa95-committee",
+      "organization": "ISA",
+      "title": "ISA95, Enterprise-Control System Integration",
+      "url": "https://www.isa.org/isa95"
+    },
+    {
+      "source_id": "opc-ua-overview",
+      "organization": "OPC Foundation",
+      "title": "Unified Architecture - Landingpage",
+      "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "safe-now-ai-native-bridge",
+      "claim_category": "safe_now",
+      "claim_text": "SSOM is an AI-native semantic bridge designed to align with and preserve relevant semantics from established OT interoperability, lifecycle, and operations standards.",
+      "required_profiles": [],
+      "required_evidence_refs": [
+        "README.md",
+        "docs/standards-mapping-v0.9.md"
+      ],
+      "status_reason": "This claim is qualified, non-certifying, and grounded in the schema, fixture, and crosswalk evidence published in the repository.",
+      "allowed_surfaces": [
+        "README.md",
+        "docs/standards-mapping-v0.9.md"
+      ]
+    },
+    {
+      "claim_id": "safe-now-opcua-identity-measurement",
+      "claim_category": "safe_now",
+      "claim_text": "SSOM maps to OPC UA identity, measurement, event, and alarm semantics through executable fixture-backed profiles.",
+      "required_profiles": [],
+      "required_evidence_refs": [
+        "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json",
+        "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json"
+      ],
+      "status_reason": "Identity, measurement-safety, and event-alarm semantics are already executable in the repository validator.",
+      "allowed_surfaces": [
+        "docs/standards-mapping-v0.9.md",
+        "docs/source-system-mapping-guidance-v0.9.json"
+      ]
+    },
+    {
+      "claim_id": "safe-with-profiles-isa95",
+      "claim_category": "safe_with_profiles",
+      "claim_text": "SSOM supports interoperability with ISA-95 or IEC 62264 equipment and production structures when a named ISA-95 hierarchy profile is implemented.",
+      "required_profiles": [
+        "isa95-hierarchy-profile"
+      ],
+      "required_evidence_refs": [
+        "docs/profile-applicability-matrix-v0.9.json",
+        "docs/standards-crosswalk-matrix-v0.9.json"
+      ],
+      "status_reason": "The core boundary model is present, but the detailed exchange and hierarchy profile remains deferred.",
+      "allowed_surfaces": [
+        "docs/standards-mapping-v0.9.md",
+        "docs/standards-claims-matrix-v0.9.json"
+      ]
+    },
+    {
+      "claim_id": "safe-with-profiles-servicenow",
+      "claim_category": "safe_with_profiles",
+      "claim_text": "SSOM supports interoperability with ServiceNow CI and OT Device projections where a serving-projection profile is implemented.",
+      "required_profiles": [
+        "serving-projection-profile"
+      ],
+      "required_evidence_refs": [
+        "docs/servicenow-coexistence.md",
+        "docs/source-system-mapping-guidance-v0.9.json"
+      ],
+      "status_reason": "Current evidence supports documented coexistence and projection guidance, not a generic executable ServiceNow adapter.",
+      "allowed_surfaces": [
+        "docs/servicenow-coexistence.md",
+        "docs/standards-claims-matrix-v0.9.json"
+      ]
+    },
+    {
+      "claim_id": "not-safe-yet-iec62443",
+      "claim_category": "not_safe_yet",
+      "claim_text": "SSOM fully supports IEC 62443 zone, conduit, and control-framework interoperability today.",
+      "required_profiles": [
+        "cyber-context-profile"
+      ],
+      "required_evidence_refs": [
+        "docs/transformation-loss-register-v0.9.json"
+      ],
+      "status_reason": "The repository currently preserves foundational cyber context only; a richer cyber profile is still required before broader claims are safe.",
+      "allowed_surfaces": [
+        "docs/standards-claims-matrix-v0.9.json"
+      ]
+    },
+    {
+      "claim_id": "not-safe-yet-b2mml",
+      "claim_category": "not_safe_yet",
+      "claim_text": "SSOM directly exchanges B2MML messages without transformation loss.",
+      "required_profiles": [
+        "b2mml-interchange-profile"
+      ],
+      "required_evidence_refs": [
+        "docs/transformation-loss-register-v0.9.json"
+      ],
+      "status_reason": "No XML binding or round-trip B2MML interchange profile exists in the repository today.",
+      "allowed_surfaces": [
+        "docs/standards-claims-matrix-v0.9.json"
+      ]
+    },
+    {
+      "claim_id": "never-safe-compliance",
+      "claim_category": "never_safe",
+      "claim_text": "SSOM is compliant with ISA-95, certified against IEC 62443, a replacement for OPC UA, fully implements ISO 14224, or is a universal standard.",
+      "required_profiles": [],
+      "required_evidence_refs": [],
+      "status_reason": "These claims overstate the repository scope and violate the documented qualified-language boundary.",
+      "allowed_surfaces": [
+        "docs/standards-claims-matrix-v0.9.json"
+      ]
+    }
+  ]
+}

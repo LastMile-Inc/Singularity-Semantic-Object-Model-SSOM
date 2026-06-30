@@ -1,6 +1,6 @@
 # SSOM RFCs
 
-The **Standardized Semantic Object Model (SSOM)** is a draft, vendor-neutral, evidence-aware semantic standard for industrial operations data. SSOM models industrial **Assets** as the canonical lifecycle entities for identity, identifier continuity, relationships, condition, measurement safety, and a governed operational truth-state lifecycle from observation through verified work outcome.
+The **Standardized Semantic Object Model (SSOM)** is a draft, vendor-neutral, evidence-aware semantic standard for industrial operations data. SSOM is an AI-native semantic bridge designed to align with and preserve relevant semantics from established OT interoperability, lifecycle, and operations standards. SSOM models industrial **Assets** as the canonical lifecycle entities for identity, identifier continuity, relationships, condition, measurement safety, and a governed operational truth-state lifecycle from observation through verified work outcome.
 
 SSOM standardizes **meaning**, not transport, control behavior, workflow execution engines, dashboard behavior, cloud deployment, or vendor-specific product implementation. SSOM reuses the generic Recommendation, Decision, Action, and Outcome foundation for maintenance and reliability semantics, and now adds first-class schemas for failure, work verification, measurable work outcome, event, alarm, and state-transition semantics.
 
@@ -121,6 +121,10 @@ docs/
 
 This repository contains public RFCs, schema artifacts, conformance materials, a BigQuery reference implementation, and supporting implementation guidance.
 
+Legacy note:
+
+The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
+
 ## Current draft version
 
 - SSOM v0.9.0 draft: additive governed relationship registry and operational boundary update
@@ -131,12 +135,20 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 
 - Core specification: [RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md](RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md)
 - JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/asset-class.json](schemas/jsonschema/asset-class.json), [schemas/jsonschema/equipment-model.json](schemas/jsonschema/equipment-model.json), [schemas/jsonschema/operational-boundary.json](schemas/jsonschema/operational-boundary.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/relationship.json](schemas/jsonschema/relationship.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
+- Capability manifest schema: [schemas/jsonschema/capability-manifest.json](schemas/jsonschema/capability-manifest.json)
 - Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
 - Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
 - Previous schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
 - Previous schema reference: [docs/schema-reference-v0.6.md](docs/schema-reference-v0.6.md)
 - Previous schema reference: [docs/schema-reference-v0.5.md](docs/schema-reference-v0.5.md)
 - Relationship vocabulary: [docs/relationship-vocabulary-v0.9.md](docs/relationship-vocabulary-v0.9.md)
+- Standards crosswalk overview: [docs/standards-mapping-v0.9.md](docs/standards-mapping-v0.9.md)
+- Standards crosswalk matrix: [docs/standards-crosswalk-matrix-v0.9.json](docs/standards-crosswalk-matrix-v0.9.json)
+- Source-system mapping guidance: [docs/source-system-mapping-guidance-v0.9.json](docs/source-system-mapping-guidance-v0.9.json)
+- Transformation-loss register: [docs/transformation-loss-register-v0.9.json](docs/transformation-loss-register-v0.9.json)
+- Profile applicability matrix: [docs/profile-applicability-matrix-v0.9.json](docs/profile-applicability-matrix-v0.9.json)
+- Standards claims matrix: [docs/standards-claims-matrix-v0.9.json](docs/standards-claims-matrix-v0.9.json)
+- Capability manifest profile: [docs/capability-manifest-v0.9.md](docs/capability-manifest-v0.9.md)
 - Integrated lifecycle conformance: [docs/integrated-pump-lifecycle-conformance-v0.9.md](docs/integrated-pump-lifecycle-conformance-v0.9.md)
 - Event and alarm profile: [docs/event-alarm-profile-v0.8.md](docs/event-alarm-profile-v0.8.md)
 - Reliability and maintenance profile: [docs/reliability-maintenance-profile-v0.7.md](docs/reliability-maintenance-profile-v0.7.md)
@@ -149,8 +161,9 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 - Previous migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)
 - Previous migration guidance: [docs/migration-v0.5.md](docs/migration-v0.5.md)
 - Previous migration guidance: [docs/migration-v0.4.md](docs/migration-v0.4.md)
-- Standards mapping: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
+- Current standards mapping note: [docs/standards-mapping-v0.9.md](docs/standards-mapping-v0.9.md)
 - Standards mapping claims are qualified conceptual-alignment statements unless an implementation publishes additional mapping evidence and profile-specific conformance artifacts.
+- Previous standards mapping note: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
 - ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
 - Conformance: [conformance/checklist-v0.9.md](conformance/checklist-v0.9.md)

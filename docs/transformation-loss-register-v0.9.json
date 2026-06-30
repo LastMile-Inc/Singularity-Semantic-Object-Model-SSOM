@@ -1,0 +1,188 @@
+{
+  "artifact_id": "urn:ssom:standards-mapping:transformation-loss-register:v0.9",
+  "artifact_type": "transformation_loss_register",
+  "artifact_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "primary_source_refs": [
+    {
+      "source_id": "opc-ua-overview",
+      "organization": "OPC Foundation",
+      "title": "Unified Architecture - Landingpage",
+      "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+    },
+    {
+      "source_id": "isa95-committee",
+      "organization": "ISA",
+      "title": "ISA95, Enterprise-Control System Integration",
+      "url": "https://www.isa.org/isa95"
+    },
+    {
+      "source_id": "isa88-committee",
+      "organization": "ISA",
+      "title": "ISA88: Batch Control",
+      "url": "https://www.isa.org/isa88"
+    }
+  ],
+  "transformations": [
+    {
+      "transformation_id": "loss-opcua-methods",
+      "source_scope": "OPC UA methods and executable control interactions",
+      "target_scope": "SSOM evidence, decision, or action context",
+      "scenario": "A UA method call or executable control interaction must be preserved as context rather than treated as SSOM control behavior.",
+      "transformation_requirement": "lossy_transform",
+      "information_loss_risk": "high",
+      "required_profile": null,
+      "maturity": "documented_mapping",
+      "repo_evidence": [
+        {
+          "artifact_ref": "README.md",
+          "evidence_type": "documentation"
+        }
+      ],
+      "known_limitation": "SSOM does not standardize direct control-command execution or method signatures.",
+      "mitigation": "Preserve method invocation metadata as source payload or provenance while keeping SSOM focused on semantic evidence and outcomes.",
+      "test_fixture_refs": []
+    },
+    {
+      "transformation_id": "loss-isa95-full-role-taxonomy",
+      "source_scope": "Detailed ISA-95 role and exchange structures",
+      "target_scope": "SSOM operational boundaries and assets",
+      "scenario": "A detailed ISA-95 hierarchy must be flattened into current SSOM boundary and identity surfaces unless a dedicated hierarchy profile is implemented.",
+      "transformation_requirement": "profile_constraint",
+      "information_loss_risk": "medium",
+      "required_profile": "isa95-hierarchy-profile",
+      "maturity": "partial",
+      "repo_evidence": [
+        {
+          "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+          "evidence_type": "fixture"
+        }
+      ],
+      "known_limitation": "Core SSOM preserves boundary meaning but not the full ISA-95 exchange vocabulary set.",
+      "mitigation": "Use a named hierarchy profile that constrains boundary types, identifier roles, and projection rules.",
+      "test_fixture_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+      ]
+    },
+    {
+      "transformation_id": "loss-iec81346-structure-rules",
+      "source_scope": "IEC 81346 aspect designations and structural rules",
+      "target_scope": "SSOM external identifiers and relationships",
+      "scenario": "An engineering designation can be preserved, but not fully validated against IEC 81346 rules in core SSOM.",
+      "transformation_requirement": "profile_constraint",
+      "information_loss_risk": "medium",
+      "required_profile": "iec81346-designation-profile",
+      "maturity": "partial",
+      "repo_evidence": [
+        {
+          "artifact_ref": "schemas/jsonschema/functional-location.json",
+          "evidence_type": "schema"
+        }
+      ],
+      "known_limitation": "Aspect-specific designation syntax and decomposition rules are not enforced.",
+      "mitigation": "Introduce an IEC 81346 profile with syntax, aspect, and validation constraints.",
+      "test_fixture_refs": []
+    },
+    {
+      "transformation_id": "loss-isa88-recipe-semantics",
+      "source_scope": "ISA-88 recipe management and batch execution semantics",
+      "target_scope": "SSOM boundary and lifecycle context",
+      "scenario": "Batch procedure, unit procedure, operation, phase, and recipe semantics are outside current SSOM core scope.",
+      "transformation_requirement": "profile_constraint",
+      "information_loss_risk": "high",
+      "required_profile": "batch-recipe-profile",
+      "maturity": "profile_required",
+      "repo_evidence": [
+        {
+          "artifact_ref": "docs/migration-v0.9.md",
+          "evidence_type": "documentation"
+        }
+      ],
+      "known_limitation": "No batch or recipe schema family currently exists in the repository.",
+      "mitigation": "Implement a dedicated batch and recipe profile before making ISA-88 interoperability claims beyond structure alignment.",
+      "test_fixture_refs": []
+    },
+    {
+      "transformation_id": "loss-b2mml-xml-envelope",
+      "source_scope": "B2MML XML exchange envelopes and schema bindings",
+      "target_scope": "SSOM JSON semantic records",
+      "scenario": "B2MML XML must be transformed into SSOM object families and may not round-trip without a binding profile.",
+      "transformation_requirement": "lossy_transform",
+      "information_loss_risk": "high",
+      "required_profile": "b2mml-interchange-profile",
+      "maturity": "profile_required",
+      "repo_evidence": [
+        {
+          "artifact_ref": "schemas/jsonschema/operational-boundary.json",
+          "evidence_type": "schema"
+        }
+      ],
+      "known_limitation": "No B2MML XML serialization or namespace-preserving interchange surface is published here.",
+      "mitigation": "Implement a B2MML interchange profile that preserves schema binding, namespaces, and message envelope semantics.",
+      "test_fixture_refs": []
+    },
+    {
+      "transformation_id": "loss-automationml-engineering-detail",
+      "source_scope": "AutomationML engineering exchange detail",
+      "target_scope": "SSOM assets, classes, models, boundaries, and relationships",
+      "scenario": "AutomationML geometry, CAEX-specific engineering relationships, and rich vendor attributes are not preserved losslessly in core SSOM.",
+      "transformation_requirement": "lossy_transform",
+      "information_loss_risk": "high",
+      "required_profile": "automationml-engineering-exchange-profile",
+      "maturity": "profile_required",
+      "repo_evidence": [
+        {
+          "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+          "evidence_type": "fixture"
+        }
+      ],
+      "known_limitation": "Engineering authoring detail exceeds the current runtime-focused SSOM semantic surface.",
+      "mitigation": "Use an engineering-exchange profile with extension namespaces and a documented loss boundary.",
+      "test_fixture_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
+      ]
+    },
+    {
+      "transformation_id": "loss-iec62443-control-framework",
+      "source_scope": "IEC 62443 security controls, security levels, and compliance program context",
+      "target_scope": "SSOM asset and topology semantics",
+      "scenario": "SSOM can preserve cyber-relevant asset and zone-conduit context but not the full IEC 62443 control framework in core.",
+      "transformation_requirement": "profile_constraint",
+      "information_loss_risk": "high",
+      "required_profile": "cyber-context-profile",
+      "maturity": "partial",
+      "repo_evidence": [
+        {
+          "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
+          "evidence_type": "fixture"
+        }
+      ],
+      "known_limitation": "Security levels, requirement identifiers, and compliance evidence are not modeled by default.",
+      "mitigation": "Constrain cyber_context extensions and publish a named cyber profile before making stronger claims.",
+      "test_fixture_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json"
+      ]
+    },
+    {
+      "transformation_id": "loss-iec61511-sil-program",
+      "source_scope": "IEC 61511 lifecycle, SIL calculation, and compliance program artifacts",
+      "target_scope": "SSOM safety events, work, verification, and state context",
+      "scenario": "Safety evidence can be preserved without asserting IEC 61511 lifecycle completeness.",
+      "transformation_requirement": "profile_constraint",
+      "information_loss_risk": "high",
+      "required_profile": "safety-context-profile",
+      "maturity": "partial",
+      "repo_evidence": [
+        {
+          "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
+          "evidence_type": "fixture"
+        }
+      ],
+      "known_limitation": "SIL allocation, validation program governance, and lifecycle obligations are not represented in core SSOM.",
+      "mitigation": "Preserve the safety evidence trail and declare that functional-safety compliance requires external program controls and a dedicated profile.",
+      "test_fixture_refs": [
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json"
+      ]
+    }
+  ]
+}

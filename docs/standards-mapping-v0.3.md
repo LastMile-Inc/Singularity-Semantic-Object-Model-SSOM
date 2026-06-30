@@ -1,5 +1,7 @@
 # SSOM v0.3 Standards Mapping Note
 
+Superseded for current interoperability work by `docs/standards-mapping-v0.9.md` and the structured Prompt 8 mapping artifacts. This v0.3 note remains as the earlier narrative summary.
+
 This note describes how SSOM v0.3.0 is conceptually aligned with and designed to preserve semantics relevant to existing industrial standards. It does not claim formal certification, complete interoperability, or standards-body endorsement.
 
 ## Mapping summary

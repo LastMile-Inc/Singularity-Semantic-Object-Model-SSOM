@@ -1,0 +1,131 @@
+{
+  "record_id": "urn:ssom:record:p401-pressure-bar-consumer-psi",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:compressor-c401",
+  "metric": "suction_pressure",
+  "value": 4.8,
+  "unit": "bar",
+  "event_time": "2026-06-30T18:20:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.98
+  },
+  "original_measurement": {
+    "source_value": 4.8,
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar",
+      "dimension": "pressure"
+    },
+    "source_timestamp": "2026-06-30T18:20:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "pressure",
+    "canonical_value": 69.62,
+    "canonical_unit": {
+      "unit_code": "PSI",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "psi",
+      "dimension": "pressure"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "canonical_unit": {
+      "unit_code": "PSI",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "psi"
+    },
+    "formula_reference": "1 bar = 14.5038 psi",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-30T18:20:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "uncertainty": 0.03,
+    "accuracy": 0.5,
+    "precision": 0.01,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_reference": "cal-pt401-2026q2",
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-04-05T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:pt-401"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:compressor-c401",
+    "source_device_ref": "urn:ssom:asset:pt-401",
+    "source_signal_ref": "tag:PT-401.PV",
+    "engineering_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "display_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "engineering_range": {
+      "low": 0,
+      "high": 10,
+      "unit": {
+        "unit_code": "BAR",
+        "vocabulary_id": "ucum-compatible",
+        "symbol": "bar"
+      }
+    },
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "normal_operation"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-30T18:20:00Z",
+    "ingestion_timestamp": "2026-06-30T18:20:01Z",
+    "clock_source_context": "ntp_disciplined_edge_gateway",
+    "ordering_state": "in_order"
+  },
+  "extensions": {
+    "measurement_comparability": {
+      "comparable": true,
+      "comparable_view_eligible": true
+    },
+    "analytical_consumers": [
+      {
+        "consumer_id": "urn:ssom:analytics:compressor-health-model-c401",
+        "expected_quantity_kind": "pressure",
+        "expected_unit_code": "PSI",
+        "comparable_view_ref": "urn:ssom:view:compressor-c401-pressure-psi"
+      }
+    ]
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:PT-401.PV",
+    "lineage_id": "lin-obs-p401-pressure-psi",
+    "ingest_time": "2026-06-30T18:20:01Z",
+    "processing_time": "2026-06-30T18:20:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-30T18:20:00Z",
+    "source_time": "2026-06-30T18:20:00Z",
+    "receive_time": "2026-06-30T18:20:01Z",
+    "processing_time": "2026-06-30T18:20:02Z",
+    "delivery_classification": "live"
+  }
+}

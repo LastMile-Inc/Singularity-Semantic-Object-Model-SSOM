@@ -1,0 +1,590 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/standards-mapping-artifact.json",
+  "title": "SSOM Standards Mapping Artifact",
+  "description": "Structured standards crosswalk, mapping guidance, loss register, profile applicability, or standards claims artifact.",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "artifact_type",
+    "artifact_version",
+    "ssom_version",
+    "primary_source_refs"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:standards-mapping:"
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "crosswalk_matrix",
+        "source_system_mapping_guidance",
+        "transformation_loss_register",
+        "profile_applicability_matrix",
+        "standards_claims_matrix"
+      ]
+    },
+    "artifact_version": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "primary_source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/primarySourceRef"
+      }
+    },
+    "standards_areas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/standardsArea"
+      }
+    },
+    "source_systems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sourceSystemGuidance"
+      }
+    },
+    "transformations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/transformationLossEntry"
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profileApplicabilityEntry"
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/standardsClaimEntry"
+      }
+    }
+  },
+  "$defs": {
+    "primarySourceRef": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "organization",
+        "title",
+        "url"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "repoEvidenceRef": {
+      "type": "object",
+      "required": [
+        "artifact_ref",
+        "evidence_type"
+      ],
+      "properties": {
+        "artifact_ref": {
+          "type": "string"
+        },
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "schema",
+            "fixture",
+            "validator",
+            "documentation",
+            "registry"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mappingRelationship": {
+      "type": "string",
+      "enum": [
+        "maps_to",
+        "preserves_semantics_from",
+        "extends",
+        "requires_transformation",
+        "requires_profile",
+        "supports_interoperability_with"
+      ]
+    },
+    "mappingDirection": {
+      "type": "string",
+      "enum": [
+        "external_to_ssom",
+        "ssom_to_external",
+        "bidirectional_semantic",
+        "projection_only"
+      ]
+    },
+    "transformationRequirement": {
+      "type": "string",
+      "enum": [
+        "none",
+        "normalization",
+        "structural_transform",
+        "projection_transform",
+        "profile_constraint",
+        "lossy_transform"
+      ]
+    },
+    "informationLossRisk": {
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "maturity": {
+      "type": "string",
+      "enum": [
+        "fixture_backed",
+        "schema_backed",
+        "documented_mapping",
+        "profile_required",
+        "partial"
+      ]
+    },
+    "mappingEntry": {
+      "type": "object",
+      "required": [
+        "mapping_id",
+        "ssom_object_or_field",
+        "external_standard_concept",
+        "mapping_relationship",
+        "mapping_direction",
+        "transformation_requirement",
+        "information_loss_risk",
+        "required_profile",
+        "maturity",
+        "repo_evidence",
+        "known_limitation",
+        "test_fixture_refs"
+      ],
+      "properties": {
+        "mapping_id": {
+          "type": "string"
+        },
+        "ssom_object_or_field": {
+          "type": "string"
+        },
+        "external_standard_concept": {
+          "type": "string"
+        },
+        "mapping_relationship": {
+          "$ref": "#/$defs/mappingRelationship"
+        },
+        "mapping_direction": {
+          "$ref": "#/$defs/mappingDirection"
+        },
+        "transformation_requirement": {
+          "$ref": "#/$defs/transformationRequirement"
+        },
+        "information_loss_risk": {
+          "$ref": "#/$defs/informationLossRisk"
+        },
+        "required_profile": {
+          "type": ["string", "null"]
+        },
+        "maturity": {
+          "$ref": "#/$defs/maturity"
+        },
+        "repo_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/repoEvidenceRef"
+          }
+        },
+        "known_limitation": {
+          "type": "string"
+        },
+        "test_fixture_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "standardsArea": {
+      "type": "object",
+      "required": [
+        "standard_id",
+        "standard_label",
+        "scope_summary",
+        "primary_source_refs",
+        "mappings"
+      ],
+      "properties": {
+        "standard_id": {
+          "type": "string"
+        },
+        "standard_label": {
+          "type": "string"
+        },
+        "scope_summary": {
+          "type": "string"
+        },
+        "primary_source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/primarySourceRef"
+          }
+        },
+        "mappings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/mappingEntry"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceSystemPattern": {
+      "type": "object",
+      "required": [
+        "pattern_id",
+        "source_construct",
+        "ssom_target",
+        "mapping_relationship",
+        "mapping_direction",
+        "transformation_requirement",
+        "information_loss_risk",
+        "required_profile",
+        "maturity",
+        "repo_evidence",
+        "known_limitation"
+      ],
+      "properties": {
+        "pattern_id": {
+          "type": "string"
+        },
+        "source_construct": {
+          "type": "string"
+        },
+        "ssom_target": {
+          "type": "string"
+        },
+        "mapping_relationship": {
+          "$ref": "#/$defs/mappingRelationship"
+        },
+        "mapping_direction": {
+          "$ref": "#/$defs/mappingDirection"
+        },
+        "transformation_requirement": {
+          "$ref": "#/$defs/transformationRequirement"
+        },
+        "information_loss_risk": {
+          "$ref": "#/$defs/informationLossRisk"
+        },
+        "required_profile": {
+          "type": ["string", "null"]
+        },
+        "maturity": {
+          "$ref": "#/$defs/maturity"
+        },
+        "repo_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/repoEvidenceRef"
+          }
+        },
+        "known_limitation": {
+          "type": "string"
+        },
+        "example_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceSystemGuidance": {
+      "type": "object",
+      "required": [
+        "system_id",
+        "system_label",
+        "guidance_patterns"
+      ],
+      "properties": {
+        "system_id": {
+          "type": "string"
+        },
+        "system_label": {
+          "type": "string"
+        },
+        "guidance_patterns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceSystemPattern"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "transformationLossEntry": {
+      "type": "object",
+      "required": [
+        "transformation_id",
+        "source_scope",
+        "target_scope",
+        "scenario",
+        "transformation_requirement",
+        "information_loss_risk",
+        "required_profile",
+        "maturity",
+        "repo_evidence",
+        "known_limitation",
+        "mitigation"
+      ],
+      "properties": {
+        "transformation_id": {
+          "type": "string"
+        },
+        "source_scope": {
+          "type": "string"
+        },
+        "target_scope": {
+          "type": "string"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "transformation_requirement": {
+          "$ref": "#/$defs/transformationRequirement"
+        },
+        "information_loss_risk": {
+          "$ref": "#/$defs/informationLossRisk"
+        },
+        "required_profile": {
+          "type": ["string", "null"]
+        },
+        "maturity": {
+          "$ref": "#/$defs/maturity"
+        },
+        "repo_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/repoEvidenceRef"
+          }
+        },
+        "known_limitation": {
+          "type": "string"
+        },
+        "mitigation": {
+          "type": "string"
+        },
+        "test_fixture_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "profileApplicabilityEntry": {
+      "type": "object",
+      "required": [
+        "profile_id",
+        "profile_label",
+        "standard_applicability"
+      ],
+      "properties": {
+        "profile_id": {
+          "type": "string"
+        },
+        "profile_label": {
+          "type": "string"
+        },
+        "standard_applicability": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "standard_id",
+              "applicability",
+              "required_for_claims",
+              "repo_evidence",
+              "known_limitation"
+            ],
+            "properties": {
+              "standard_id": {
+                "type": "string"
+              },
+              "applicability": {
+                "type": "string",
+                "enum": [
+                  "core_support",
+                  "profile_required",
+                  "projection_only",
+                  "not_applicable"
+                ]
+              },
+              "required_for_claims": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "repo_evidence": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/repoEvidenceRef"
+                }
+              },
+              "known_limitation": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "standardsClaimEntry": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "claim_category",
+        "claim_text",
+        "required_profiles",
+        "required_evidence_refs",
+        "status_reason"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_category": {
+          "type": "string",
+          "enum": [
+            "safe_now",
+            "safe_with_profiles",
+            "not_safe_yet",
+            "never_safe"
+          ]
+        },
+        "claim_text": {
+          "type": "string"
+        },
+        "required_profiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status_reason": {
+          "type": "string"
+        },
+        "allowed_surfaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "artifact_type": {
+          "const": "crosswalk_matrix"
+        }
+      },
+      "required": [
+        "standards_areas"
+      ]
+    },
+    {
+      "properties": {
+        "artifact_type": {
+          "const": "source_system_mapping_guidance"
+        }
+      },
+      "required": [
+        "source_systems"
+      ]
+    },
+    {
+      "properties": {
+        "artifact_type": {
+          "const": "transformation_loss_register"
+        }
+      },
+      "required": [
+        "transformations"
+      ]
+    },
+    {
+      "properties": {
+        "artifact_type": {
+          "const": "profile_applicability_matrix"
+        }
+      },
+      "required": [
+        "profiles"
+      ]
+    },
+    {
+      "properties": {
+        "artifact_type": {
+          "const": "standards_claims_matrix"
+        }
+      },
+      "required": [
+        "claims"
+      ]
+    }
+  ],
+  "additionalProperties": false
+}

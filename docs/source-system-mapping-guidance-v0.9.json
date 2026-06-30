@@ -1,0 +1,241 @@
+{
+  "artifact_id": "urn:ssom:standards-mapping:source-system-guidance:v0.9",
+  "artifact_type": "source_system_mapping_guidance",
+  "artifact_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "primary_source_refs": [
+    {
+      "source_id": "opc-ua-overview",
+      "organization": "OPC Foundation",
+      "title": "Unified Architecture - Landingpage",
+      "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+    },
+    {
+      "source_id": "mimosa-overview",
+      "organization": "MIMOSA",
+      "title": "What is MIMOSA?",
+      "url": "https://www.mimosa.org/what-is-mimosa/"
+    }
+  ],
+  "source_systems": [
+    {
+      "system_id": "opc-ua-server",
+      "system_label": "OPC UA server or gateway",
+      "guidance_patterns": [
+        {
+          "pattern_id": "opcua-nodeid-namespace-guidance",
+          "source_construct": "NodeId and NamespaceUri",
+          "ssom_target": "identity.identifier_assignments",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "normalization",
+          "information_loss_risk": "low",
+          "required_profile": "identity-lifecycle-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "BrowsePath, NodeClass, and companion-specific type modeling need a UA profile if round-trip fidelity is required.",
+          "example_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json"
+          ]
+        },
+        {
+          "pattern_id": "opcua-variable-datavalue-guidance",
+          "source_construct": "Variable, DataValue, timestamp, status, and engineering unit metadata",
+          "ssom_target": "Observation and measurement semantics",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "normalization",
+          "information_loss_risk": "low",
+          "required_profile": "measurement-safety-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "StatusCode detail and Variant typing require a more specific UA projection profile.",
+          "example_refs": [
+            "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "historian",
+      "system_label": "Historian",
+      "guidance_patterns": [
+        {
+          "pattern_id": "historian-samples-guidance",
+          "source_construct": "time-series sample, late arrival, and revised evidence",
+          "ssom_target": "Observation with temporal_integrity and truth-state lineage",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "normalization",
+          "information_loss_risk": "low",
+          "required_profile": "measurement-safety-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.4/valid/truth-state-lineage-corrections-and-supersession.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Historian-specific compression, interpolation, and aggregate semantics are not standardized by SSOM core.",
+          "example_refs": [
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "eam",
+      "system_label": "EAM or CMMS",
+      "guidance_patterns": [
+        {
+          "pattern_id": "eam-asset-work-guidance",
+          "source_construct": "asset register, work request, work plan, work execution, verification, outcome",
+          "ssom_target": "Asset identity and reliability-maintenance lifecycle records",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "reliability-maintenance-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Closed-loop planning and labor or material accounting semantics depend on source-specific extensions.",
+          "example_refs": [
+            "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "servicenow-cmdb",
+      "system_label": "ServiceNow CMDB and OT Device constructs",
+      "guidance_patterns": [
+        {
+          "pattern_id": "servicenow-ci-otdevice-serving-projection",
+          "source_construct": "CI sys_id, CI class, OT Device CI, equipment model entity, relationship projection",
+          "ssom_target": "Asset, device_roles, equipment_roles, external identifiers, serving-projection profile",
+          "mapping_relationship": "requires_profile",
+          "mapping_direction": "projection_only",
+          "transformation_requirement": "projection_transform",
+          "information_loss_risk": "medium",
+          "required_profile": "serving-projection-profile",
+          "maturity": "documented_mapping",
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/servicenow-coexistence.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "ServiceNow class hierarchies do not map one-to-one to SSOM roles without a projection profile and local class governance.",
+          "example_refs": [
+            "docs/servicenow-coexistence.md",
+            "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "scada",
+      "system_label": "SCADA",
+      "guidance_patterns": [
+        {
+          "pattern_id": "scada-state-context-guidance",
+          "source_construct": "runtime tag identities, alarm state, command-adjacent context, and source payload",
+          "ssom_target": "Observation, Event, Alarm, provenance, external identifiers",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "medium",
+          "required_profile": "event-alarm-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Control-command semantics remain out of SSOM core scope unless surfaced as evidence or decision context.",
+          "example_refs": [
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "oem-cloud",
+      "system_label": "OEM cloud",
+      "guidance_patterns": [
+        {
+          "pattern_id": "oem-cloud-identity-guidance",
+          "source_construct": "OEM tenant identifier, device serial, health advisory, derived diagnostics",
+          "ssom_target": "external identifiers, source assertions, derived assertions, recommendations",
+          "mapping_relationship": "supports_interoperability_with",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "medium",
+          "required_profile": "identity-lifecycle-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Vendor-specific health scoring and proprietary rule explanations may require opaque source payload preservation rather than native SSOM fields.",
+          "example_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+          ]
+        }
+      ]
+    },
+    {
+      "system_id": "multi-source-identity-convergence",
+      "system_label": "Historian, EAM, CMDB, OEM cloud, and SCADA identity convergence",
+      "guidance_patterns": [
+        {
+          "pattern_id": "identity-convergence-guidance",
+          "source_construct": "site tag, CMDB CI, OEM cloud ID, historian path, SCADA object ID, EAM equipment ID",
+          "ssom_target": "single canonical Asset identity with scoped identifier assignments",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "identity-lifecycle-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Confidence scoring and conflict reconciliation policy remain implementation responsibilities outside the core repository.",
+          "example_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+          ]
+        }
+      ]
+    }
+  ]
+}

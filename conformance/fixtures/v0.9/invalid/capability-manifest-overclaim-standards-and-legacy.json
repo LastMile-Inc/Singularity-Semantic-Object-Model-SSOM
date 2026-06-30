@@ -1,0 +1,64 @@
+{
+  "manifest_id": "urn:ssom:capability-manifest:ssom-rfc-v0.9-overclaim",
+  "manifest_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "implementation": {
+    "name": "SSOM RFC Overclaim Example",
+    "implementation_class": "validation_harness",
+    "repository_scope": "public_rfc_repo"
+  },
+  "supported_profiles": [
+    {
+      "profile_id": "relationship-governance-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
+      ]
+    },
+    {
+      "profile_id": "relationship-governance-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json"
+      ]
+    }
+  ],
+  "conformance_artifacts": {
+    "schema_validation": {
+      "command": "npm run validate",
+      "result": "pass"
+    },
+    "fixture_validation": {
+      "command": "npm run validate",
+      "result": "pass"
+    }
+  },
+  "compatibility": {
+    "semantic_version": "0.9.0",
+    "backward_compatibility": "additive",
+    "legacy_artifacts": [
+      {
+        "path": "schemas/ssom-core.xsd",
+        "status": "example_only",
+        "compatibility_note": "Incorrectly treated as a supported example rather than deprecated placeholder."
+      }
+    ]
+  },
+  "standards_mapping_claims": [
+    {
+      "standard_ref": "ISA-95",
+      "claim_scope": "published_crosswalk",
+      "qualification": "Claims a published crosswalk without linking one."
+    }
+  ],
+  "provenance": {
+    "source_platform": "repo-maintainer",
+    "source_authority_id": "ssom-maintainer",
+    "source_reference": "capability-manifest-v0.9-overclaim",
+    "lineage_id": "lin-capability-manifest-v0.9-overclaim",
+    "ingest_time": "2026-06-30T18:00:00Z",
+    "processing_time": "2026-06-30T18:00:01Z"
+  }
+}

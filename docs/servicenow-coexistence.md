@@ -22,3 +22,7 @@ SSOM does not require ServiceNow CMDB or CSDM to become a complete industrial se
 - A single SSOM Asset may consolidate evidence from CMDB, EAM, historian, control-system, and cybersecurity sources.
 - A replacement Asset may retain the same ServiceNow-facing tag, CI display name, or functional location while remaining a different canonical SSOM Asset.
 - Smart operational assets such as PLCs, VFDs, and robot cells may be represented as both Equipment and Device in SSOM even when upstream platforms separate those concerns.
+
+## Prompt 8 crosswalk reference
+
+- Structured ServiceNow projection guidance now lives in `docs/source-system-mapping-guidance-v0.9.json` under the `servicenow-cmdb` mapping patterns.

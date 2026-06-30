@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Added: Traceable Standards Crosswalks And Claims Boundaries
+
+- Added a reusable standards-mapping artifact schema and structured Prompt 8 artifacts for the standards crosswalk matrix, source-system mapping guidance, transformation-loss register, profile applicability matrix, and standards claims matrix.
+- Added field-level, qualified mapping entries for MIMOSA, ISA-95, OPC UA, O-PAS, ISO 14224, ISO 55000, IEC 81346, IEC 62443, IEC 61511, ISA-18 or IEC 62682, ISA-88, B2MML, and AutomationML.
+- Added validator checks proving mapping artifacts include maturity and limitation fields, profile-dependent mappings identify required profiles, and README standards language stays within the allowed claim boundary.
+
+### Changed: Standards Documentation
+
+- README now positions SSOM as an AI-native semantic bridge and links to the new structured crosswalk artifacts.
+- ServiceNow coexistence guidance now points to the structured Prompt 8 source-system mapping artifact.
+
+### Added: Capability Manifest And Topology Coverage
+
+- Added a capability-manifest JSON Schema plus valid and invalid fixtures covering supported profile declarations, executable evidence, qualified standards-mapping claims, and legacy-artifact posture.
+- Added semantic validation rejecting duplicate profile claims, unsupported published-crosswalk claims, and placeholder XSDs that are not marked deprecated and non-normative.
+- Added a v0.9 utility-substation relationship bundle proving SSOM can represent relays, breakers, transformers, control cabinets, zones, and conduits in one governed topology.
+
+### Changed: Governance And Legacy Artifact Posture
+
+- Expanded governance with controlled vocabulary stewardship, extension namespace registration, profile approval, versioning, deprecation workflow, ADR expectations, standards-mapping review, security disclosure, and public-versus-proprietary boundary guidance.
+- Marked placeholder XSD artifacts as deprecated non-normative compatibility markers and clarified that reference BigQuery SQL is example-only rather than a normative semantic definition.
+
 ### Added: P0 Closure Edge-Case Hardening
 
 - Added v0.4 truth-state lineage fixtures proving corrected source assertions, superseded derived assertions, revised inferences, superseded recommendations, and reassessed outcomes preserve original evidence, provenance, and temporal context.

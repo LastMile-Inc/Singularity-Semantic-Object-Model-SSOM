@@ -74,6 +74,7 @@ const unitCatalog = {
   BAR: { dimension: "pressure" },
   KPA: { dimension: "pressure" },
   PA: { dimension: "pressure" },
+  PSI: { dimension: "pressure" },
   DEG_F: { dimension: "temperature" },
   DEG_C: { dimension: "temperature" },
   GAL_US_PER_MIN: { dimension: "volumetric_flow_rate" },
@@ -144,6 +145,24 @@ function validateMeasurementObservation(testName, relativePath) {
       observation.conversion_lineage.canonical_unit.unit_code === observation.canonical_measurement.canonical_unit.unit_code,
       `${testName} conversion lineage must retain the canonical unit.`
     );
+
+    for (const consumer of observation.extensions?.analytical_consumers || []) {
+      const consumerExpectedDimension = quantityKindDimensions[consumer.expected_quantity_kind];
+      assert(consumerExpectedDimension, `${testName} analytical consumer ${consumer.consumer_id} must declare a governed quantity kind.`);
+
+      const consumerUnitDimension = getUnitDimension(
+        { unit_code: consumer.expected_unit_code },
+        `${testName} analytical consumer ${consumer.consumer_id} expected unit`
+      );
+      assert(
+        consumerExpectedDimension === consumerUnitDimension,
+        `${testName} analytical consumer ${consumer.consumer_id} must expect a unit compatible with ${consumer.expected_quantity_kind}.`
+      );
+      assert(
+        observation.canonical_measurement.canonical_unit.unit_code === consumer.expected_unit_code,
+        `${testName} analytical consumer ${consumer.consumer_id} must receive canonical unit ${consumer.expected_unit_code}.`
+      );
+    }
   }
 
   if (observation.original_measurement && !observation.canonical_measurement) {
@@ -174,6 +193,268 @@ function validateMeasurementObservation(testName, relativePath) {
   }
 
   return observation;
+}
+
+function validateCapabilityManifest(testName, relativePath) {
+  return validateFixture(testName, "capability-manifest.json", relativePath);
+}
+
+function ensureCapabilityManifestSemantics(manifest, testName) {
+  const seenProfiles = new Set();
+
+  for (const profile of manifest.supported_profiles || []) {
+    assert(!seenProfiles.has(profile.profile_id), `${testName} must not repeat supported profile ${profile.profile_id}.`);
+    seenProfiles.add(profile.profile_id);
+    assert((profile.evidence_refs || []).length > 0, `${testName} profile ${profile.profile_id} must include at least one evidence reference.`);
+    if (profile.support_level === "projected") {
+      assert(profile.projection_surface, `${testName} projected profile ${profile.profile_id} must declare a projection surface.`);
+    }
+  }
+
+  assert(
+    manifest.conformance_artifacts?.schema_validation?.result === "pass",
+    `${testName} must not claim schema validation support without a passing schema validation result.`
+  );
+  assert(
+    manifest.conformance_artifacts?.fixture_validation?.result === "pass",
+    `${testName} must not claim fixture validation support without a passing fixture validation result.`
+  );
+
+  for (const artifact of manifest.compatibility?.legacy_artifacts || []) {
+    if (artifact.path.endsWith(".xsd")) {
+      assert(
+        artifact.status === "deprecated_non_normative",
+        `${testName} placeholder legacy XSD artifacts must be declared deprecated and non-normative.`
+      );
+    }
+  }
+
+  for (const claim of manifest.standards_mapping_claims || []) {
+    if (claim.claim_scope === "published_crosswalk") {
+      assert(
+        claim.crosswalk_artifact_ref,
+        `${testName} published crosswalk claims must reference a crosswalk artifact.`
+      );
+    }
+  }
+}
+
+function expectInvalidCapabilityManifest(testName, relativePath, expectedFragment) {
+  try {
+    const manifest = validateCapabilityManifest(testName, relativePath);
+    ensureCapabilityManifestSemantics(manifest, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateStandardsMappingArtifact(testName, relativePath) {
+  return validateFixture(testName, "standards-mapping-artifact.json", relativePath);
+}
+
+function assertWorkspacePathExists(relativePath, testName, label) {
+  assert(fs.existsSync(path.join(rootDir, relativePath)), `${testName} references missing ${label} ${relativePath}.`);
+}
+
+function ensureEvidenceRefsExist(entries, testName, label) {
+  for (const entry of entries || []) {
+    assertWorkspacePathExists(entry.artifact_ref, testName, label);
+  }
+}
+
+function ensureStringRefsExist(entries, testName, label) {
+  for (const entry of entries || []) {
+    assertWorkspacePathExists(entry, testName, label);
+  }
+}
+
+function ensureMappingEntrySemantics(entry, testName) {
+  ensureEvidenceRefsExist(entry.repo_evidence, testName, "repo evidence");
+  ensureStringRefsExist(entry.test_fixture_refs, testName, "test fixture");
+  if (
+    entry.mapping_relationship === "requires_profile" ||
+    entry.transformation_requirement === "profile_constraint"
+  ) {
+    assert(entry.required_profile, `${testName} mapping ${entry.mapping_id} must identify its required profile.`);
+  }
+}
+
+function ensureStandardsMappingArtifactSemantics(artifact, testName) {
+  ensureEvidenceRefsExist(
+    (artifact.claims || []).flatMap((claim) =>
+      (claim.required_evidence_refs || []).map((artifactRef) => ({ artifact_ref: artifactRef }))
+    ),
+    testName,
+    "required evidence"
+  );
+
+  switch (artifact.artifact_type) {
+    case "crosswalk_matrix": {
+      const expectedAreas = new Set([
+        "mimosa-ccom-osa-eai",
+        "isa95-iec62264",
+        "opc-ua-core-and-companions",
+        "opas-principles",
+        "iso-14224",
+        "iso-55000",
+        "iec-81346",
+        "iec-62443",
+        "iec-61511",
+        "isa18-iec62682",
+        "isa88",
+        "b2mml",
+        "automationml"
+      ]);
+      const seenAreas = new Set();
+      const requiredMappings = new Set([
+        "opcua-nodeid-identifier-assignment",
+        "opcua-datavalue-observation",
+        "opcua-event-alarm",
+        "isa95-equipment-hierarchy-boundaries",
+        "mimosa-asset-lifecycle",
+        "iso14224-failure-work-outcome",
+        "iec81346-designation-identifiers",
+        "iec62443-zone-conduit-foundation",
+        "iec61511-safety-bypass-proof-context"
+      ]);
+      const seenMappings = new Set();
+
+      for (const area of artifact.standards_areas || []) {
+        seenAreas.add(area.standard_id);
+        for (const mapping of area.mappings || []) {
+          ensureMappingEntrySemantics(mapping, testName);
+          seenMappings.add(mapping.mapping_id);
+        }
+      }
+
+      assert(seenAreas.size === expectedAreas.size, `${testName} must cover exactly 13 standards areas.`);
+      for (const areaId of expectedAreas) {
+        assert(seenAreas.has(areaId), `${testName} is missing standards area ${areaId}.`);
+      }
+      for (const mappingId of requiredMappings) {
+        assert(seenMappings.has(mappingId), `${testName} is missing required mapping example ${mappingId}.`);
+      }
+      break;
+    }
+    case "source_system_mapping_guidance": {
+      const requiredSystems = new Set([
+        "opc-ua-server",
+        "historian",
+        "eam",
+        "servicenow-cmdb",
+        "scada",
+        "oem-cloud",
+        "multi-source-identity-convergence"
+      ]);
+      const seenSystems = new Set();
+      let hasServiceNowPattern = false;
+
+      for (const system of artifact.source_systems || []) {
+        seenSystems.add(system.system_id);
+        for (const pattern of system.guidance_patterns || []) {
+          ensureEvidenceRefsExist(pattern.repo_evidence, testName, "repo evidence");
+          ensureStringRefsExist(pattern.example_refs || [], testName, "example reference");
+          if (
+            pattern.mapping_relationship === "requires_profile" ||
+            pattern.transformation_requirement === "profile_constraint" ||
+            pattern.transformation_requirement === "projection_transform"
+          ) {
+            assert(pattern.required_profile, `${testName} pattern ${pattern.pattern_id} must identify its required profile.`);
+          }
+          if (pattern.pattern_id === "servicenow-ci-otdevice-serving-projection") {
+            hasServiceNowPattern = true;
+          }
+        }
+      }
+
+      for (const systemId of requiredSystems) {
+        assert(seenSystems.has(systemId), `${testName} is missing source-system guidance for ${systemId}.`);
+      }
+      assert(hasServiceNowPattern, `${testName} must include the ServiceNow serving-projection mapping pattern.`);
+      break;
+    }
+    case "transformation_loss_register": {
+      let hasHighRisk = false;
+      for (const transformation of artifact.transformations || []) {
+        ensureEvidenceRefsExist(transformation.repo_evidence, testName, "repo evidence");
+        ensureStringRefsExist(transformation.test_fixture_refs || [], testName, "test fixture");
+        if (transformation.required_profile) {
+          assert(transformation.required_profile.length > 0, `${testName} transformation ${transformation.transformation_id} must name its required profile.`);
+        }
+        if (transformation.information_loss_risk === "high") {
+          hasHighRisk = true;
+        }
+      }
+      assert(hasHighRisk, `${testName} must record at least one high-risk transformation-loss scenario.`);
+      break;
+    }
+    case "profile_applicability_matrix": {
+      const requiredProfiles = new Set([
+        "identity-lifecycle-profile",
+        "measurement-safety-profile",
+        "reliability-maintenance-profile",
+        "event-alarm-profile",
+        "relationship-governance-profile",
+        "serving-projection-profile",
+        "batch-recipe-profile"
+      ]);
+      const seenProfiles = new Set();
+      for (const profile of artifact.profiles || []) {
+        seenProfiles.add(profile.profile_id);
+        for (const applicability of profile.standard_applicability || []) {
+          ensureEvidenceRefsExist(applicability.repo_evidence, testName, "repo evidence");
+          if (applicability.applicability === "profile_required") {
+            assert(
+              (applicability.required_for_claims || []).length > 0,
+              `${testName} profile ${profile.profile_id} must declare claim prerequisites for profile-required applicability.`
+            );
+          }
+        }
+      }
+      for (const profileId of requiredProfiles) {
+        assert(seenProfiles.has(profileId), `${testName} is missing profile applicability entry ${profileId}.`);
+      }
+      break;
+    }
+    case "standards_claims_matrix": {
+      const requiredCategories = new Set(["safe_now", "safe_with_profiles", "not_safe_yet", "never_safe"]);
+      const seenCategories = new Set();
+      for (const claim of artifact.claims || []) {
+        seenCategories.add(claim.claim_category);
+        ensureStringRefsExist(claim.required_evidence_refs || [], testName, "required evidence");
+        if (claim.claim_category === "safe_with_profiles") {
+          assert((claim.required_profiles || []).length > 0, `${testName} claim ${claim.claim_id} must name required profiles.`);
+        }
+      }
+      for (const category of requiredCategories) {
+        assert(seenCategories.has(category), `${testName} is missing standards-claims category ${category}.`);
+      }
+      break;
+    }
+    default:
+      throw new Error(`${testName} uses unknown standards-mapping artifact type ${artifact.artifact_type}.`);
+  }
+}
+
+function ensureReadmeClaimDiscipline(testName) {
+  const readme = fs.readFileSync(path.join(rootDir, "README.md"), "utf8").toLowerCase();
+  const requiredPhrase = "an ai-native semantic bridge designed to align with and preserve relevant semantics from established ot interoperability, lifecycle, and operations standards.";
+  const forbiddenPhrases = [
+    "compliant with",
+    "certified against",
+    "replacement for",
+    "fully implements",
+    "universal standard"
+  ];
+
+  assert(readme.includes(requiredPhrase), `${testName} README must include the qualified AI-native semantic bridge statement.`);
+  for (const phrase of forbiddenPhrases) {
+    assert(!readme.includes(phrase), `${testName} README must not contain unsupported standards claim phrase \"${phrase}\".`);
+  }
 }
 
 function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
@@ -608,6 +889,7 @@ function ensureEventAlarmSemantics(bundle, testName) {
     ...(bundle.work_executions || []).map((entry) => entry.action_id)
   ]);
   const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const eventById = new Map((bundle.events || []).map((entry) => [entry.event_id, entry]));
 
   for (const observation of bundle.observations || []) {
     assert(
@@ -771,6 +1053,33 @@ function ensureEventAlarmSemantics(bundle, testName) {
       testName,
       `work verification ${verification.verification_id} must reference known evidence.`
     );
+  }
+
+  for (const execution of bundle.work_executions || []) {
+    if (execution.action_status !== "completed") {
+      continue;
+    }
+
+    const executionTime = parseTimestamp(execution.executed_at, `${execution.action_id} executed_at`);
+    for (const transition of bundle.state_transitions || []) {
+      if (transition.to_state !== "enabled") {
+        continue;
+      }
+
+      const sourceEvent = transition.source_ref ? eventById.get(transition.source_ref) : null;
+      if (!sourceEvent || sourceEvent.event_type !== "safety_bypass_activated") {
+        continue;
+      }
+
+      const validTo = transition.valid_to
+        ? parseTimestamp(transition.valid_to, `${transition.transition_id} valid_to`)
+        : Number.POSITIVE_INFINITY;
+
+      assert(
+        validTo <= executionTime,
+        `${testName} completed work execution ${execution.action_id} must not close while a safety bypass remains active.`
+      );
+    }
   }
 }
 
@@ -1624,6 +1933,12 @@ const temperatureObservation = validateMeasurementObservation(
 );
 assert(temperatureObservation.canonical_measurement.quantity_kind === "temperature", "Temperature observation must declare quantity kind.");
 
+const pressureConsumerObservation = validateMeasurementObservation(
+  "pressure normalization for psi analytical consumer",
+  "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json"
+);
+assert(pressureConsumerObservation.canonical_measurement.canonical_unit.unit_code === "PSI", "Pressure analytical consumer scenario must normalize to PSI.");
+
 const vibrationObservationAccel = validateMeasurementObservation(
   "vibration acceleration normalization",
   "conformance/fixtures/v0.6/valid/observation-vibration-g-normalized.json"
@@ -1873,6 +2188,34 @@ assert(falseAlarmBundle.alarms[0].alarm_state === "cleared", "False alarm scenar
 assert(falseAlarmBundle.work_verifications[0].verification_status === "verified", "False alarm scenario must preserve later verification evidence.");
 results.push("false alarms can be linked to instrument drift and later verification without erasing the original alarm evidence");
 
+const capabilityManifest = validateCapabilityManifest(
+  "core capability manifest",
+  "conformance/fixtures/v0.9/valid/capability-manifest-core-profiles.json"
+);
+ensureCapabilityManifestSemantics(capabilityManifest, "core capability manifest");
+results.push("capability manifests can declare supported profiles, qualified standards claims, executable evidence, and legacy-artifact posture without overclaiming conformance");
+
+for (const [label, relativePath] of [
+  ["standards crosswalk matrix", "docs/standards-crosswalk-matrix-v0.9.json"],
+  ["source-system mapping guidance", "docs/source-system-mapping-guidance-v0.9.json"],
+  ["transformation-loss register", "docs/transformation-loss-register-v0.9.json"],
+  ["profile applicability matrix", "docs/profile-applicability-matrix-v0.9.json"],
+  ["standards claims matrix", "docs/standards-claims-matrix-v0.9.json"]
+]) {
+  const artifact = validateStandardsMappingArtifact(label, relativePath);
+  ensureStandardsMappingArtifactSemantics(artifact, label);
+}
+ensureReadmeClaimDiscipline("standards claim discipline");
+results.push("standards crosswalk artifacts validate structurally, require maturity and limitation fields, and identify profile-dependent mappings explicitly");
+results.push("README standards language remains qualified and avoids unsupported compliance-style claims");
+
+expectInvalidCapabilityManifest(
+  "capability manifest overclaim",
+  "conformance/fixtures/v0.9/invalid/capability-manifest-overclaim-standards-and-legacy.json",
+  "must not repeat supported profile relationship-governance-profile"
+);
+results.push("capability manifests reject duplicate profile claims, unsupported standards crosswalk claims, and non-deprecated placeholder XSD posture");
+
 expectInvalidEventAlarmBundle(
   "alarm semantics collapsed into condition free text",
   "conformance/fixtures/v0.8/invalid/event-alarm-bundle-condition-freeform-alarm.json",
@@ -1901,6 +2244,13 @@ expectInvalidEventAlarmBundle(
 );
 results.push("suppression and shelving require provenance and an explicit valid interval");
 
+expectInvalidEventAlarmBundle(
+  "completed work while safety bypass remains active",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-safety-bypass-work-closed-while-active.json",
+  "must not close while a safety bypass remains active"
+);
+results.push("completed work cannot be represented as closed if the governing safety bypass remains active beyond work completion");
+
 const coolingWaterBundle = validateRelationshipBundle(
   "cooling water system relationship bundle",
   "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
@@ -1921,6 +2271,37 @@ const robotCellBundle = validateRelationshipBundle(
 );
 ensureRelationshipSemantics(robotCellBundle, "robot cell relationship bundle");
 results.push("robot cells can be modeled as composite operational boundaries with constituent controllers, sensors, HMI, and line context");
+
+const utilitySubstationBundle = validateRelationshipBundle(
+  "utility substation topology bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json"
+);
+ensureRelationshipSemantics(utilitySubstationBundle, "utility substation topology bundle");
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "power_transformer"),
+  "Utility substation topology must include a transformer asset."
+);
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "protective_relay"),
+  "Utility substation topology must include a protective relay asset."
+);
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "conduit_run"),
+  "Utility substation topology must include a conduit asset."
+);
+results.push("utility substations can be modeled with relays, breakers, transformers, control cabinets, zones, and conduits in one governed topology bundle");
+
+const productionLineBundle = validateRelationshipBundle(
+  "production line vfd cyber-risk bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+);
+ensureRelationshipSemantics(productionLineBundle, "production line vfd cyber-risk bundle");
+const productionLineVfd = productionLineBundle.assets.find((asset) => asset.asset_id === "urn:ssom:asset:vfd-line7-01");
+assert(
+  productionLineVfd?.extensions?.cyber_posture?.vulnerability_state === "known_vulnerable",
+  "Production-line cyber-risk scenario must preserve vulnerable VFD firmware posture."
+);
+results.push("production lines can bundle conveyor, motor, VFD, PLC, sensor, functional location, and vulnerable firmware posture in one governed system model");
 
 const processSegmentBundle = validateRelationshipBundle(
   "process segment upstream downstream bundle",

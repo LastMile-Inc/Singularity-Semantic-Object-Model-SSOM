@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/capability-manifest.json",
+  "title": "SSOM Capability Manifest",
+  "description": "Declares the SSOM profiles, evidence, compatibility posture, and qualified standards-mapping claims an implementation supports.",
+  "type": "object",
+  "required": [
+    "manifest_id",
+    "manifest_version",
+    "ssom_version",
+    "implementation",
+    "supported_profiles",
+    "conformance_artifacts",
+    "compatibility",
+    "provenance"
+  ],
+  "properties": {
+    "manifest_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:capability-manifest:"
+    },
+    "manifest_version": {
+      "type": "string"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "implementation": {
+      "type": "object",
+      "required": [
+        "name",
+        "implementation_class",
+        "repository_scope"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "implementation_class": {
+          "type": "string",
+          "enum": [
+            "reference_implementation",
+            "validation_harness",
+            "producer",
+            "consumer",
+            "profile_projection"
+          ]
+        },
+        "repository_scope": {
+          "type": "string",
+          "enum": [
+            "public_rfc_repo",
+            "private_implementation_repo",
+            "mixed"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "supported_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "profile_id",
+          "profile_version",
+          "support_level",
+          "evidence_refs"
+        ],
+        "properties": {
+          "profile_id": {
+            "type": "string"
+          },
+          "profile_version": {
+            "type": "string"
+          },
+          "support_level": {
+            "type": "string",
+            "enum": [
+              "implemented",
+              "validated",
+              "projected"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "projection_surface": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "conformance_artifacts": {
+      "type": "object",
+      "required": [
+        "schema_validation",
+        "fixture_validation"
+      ],
+      "properties": {
+        "schema_validation": {
+          "type": "object",
+          "required": [
+            "command",
+            "result"
+          ],
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail"
+              ]
+            },
+            "evidence_ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "fixture_validation": {
+          "type": "object",
+          "required": [
+            "command",
+            "result"
+          ],
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail"
+              ]
+            },
+            "evidence_ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "review_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "compatibility": {
+      "type": "object",
+      "required": [
+        "semantic_version",
+        "backward_compatibility",
+        "legacy_artifacts"
+      ],
+      "properties": {
+        "semantic_version": {
+          "type": "string"
+        },
+        "backward_compatibility": {
+          "type": "string",
+          "enum": [
+            "additive",
+            "breaking",
+            "mixed"
+          ]
+        },
+        "legacy_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "status",
+              "compatibility_note"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "deprecated_non_normative",
+                  "example_only",
+                  "not_supported"
+                ]
+              },
+              "compatibility_note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "standards_mapping_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "standard_ref",
+          "claim_scope",
+          "qualification"
+        ],
+        "properties": {
+          "standard_ref": {
+            "type": "string"
+          },
+          "claim_scope": {
+            "type": "string",
+            "enum": [
+              "conceptual_alignment",
+              "partial_mapping",
+              "published_crosswalk"
+            ]
+          },
+          "qualification": {
+            "type": "string"
+          },
+          "crosswalk_artifact_ref": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,160 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:sif301-bypass-activated",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-301",
+      "event_type": "safety_bypass_activated",
+      "event_category": "safety",
+      "event_time": "2026-06-30T14:00:00Z",
+      "event_description": "Safety bypass was activated for valve positioner replacement.",
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "bypass_key": "BYP-301",
+          "source_state": "ENABLED"
+        }
+      },
+      "state_transition": {
+        "from_state": "disabled",
+        "to_state": "enabled",
+        "transition_type": "state_change",
+        "event_time": "2026-06-30T14:00:00Z",
+        "confidence": 0.98
+      },
+      "provenance": {
+        "source_platform": "sis",
+        "source_authority_id": "safety-system",
+        "source_reference": "evt-sif301-byp-001",
+        "lineage_id": "lin-evt-sif301-byp-001",
+        "ingest_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:00:00Z",
+        "receive_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:sif301-positioner-replacement",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-301",
+      "request_type": "instrument_replacement",
+      "request_status": "approved",
+      "requested_action": "Replace the faulty valve positioner and restore the safety bypass.",
+      "basis_refs": ["urn:ssom:event:sif301-bypass-activated"],
+      "requested_at": "2026-06-30T14:01:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "maintenance-supervisor",
+        "source_reference": "wr-sif301-001",
+        "lineage_id": "lin-wr-sif301-001",
+        "ingest_time": "2026-06-30T14:01:01Z",
+        "processing_time": "2026-06-30T14:01:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:01:00Z",
+        "receive_time": "2026-06-30T14:01:01Z",
+        "processing_time": "2026-06-30T14:01:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:sif301-positioner-replacement-plan",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-301",
+      "work_request_ref": "urn:ssom:work-request:sif301-positioner-replacement",
+      "plan_status": "approved",
+      "planned_actions": ["Activate bypass", "Replace positioner", "Restore bypass"],
+      "planned_verification_method": "Safety-system permissive restoration check",
+      "expected_outcome": {
+        "description": "Complete positioner replacement and return the bypass to disabled state."
+      },
+      "planned_start": "2026-06-30T14:05:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-sif301-001",
+        "lineage_id": "lin-wp-sif301-001",
+        "ingest_time": "2026-06-30T14:02:01Z",
+        "processing_time": "2026-06-30T14:02:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:02:00Z",
+        "receive_time": "2026-06-30T14:02:01Z",
+        "processing_time": "2026-06-30T14:02:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:sif301-positioner-replacement-execution",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.8.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:sif-301",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:sif301-positioner-replacement-plan"],
+      "executed_at": "2026-06-30T14:25:00Z",
+      "work_request_ref": "urn:ssom:work-request:sif301-positioner-replacement",
+      "work_plan_ref": "urn:ssom:work-plan:sif301-positioner-replacement-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "instrument-technician",
+        "source_reference": "wx-sif301-001",
+        "lineage_id": "lin-wx-sif301-001",
+        "ingest_time": "2026-06-30T14:25:01Z",
+        "processing_time": "2026-06-30T14:25:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:25:00Z",
+        "receive_time": "2026-06-30T14:25:01Z",
+        "processing_time": "2026-06-30T14:25:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "state_transitions": [
+    {
+      "transition_id": "urn:ssom:state-transition:sif301-bypass-enabled",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:sif-301",
+      "state_subject_type": "asset",
+      "from_state": "disabled",
+      "to_state": "enabled",
+      "transition_type": "state_change",
+      "event_time": "2026-06-30T14:00:00Z",
+      "valid_from": "2026-06-30T14:00:00Z",
+      "valid_to": "2026-06-30T14:45:00Z",
+      "confidence": 0.98,
+      "source_ref": "urn:ssom:event:sif301-bypass-activated",
+      "evidence_refs": [
+        "urn:ssom:event:sif301-bypass-activated",
+        "urn:ssom:action:sif301-positioner-replacement-execution"
+      ],
+      "provenance": {
+        "source_platform": "sis",
+        "source_authority_id": "safety-system",
+        "source_reference": "st-sif301-byp-001",
+        "lineage_id": "lin-st-sif301-byp-001",
+        "ingest_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:00:00Z",
+        "receive_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

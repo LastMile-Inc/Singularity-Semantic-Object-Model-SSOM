@@ -13,6 +13,7 @@
 - [ ] Systems, Process Segments, Production Units, and Control Entities can be represented as non-serialized operational boundaries.
 - [ ] Namespaced extension relationships preserve source-specific relationship semantics with mapping metadata and provenance.
 - [ ] Time-bounded relationships preserve valid temporal intervals.
+- [ ] Utility-substation topology can represent relays, breakers, transformers, control cabinets, zones, and conduits in one governed bundle.
 
 ## Integrated Lifecycle Profile
 - [ ] Pump P-101 integrated lifecycle bundle validates across truth-state, measurement-safety, reliability, and identity-continuity semantics.
@@ -21,6 +22,13 @@
 - [ ] Immediate post-work vibration reduction does not automatically imply sustained reliability improvement.
 - [ ] Recurrence remains linked to earlier work, outcome, and failure context.
 - [ ] Replacement preserves predecessor or successor lineage and full provenance history.
+
+## Capability Manifest Profile
+- [ ] Capability manifests declare supported profiles with evidence references.
+- [ ] Projected support claims declare a projection surface rather than implying executable support.
+- [ ] Standards-mapping claims remain qualified unless a published crosswalk artifact is referenced.
+- [ ] Placeholder XSD artifacts are marked deprecated and non-normative.
+- [ ] Reference SQL artifacts are explicitly treated as examples rather than normative semantic definitions.
 
 ## Standards Discipline
 - [ ] Implementations do not claim complete ISA-95 hierarchy conformance from the core boundary model alone.

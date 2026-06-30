@@ -1,1 +1,5 @@
--- BigQuery schema SQL placeholder
+-- Non-normative reference-implementation marker.
+--
+-- This file does not define the SSOM semantic contract.
+-- Maintained normative semantics are defined by the RFCs, JSON Schemas, and executable conformance fixtures.
+-- Any future BigQuery DDL in this directory should be treated as an implementation example only.

@@ -1,0 +1,248 @@
+{
+  "operational_boundaries": [
+    {
+      "boundary_id": "urn:ssom:operational-boundary:line-7",
+      "boundary_type": "production_unit",
+      "display_name": "Production Line 7",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "mes",
+        "source_authority_id": "mes",
+        "source_reference": "line:7",
+        "lineage_id": "lin-line-7",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:line-7-conveyance",
+      "boundary_type": "functional_system",
+      "display_name": "Line 7 Conveyance System",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:line-7",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "mes",
+        "source_authority_id": "mes",
+        "source_reference": "system:line7-conveyance",
+        "lineage_id": "lin-line-7-conveyance",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      }
+    }
+  ],
+  "functional_locations": [
+    {
+      "location_id": "urn:ssom:functional-location:plant4-line7-station2",
+      "display_name": "Plant-4/Line-7/Station-2",
+      "location_type": "production_station",
+      "ssom_version": "0.9.0"
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:conveyor-line7-01",
+      "asset_type": "conveyor",
+      "display_name": "Conveyor Line7-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": ["material_handling_equipment", "production_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "eam", "source_reference": "asset:CONV-L7-01" }],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:motor-line7-01",
+      "asset_type": "electric_motor",
+      "display_name": "Motor Line7-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "component",
+      "equipment_roles": ["utility_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "eam", "source_reference": "asset:MOTOR-L7-01" }],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:vfd-line7-01",
+      "asset_type": "variable_frequency_drive",
+      "display_name": "VFD Line7-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "equipment_roles": ["utility_equipment"],
+      "device_roles": ["control_device", "actuation_device", "communication_device"],
+      "lifecycle_roles": ["serialized_asset", "cyber_managed_asset"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:VFD-L7-01" }],
+        "confidence": 0.96
+      },
+      "extensions": {
+        "cyber_posture": {
+          "firmware_version": "3.2.1",
+          "vulnerability_state": "known_vulnerable",
+          "risk_note": "Drive remains on an unpatched firmware version while controlling a production conveyor."
+        }
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:plc-line7-01",
+      "asset_type": "plc",
+      "display_name": "PLC Line7-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "device_roles": ["control_device", "compute_device"],
+      "lifecycle_roles": ["serialized_asset", "cyber_managed_asset"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:PLC-L7-01" }],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:pe-line7-01",
+      "asset_type": "photoeye_sensor",
+      "display_name": "Photoeye Line7-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "instrument",
+      "device_roles": ["sensing_device", "measurement_device"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "instrument-index", "source_reference": "inst:PE-L7-01" }],
+        "confidence": 0.95
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:line7-contains-conveyor",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:line-7",
+      "to_ref": "urn:ssom:asset:conveyor-line7-01",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "mes",
+        "source_authority_id": "mes",
+        "source_reference": "LINE7>CONV",
+        "lineage_id": "lin-line7-conveyor",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:conveyor-contained-in-conveyance-system",
+      "relationship_type": "is_contained_in",
+      "from_ref": "urn:ssom:asset:conveyor-line7-01",
+      "to_ref": "urn:ssom:operational-boundary:line-7-conveyance",
+      "confidence": 0.95,
+      "provenance": {
+        "source_platform": "mes",
+        "source_authority_id": "mes",
+        "source_reference": "CONV>CONVEYANCE",
+        "lineage_id": "lin-conveyor-conveyance",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:conveyor-installed-in-station2",
+      "relationship_type": "is_installed_in",
+      "from_ref": "urn:ssom:asset:conveyor-line7-01",
+      "to_ref": "urn:ssom:functional-location:plant4-line7-station2",
+      "confidence": 0.93,
+      "provenance": {
+        "source_platform": "functional_location_registry",
+        "source_authority_id": "functional_location_registry",
+        "source_reference": "CONV@STATION2",
+        "lineage_id": "lin-conveyor-station2",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:station2-hosts-plc-line7",
+      "relationship_type": "hosts",
+      "from_ref": "urn:ssom:functional-location:plant4-line7-station2",
+      "to_ref": "urn:ssom:asset:plc-line7-01",
+      "confidence": 0.9,
+      "provenance": {
+        "source_platform": "ot_cmdb",
+        "source_authority_id": "ot_cmdb",
+        "source_reference": "STATION2>PLC",
+        "lineage_id": "lin-station2-plc",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:plc-line7-controls-vfd",
+      "relationship_type": "controls",
+      "from_ref": "urn:ssom:asset:plc-line7-01",
+      "to_ref": "urn:ssom:asset:vfd-line7-01",
+      "confidence": 0.96,
+      "provenance": {
+        "source_platform": "controls_design",
+        "source_authority_id": "controls",
+        "source_reference": "PLC>VFD",
+        "lineage_id": "lin-plc-vfd-line7",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:vfd-line7-powers-motor",
+      "relationship_type": "powers",
+      "from_ref": "urn:ssom:asset:vfd-line7-01",
+      "to_ref": "urn:ssom:asset:motor-line7-01",
+      "confidence": 0.94,
+      "provenance": {
+        "source_platform": "controls_design",
+        "source_authority_id": "controls",
+        "source_reference": "VFD>MOTOR",
+        "lineage_id": "lin-vfd-motor-line7",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:motor-line7-drives-conveyor",
+      "relationship_type": "drives",
+      "from_ref": "urn:ssom:asset:motor-line7-01",
+      "to_ref": "urn:ssom:asset:conveyor-line7-01",
+      "confidence": 0.95,
+      "provenance": {
+        "source_platform": "mechanical_design",
+        "source_authority_id": "engineering",
+        "source_reference": "MOTOR>CONVEYOR",
+        "lineage_id": "lin-motor-conveyor-line7",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:photoeye-line7-monitors-conveyor",
+      "relationship_type": "monitors",
+      "from_ref": "urn:ssom:asset:pe-line7-01",
+      "to_ref": "urn:ssom:asset:conveyor-line7-01",
+      "confidence": 0.93,
+      "provenance": {
+        "source_platform": "monitoring_design",
+        "source_authority_id": "controls",
+        "source_reference": "PE>CONVEYOR",
+        "lineage_id": "lin-photoeye-conveyor-line7",
+        "ingest_time": "2026-06-30T18:30:00Z",
+        "processing_time": "2026-06-30T18:30:01Z"
+      },
+      "direction": "directed"
+    }
+  ]
+}

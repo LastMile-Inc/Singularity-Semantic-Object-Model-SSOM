@@ -1,0 +1,244 @@
+{
+  "artifact_id": "urn:ssom:standards-mapping:profile-applicability:v0.9",
+  "artifact_type": "profile_applicability_matrix",
+  "artifact_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "primary_source_refs": [
+    {
+      "source_id": "isa95-committee",
+      "organization": "ISA",
+      "title": "ISA95, Enterprise-Control System Integration",
+      "url": "https://www.isa.org/isa95"
+    },
+    {
+      "source_id": "opc-ua-overview",
+      "organization": "OPC Foundation",
+      "title": "Unified Architecture - Landingpage",
+      "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+    }
+  ],
+  "profiles": [
+    {
+      "profile_id": "identity-lifecycle-profile",
+      "profile_label": "Identity Lifecycle Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "mimosa-ccom-osa-eai",
+          "applicability": "core_support",
+          "required_for_claims": ["asset lifecycle continuity mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Exchange bindings remain transformation-specific."
+        },
+        {
+          "standard_id": "opc-ua-core-and-companions",
+          "applicability": "core_support",
+          "required_for_claims": ["NodeId and NamespaceUri continuity mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Companion-specific identity context is not yet profiled."
+        }
+      ]
+    },
+    {
+      "profile_id": "measurement-safety-profile",
+      "profile_label": "Measurement Safety Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "opc-ua-core-and-companions",
+          "applicability": "core_support",
+          "required_for_claims": ["DataValue and unit normalization mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Rich UA status metadata is not lossless by default."
+        },
+        {
+          "standard_id": "iso-14224",
+          "applicability": "projection_only",
+          "required_for_claims": ["quantitative evidence comparability"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "ISO 14224 reporting semantics still require a reliability reporting profile."
+        }
+      ]
+    },
+    {
+      "profile_id": "reliability-maintenance-profile",
+      "profile_label": "Reliability and Maintenance Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "mimosa-ccom-osa-eai",
+          "applicability": "core_support",
+          "required_for_claims": ["maintenance and work-history mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "No MIMOSA-native message profile is published."
+        },
+        {
+          "standard_id": "iso-14224",
+          "applicability": "core_support",
+          "required_for_claims": ["failure-work-outcome terminology mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/reliability-maintenance-profile-v0.7.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "No field-code crosswalk is shipped beyond this Prompt 8 artifact set."
+        }
+      ]
+    },
+    {
+      "profile_id": "event-alarm-profile",
+      "profile_label": "Event and Alarm Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "opc-ua-core-and-companions",
+          "applicability": "core_support",
+          "required_for_claims": ["event and alarm semantic preservation"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Companion-specific condition classes are not enumerated."
+        },
+        {
+          "standard_id": "isa18-iec62682",
+          "applicability": "core_support",
+          "required_for_claims": ["suppression and state transition mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Alarm philosophy and KPI governance remain external."
+        },
+        {
+          "standard_id": "iec-61511",
+          "applicability": "profile_required",
+          "required_for_claims": ["safety-bypass state and work verification context"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Functional-safety program claims require the safety-context profile."
+        }
+      ]
+    },
+    {
+      "profile_id": "relationship-governance-profile",
+      "profile_label": "Relationship Governance Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "isa95-iec62264",
+          "applicability": "core_support",
+          "required_for_claims": ["boundary and relationship governance mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Detailed ISA-95 exchange payloads are not part of the core profile."
+        },
+        {
+          "standard_id": "iec-62443",
+          "applicability": "profile_required",
+          "required_for_claims": ["zone and conduit foundation mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Cyber controls and security levels require the cyber-context profile."
+        },
+        {
+          "standard_id": "automationml",
+          "applicability": "profile_required",
+          "required_for_claims": ["engineering topology interchange mapping"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Engineering-authoring detail requires a dedicated profile."
+        }
+      ]
+    },
+    {
+      "profile_id": "serving-projection-profile",
+      "profile_label": "Serving Projection Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "b2mml",
+          "applicability": "profile_required",
+          "required_for_claims": ["B2MML-facing projection claims"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/servicenow-coexistence.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "No B2MML interchange implementation is provided."
+        },
+        {
+          "standard_id": "servicenow-projection",
+          "applicability": "projection_only",
+          "required_for_claims": ["ServiceNow serving-projection claims"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/servicenow-coexistence.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "Projection behavior is documentation-backed, not executable in this repo."
+        }
+      ]
+    },
+    {
+      "profile_id": "batch-recipe-profile",
+      "profile_label": "Batch and Recipe Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "isa88",
+          "applicability": "profile_required",
+          "required_for_claims": ["recipe and phase semantics"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/migration-v0.9.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "No batch or recipe schema family is yet present."
+        }
+      ]
+    }
+  ]
+}
