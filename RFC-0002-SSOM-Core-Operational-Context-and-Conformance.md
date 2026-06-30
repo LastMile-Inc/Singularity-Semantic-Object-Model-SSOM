@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.4.0
+- **Intended Version:** SSOM v0.5.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -17,11 +17,14 @@ SSOM v0.3.0 added a formally governed way to distinguish **Equipment** and **Dev
 
 SSOM v0.4.0 adds a formally governed semantic truth and decision lifecycle that distinguishes **Observation**, **Source Assertion**, **Derived Assertion**, **Inference**, **Prediction**, **Recommendation**, **Decision**, **Action**, and **Outcome**.
 
+SSOM v0.5.0 adds a formally governed asset identity lifecycle that distinguishes canonical Asset identity, external identifiers, identifier assignments, scope, authority, aliases, succession, and identity-affecting lifecycle events.
+
 ## 1. Motivation
 
 Operational systems commonly produce records that are difficult to combine across platforms because the record alone does not explain:
 
 - what entity or asset it refers to;
+- whether multiple identifiers refer to the same Asset or to different Assets over time;
 - whether that entity is functioning as equipment, a device, both, or neither;
 - which source system supplied it;
 - whether its timestamp, quality, and identity are reliable;
@@ -38,23 +41,25 @@ A practical semantic standard must preserve that context without becoming a repl
 SSOM specifies transport-independent semantics for:
 
 1. Asset
-2. Relationship
-3. Observation
-4. Source Assertion
-5. Derived Assertion
-6. Inference
-7. Prediction
-8. Recommendation
-9. Decision
-10. Action
-11. Outcome
-12. Condition
-13. Operational Context
-14. Provenance
-15. Quality
-16. Temporal Integrity
-17. Policy Evidence
-18. Extension and conformance metadata
+2. Functional Location
+3. Relationship
+4. Identity Lifecycle Event
+5. Observation
+6. Source Assertion
+7. Derived Assertion
+8. Inference
+9. Prediction
+10. Recommendation
+11. Decision
+12. Action
+13. Outcome
+14. Condition
+15. Operational Context
+16. Provenance
+17. Quality
+18. Temporal Integrity
+19. Policy Evidence
+20. Extension and conformance metadata
 
 Event and Alarm labels remain reserved profile scope in the Canonical Operational Record envelope, but dedicated Event and Alarm schemas are not normative in this repository version.
 
@@ -103,6 +108,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 11. **AI-ready and explainable.** SSOM SHOULD retain the context required for people and models to understand a record and its confidence.
 12. **Implementation portability.** SSOM MUST support multiple serializations and storage patterns.
 13. **Truth-state separation.** SSOM MUST distinguish observation, assertion, inference, prediction, recommendation, decision, action, and outcome semantics.
+14. **Identity continuity.** SSOM MUST preserve canonical Asset identity separately from external identifiers, time-bound assignments, and succession semantics.
 
 ## 5. Core semantic objects
 
@@ -125,6 +131,7 @@ An Asset MUST include:
 
 An Asset MAY include:
 
+- identity lifecycle semantics such as identifier assignments, aliases, and source-preserving continuity records
 - `asset_form`
 - `equipment_roles[]`
 - `device_roles[]`
@@ -138,7 +145,35 @@ An Asset MAY include:
 - domain extensions
 - context references
 
-#### 5.1.1 Normative asset-classification rules
+#### 5.1.1 Asset identity, identifier, and succession distinctions
+
+SSOM distinguishes the following identity-related concepts:
+
+- **Canonical Asset identity:** the stable SSOM identity of an Asset.
+- **External Identifier:** a source-specific or business-specific identifier associated with an Asset.
+- **Identifier Assignment:** a time-bound association between an Asset and an External Identifier.
+- **Identifier Scope:** the context in which an identifier value is unique.
+- **Identifier Authority:** the organization or source system responsible for the identifier.
+- **Identity Alias:** a secondary or alternative identifier associated with the same Asset.
+- **Functional Location:** a distinct operational or engineering location context that MUST NOT be treated as the same thing as Asset identity.
+- **Asset Succession:** a governed continuity relationship indicating replacement, predecessor, successor, split, merge, supersession, decommissioned-as, or recommissioned-as semantics.
+
+An Asset class or source type is not the same thing as an Asset identifier. A manufacturer model designation is not the same thing as a serialized Asset identity. A functional location is not the same thing as the Asset occupying that location.
+
+#### 5.1.2 Normative asset identity rules
+
+1. A canonical SSOM Asset ID MUST be globally unique and MUST NOT be reused.
+2. An Asset MAY hold multiple external identifiers at the same time.
+3. The same identifier value MAY be assigned to different Assets over time when validity periods do not overlap within the same scope and authority.
+4. A replacement Asset MAY inherit the same engineering tag or functional location without becoming the same Asset.
+5. Source identities MUST be preserved even when they conflict.
+6. Source identity conflict MUST NOT force deletion of either source assertion or identifier assignment.
+7. Identifier assignments MUST support provenance, confidence, verification status, validity period, scope, and authority.
+8. Functional location references MUST remain distinguishable from Asset identity.
+9. No schema or validator may assume that an engineering tag, historian path, CMDB CI number, or OPC UA node identifier is globally immutable.
+10. Asset succession relationships MUST support at least `replaces`, `replaced_by`, `succeeds`, `preceded_by`, `split_into`, `merged_from`, `decommissioned_as`, and `recommissioned_as`.
+
+#### 5.1.3 Normative asset-classification rules
 
 1. An Asset MUST remain the canonical identity for lifecycle, provenance, relationships, condition, actions, and outcomes.
 2. Equipment and Device MUST NOT be modeled as mutually exclusive inheritance branches.
@@ -149,7 +184,7 @@ An Asset MAY include:
 7. The model MUST distinguish a functional system or process segment from a physical Asset instance unless the system itself is explicitly managed as an Asset.
 8. The model SHOULD allow Equipment and Device classifications to be derived from source-system data, but derived classifications MUST remain traceable to their source or derivation logic.
 
-#### 5.1.2 Asset forms
+#### 5.1.4 Asset forms
 
 SSOM v0.3.0 defines the following core `asset_form` values:
 
@@ -165,7 +200,7 @@ SSOM v0.3.0 defines the following core `asset_form` values:
 
 Additional asset forms MAY be introduced only through a governed extension or profile mechanism.
 
-#### 5.1.3 Equipment roles
+#### 5.1.5 Equipment roles
 
 Equipment is an Asset classification representing an entity whose primary role is to perform, support, enable, contain, transport, transform, regulate, or otherwise contribute directly to a process, production, utility, facility, or material-handling function.
 
@@ -181,7 +216,7 @@ Equipment classifications commonly support operational concepts such as function
 
 Examples include pumps, compressors, chillers, boilers, turbines, conveyors, packaging machines, production skids, robot cells, reactor vessels, air-handling units, motor control centers, electrical switchgear, production lines, and water-treatment systems.
 
-#### 5.1.4 Device roles
+#### 5.1.6 Device roles
 
 A Device is an Asset classification representing an entity whose primary role is sensing, measurement, control, actuation, protection, computation, communication, protocol mediation, technical interface, or control-system interaction.
 
@@ -199,7 +234,7 @@ Device classifications commonly support technical concepts such as control capab
 
 Examples include PLCs, RTUs, HMIs, VFDs, sensors, transmitters, smart valves, motor relays, safety controllers, industrial gateways, network switches, industrial PCs, cameras, RFID readers, OPC UA servers, embedded controllers, and protection relays.
 
-#### 5.1.5 Lifecycle roles
+#### 5.1.7 Lifecycle roles
 
 Core `lifecycle_roles[]` values are:
 
@@ -213,7 +248,52 @@ Core `lifecycle_roles[]` values are:
 
 Lifecycle roles are orthogonal to asset form and operational role. They MAY coexist with Equipment roles, Device roles, both, or neither.
 
-#### 5.1.6 Classification assertions and projections
+#### 5.1.8 Asset identity structures
+
+The Asset `identity` object SHOULD support:
+
+- `source_references[]`
+- `confidence`
+- `identifier_assignments[]`
+
+Each `identifier_assignment` SHOULD support:
+
+- `assignment_id`
+- `identifier_value`
+- `identifier_role`
+- `semantic_usage`
+- `identifier_scope`
+- `identifier_authority`
+- `verification_status`
+- `valid_from`
+- `valid_to`
+- `confidence`
+- `provenance`
+
+Governed identifier roles include:
+
+- `canonical_ssom_id`
+- `manufacturer_serial_number`
+- `manufacturer_model_identifier`
+- `engineering_tag`
+- `asset_tag`
+- `functional_location_reference`
+- `eam_equipment_id`
+- `cmdb_ci_id`
+- `historian_tag`
+- `opc_ua_node_id`
+- `opc_ua_namespace_uri`
+- `scada_object_id`
+- `bms_object_id`
+- `oem_cloud_id`
+- `network_identity`
+- `finance_asset_id`
+- `maintenance_vendor_id`
+- `digital_twin_id`
+
+Functional-location references MAY appear as contextual identifier assignments, but the functional location itself SHOULD be modeled as a distinct semantic object or relationship target.
+
+#### 5.1.9 Classification assertions and projections
 
 SSOM uses `classification_assertions[]` as the authoritative classification-friendly structure when provenance, temporal validity, confidence, semantic-profile version, or derivation traceability must be preserved.
 
@@ -235,7 +315,7 @@ Simple consumer projections such as `asset_form`, `equipment_roles[]`, `device_r
 
 `primary_operational_role` is OPTIONAL and MUST NOT be used to imply exclusivity.
 
-#### 5.1.7 Non-exclusivity examples
+#### 5.1.10 Non-exclusivity examples
 
 - A centrifugal pump is normally Equipment.
 - A pressure transmitter is normally a Device.
@@ -296,6 +376,14 @@ Core and normalized relationship semantics include:
 - `has_protection_target`
 - `serves`
 - `has_sensor`
+- `replaces`
+- `replaced_by`
+- `succeeds`
+- `preceded_by`
+- `split_into`
+- `merged_from`
+- `decommissioned_as`
+- `recommissioned_as`
 
 Profiles MAY document aliases. For example, a source term such as `is_installed_in` SHOULD normalize to `is_installed_on` or `located_in` without losing the source assertion.
 
@@ -309,9 +397,36 @@ Relationship examples:
 - Industrial Gateway GW-01 communicates_with PLC-17.
 - Pump P-101 is_part_of Cooling Water System CW-01.
 - Pump P-101 is_installed_on Functional Location Plant-2/Area-B/Unit-14.
+- Pump P-101 replacement asset replaces Pump P-101 original while retaining the same engineering tag over a later validity period.
 - Robot Cell RC-01 is classified as both `production_equipment` and `control_device` where the maintained evidence supports both roles.
 
-### 5.3 Observation
+### 5.3 Functional Location
+
+A **Functional Location** is a distinct operational or engineering location context used for placement, maintenance context, and continuity reasoning.
+
+A Functional Location is not the same thing as an Asset identity. Multiple Assets may occupy the same Functional Location over time, and a replacement Asset may inherit the same Functional Location without becoming the same Asset.
+
+Required fields:
+
+- `location_id`
+- `display_name`
+- `location_type`
+- `ssom_version`
+
+### 5.4 Identity Lifecycle Event
+
+An **Identity Lifecycle Event** is a time-bound identity-affecting event such as commissioning, decommissioning, replacement, recommissioning, relocation, tag reassignment, merge, split, or source-system migration.
+
+Required fields:
+
+- `event_id`
+- `event_type`
+- `subject_refs`
+- `effective_time`
+- `provenance`
+- `temporal_integrity`
+
+### 5.5 Observation
 
 An **Observation** is a time-indexed measurement or state value associated with an Asset or observable subject.
 
@@ -328,7 +443,7 @@ Required fields:
 - `provenance`
 - `temporal_integrity`
 
-### 5.4 Semantic Truth and Decision Lifecycle
+### 5.6 Semantic Truth and Decision Lifecycle
 
 SSOM v0.4.0 defines a semantic truth and decision lifecycle so implementations can preserve source evidence, derived interpretation, future-oriented reasoning, proposed interventions, approvals, executed interventions, and assessed results without collapsing them into one ambiguous record type.
 
@@ -504,11 +619,11 @@ Required fields:
 - `provenance`
 - `temporal_integrity`
 
-### 5.5 Event and Alarm planned profile scope
+### 5.7 Event and Alarm planned profile scope
 
 Event and Alarm labels remain reserved for future profile work. Implementations MAY use the Canonical Operational Record envelope to label records as `event` or `alarm`, but dedicated machine-readable Event and Alarm schemas are not normative in SSOM v0.4.0.
 
-### 5.6 Condition
+### 5.8 Condition
 
 A **Condition** is a qualified operational finding derived from one or more SSOM observations, assertions, events, alarms, actions, outcomes, or authoritative source statements.
 
@@ -527,7 +642,7 @@ Required fields:
 - `provenance`
 - `quality_summary`
 
-### 5.7 Operational Context
+### 5.9 Operational Context
 
 Operational Context carries references that help consumers understand a record in its operating environment.
 
@@ -535,7 +650,7 @@ Examples include site, location, line, zone, system, process role, operational c
 
 Operational Context MUST use references or declared extensions. It MUST NOT embed implementation-specific workflow, dashboard, user, billing, credential, or control-plane state.
 
-### 5.8 Provenance
+### 5.10 Provenance
 
 Provenance describes origin and interpretation context.
 
@@ -550,7 +665,7 @@ Required fields:
 
 Optional fields include `source_message_identity`, `mapping_package_id`, `mapping_version`, and `adapter_version`.
 
-### 5.9 Quality
+### 5.11 Quality
 
 Quality describes fitness for use.
 
@@ -562,7 +677,7 @@ Minimum fields:
 
 Quality MAY include normalized score, source quality, mapping confidence, and identity confidence.
 
-### 5.10 Temporal Integrity
+### 5.12 Temporal Integrity
 
 Temporal Integrity distinguishes:
 
@@ -576,7 +691,7 @@ Temporal Integrity distinguishes:
 
 Core delivery classifications are `live`, `retained_snapshot`, `replay`, `backfill`, `late_arrival`, `reconstructed`, and `manual_entry`.
 
-### 5.11 Policy Evidence
+### 5.13 Policy Evidence
 
 Policy Evidence is optional metadata that records classification, retention, purpose, or eligibility context.
 
@@ -588,13 +703,13 @@ A **Canonical Operational Record (COR)** is an implementation profile that packa
 
 The COR is not a separate competing semantic object. It is a practical interchange envelope.
 
-Where dedicated truth-state schemas exist, `record_type` MUST align with the packaged semantic object. Event and Alarm remain reserved COR labels until dedicated schemas are published.
+Where dedicated truth-state or identity-lifecycle schemas exist, `record_type` MUST align with the packaged semantic object. Event and Alarm remain reserved COR labels until dedicated schemas are published.
 
 ```json
 {
   "record_id": "urn:ssom:record:01J...",
   "record_type": "observation",
-  "ssom_version": "0.3.0",
+  "ssom_version": "0.5.0",
   "subject_ref": "urn:ssom:asset:...",
   "event_time": "2026-06-25T18:31:00Z",
   "priority_class": "P2",
@@ -625,15 +740,16 @@ urn:ssom:ext:<organization-or-community>:<domain>:<name>
 
 ### 7.3 Profiles
 
-SSOM v0.3.0 defines:
+SSOM v0.5.0 defines:
 
 1. Core Asset and Relationship Profile
-2. Asset Classification Profile
-3. Observation Profile
-4. Semantic Truth and Decision Lifecycle Profile
-5. Quality, Provenance, and Temporal Integrity Profile
-6. Condition Profile
-7. Analytical Warehouse Profile
+2. Asset Identity and Continuity Profile
+3. Asset Classification Profile
+4. Observation Profile
+5. Semantic Truth and Decision Lifecycle Profile
+6. Quality, Provenance, and Temporal Integrity Profile
+7. Condition Profile
+8. Analytical Warehouse Profile
 
 An Event and Alarm profile remains planned profile scope until dedicated schemas are published.
 
@@ -641,11 +757,11 @@ An implementation MAY support a subset but MUST declare supported profiles.
 
 ## 8. Serialization and schema strategy
 
-SSOM v0.4.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
+SSOM v0.5.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
 
 JSON Schema is selected because it supports broad API, cloud, event, and validation tooling.
 
-XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.4.0. Placeholder XML artifacts remain informative until a compatibility update is published.
+XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.5.0. Placeholder XML artifacts remain informative until a compatibility update is published.
 
 ## 9. Compatibility and versioning
 
@@ -655,11 +771,11 @@ XML Schema artifacts MAY be retained for compatibility. In this repository, the 
 - Implementations MUST include `ssom_version`.
 - Consumers MUST reject or quarantine unsupported major versions.
 - Consumers SHOULD preserve unknown extension fields where safe.
-- SSOM v0.4.0 is an additive, backward-compatible extension of the v0.3.0 draft.
+- SSOM v0.5.0 is an additive, backward-compatible extension of the v0.4.0 draft.
 
 ## 10. Conformance
 
-An SSOM v0.4.0 implementation MUST:
+An SSOM v0.5.0 implementation MUST:
 
 1. Validate claimed profiles against normative JSON Schemas.
 2. Preserve identity, provenance, quality, and temporal information.
@@ -678,6 +794,10 @@ An SSOM v0.4.0 implementation MUST:
 15. Preserve contradictory source assertions without forcing premature reconciliation.
 16. Preserve evidence references for Derived Assertion, Inference, Prediction, Recommendation, Decision, and Outcome records.
 17. Preserve correction or supersession lineage where a truth-state record is updated or replaced.
+18. Preserve canonical Asset identity separately from external identifier assignments.
+19. Preserve identifier scope, authority, provenance, confidence, verification status, and validity periods where identifier continuity matters.
+20. Allow replacement, recommission, split, merge, and source-system migration scenarios without reusing canonical Asset IDs.
+21. Distinguish Functional Location from Asset identity.
 
 ## 11. Security and privacy considerations
 
@@ -685,17 +805,17 @@ Operational records can expose sensitive facility, topology, production, equipme
 
 Implementations SHOULD minimize sensitive content, keep credentials outside semantic records, apply purpose and retention metadata, protect source references that reveal proprietary topology, control access to high-resolution telemetry and media references, avoid placing private application authorization logic inside SSOM, and support deletion or tombstone references where required.
 
-## 12. Migration from v0.3
+## 12. Migration from v0.4
 
-Implementations moving from v0.3.0 to v0.4.0 SHOULD:
+Implementations moving from v0.4.0 to v0.5.0 SHOULD:
 
-1. retain existing Assets, Relationships, Observations, and Conditions without re-identifying them;
-2. preserve source-specific statements as Source Assertions rather than silently upgrading them into facts;
-3. emit Derived Assertions, Inferences, Predictions, Recommendations, Decisions, Actions, and Outcomes only when the implementation can supply the required evidence and traceability fields;
-4. preserve contradictory source assertions when sources disagree;
-5. preserve correction and supersession lineage where records are revised;
+1. retain existing Assets, Relationships, Observations, Conditions, and truth-state records without re-identifying them;
+2. preserve existing source references while adding governed `identifier_assignments[]` where identity continuity matters;
+3. treat engineering tags, historian paths, CMDB CI numbers, and OPC UA node IDs as time-bound assignments rather than globally immutable identities;
+4. model functional location as a distinct relationship target or object, not as canonical Asset identity;
+5. emit identity lifecycle events for replacement, recommission, split, merge, relocation, or source-system migration scenarios when those distinctions matter;
 6. keep application-private state out of the standard; and
-7. avoid implying that Recommendation, Decision, Action, and Outcome semantics are interchangeable.
+7. avoid implying that identifier reuse over time means canonical Asset reuse.
 
 ## 13. Open questions
 
@@ -703,6 +823,7 @@ Implementations moving from v0.3.0 to v0.4.0 SHOULD:
 - Community governance and extension registry process
 - Relationship vocabulary expansion
 - Condition taxonomy governance
+- Identity bundle interchange profile for multi-record validation beyond schema structure
 - Canonical unit and quantity-kind alignment
 - Protobuf and Avro bindings
 - Privacy-preserving benchmark profile

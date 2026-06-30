@@ -59,6 +59,180 @@ function expectInvalid(testName, schemaFile, relativePath, expectedFragment) {
   }
 }
 
+function parseTimestamp(value, label) {
+  const parsed = Date.parse(value);
+  assert(Number.isFinite(parsed), `${label} must be a valid date-time.`);
+  return parsed;
+}
+
+function intervalBounds(record, startField = "valid_from", endField = "valid_to") {
+  const start = record[startField] ? parseTimestamp(record[startField], `${startField} on ${record.assignment_id || record.asset_id || "record"}`) : Number.NEGATIVE_INFINITY;
+  const end = record[endField] ? parseTimestamp(record[endField], `${endField} on ${record.assignment_id || record.asset_id || "record"}`) : Number.POSITIVE_INFINITY;
+  assert(start <= end, `${record.assignment_id || record.asset_id || "record"} has an invalid validity period.`);
+  return { start, end };
+}
+
+function intervalsOverlap(left, right) {
+  return left.start <= right.end && right.start <= left.end;
+}
+
+function validateIdentityBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const assets = payload.assets || [];
+  const functionalLocations = payload.functional_locations || [];
+  const relationships = payload.relationships || [];
+  const events = payload.identity_lifecycle_events || [];
+
+  for (const [index, asset] of assets.entries()) {
+    const validate = ajv.getSchema("asset.json");
+    const valid = validate(asset);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} asset ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, relationship] of relationships.entries()) {
+    const validate = ajv.getSchema("relationship.json");
+    const valid = validate(relationship);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} relationship ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, location] of functionalLocations.entries()) {
+    const validate = ajv.getSchema("functional-location.json");
+    const valid = validate(location);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} functional location ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, event] of events.entries()) {
+    const validate = ajv.getSchema("identity-lifecycle-event.json");
+    const valid = validate(event);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} identity lifecycle event ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  return payload;
+}
+
+function ensureUniqueCanonicalIds(assets) {
+  const seen = new Set();
+  for (const asset of assets) {
+    assert(!seen.has(asset.asset_id), `Canonical SSOM asset identifier ${asset.asset_id} must not be reused.`);
+    seen.add(asset.asset_id);
+  }
+}
+
+function ensureAssignmentValidity(assets) {
+  for (const asset of assets) {
+    const assignments = asset.identity?.identifier_assignments || [];
+    for (const assignment of assignments) {
+      intervalBounds(assignment);
+      if (assignment.identifier_role === "functional_location_reference") {
+        assert(
+          assignment.semantic_usage === "contextual_reference",
+          `${assignment.assignment_id} must treat functional location as a contextual reference rather than asset identity.`
+        );
+      }
+      assert(
+        assignment.identifier_role !== "canonical_ssom_id",
+        `${assignment.assignment_id} must not restate the canonical SSOM ID as a reusable external identifier assignment.`
+      );
+    }
+  }
+}
+
+function ensureNoOverlappingAssignments(assets) {
+  const entries = [];
+  for (const asset of assets) {
+    const assignments = asset.identity?.identifier_assignments || [];
+    for (const assignment of assignments) {
+      entries.push({ asset_id: asset.asset_id, assignment, bounds: intervalBounds(assignment) });
+    }
+  }
+
+  for (let i = 0; i < entries.length; i += 1) {
+    for (let j = i + 1; j < entries.length; j += 1) {
+      const left = entries[i];
+      const right = entries[j];
+      if (left.asset_id === right.asset_id) {
+        continue;
+      }
+      if (left.assignment.identifier_value !== right.assignment.identifier_value) {
+        continue;
+      }
+      if (left.assignment.identifier_role !== right.assignment.identifier_role) {
+        continue;
+      }
+      if (left.assignment.identifier_scope.scope_type !== right.assignment.identifier_scope.scope_type) {
+        continue;
+      }
+      if (left.assignment.identifier_scope.scope_value !== right.assignment.identifier_scope.scope_value) {
+        continue;
+      }
+      if (left.assignment.identifier_authority.authority_id !== right.assignment.identifier_authority.authority_id) {
+        continue;
+      }
+      if (
+        left.assignment.semantic_usage === "contextual_reference" ||
+        right.assignment.semantic_usage === "contextual_reference"
+      ) {
+        continue;
+      }
+      assert(
+        !intervalsOverlap(left.bounds, right.bounds),
+        `Identifier ${left.assignment.identifier_value} overlaps across assets ${left.asset_id} and ${right.asset_id} within the same scope and authority.`
+      );
+    }
+  }
+}
+
+function ensureSuccessionRelationships(relationships) {
+  const successionTypes = new Set([
+    "replaces",
+    "replaced_by",
+    "succeeds",
+    "preceded_by",
+    "split_into",
+    "merged_from",
+    "decommissioned_as",
+    "recommissioned_as"
+  ]);
+
+  for (const relationship of relationships) {
+    if (!successionTypes.has(relationship.relationship_type)) {
+      continue;
+    }
+    assert(
+      relationship.from_ref !== relationship.to_ref,
+      `Succession relationship ${relationship.relationship_id} must not self-reference.`
+    );
+  }
+}
+
+function expectInvalidIdentityBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIdentityBundle(testName, relativePath);
+    ensureUniqueCanonicalIds(payload.assets || []);
+    ensureAssignmentValidity(payload.assets || []);
+    ensureNoOverlappingAssignments(payload.assets || []);
+    ensureSuccessionRelationships(payload.relationships || []);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 const results = [];
 
 const pump = validateFixture(
@@ -301,6 +475,101 @@ expectInvalid(
   "must have required property 'evidence_refs'"
 );
 results.push("derived statements must retain evidence references");
+
+const replacementBundle = validateIdentityBundle(
+  "pump replacement identity lifecycle",
+  "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json"
+);
+ensureUniqueCanonicalIds(replacementBundle.assets);
+ensureAssignmentValidity(replacementBundle.assets);
+ensureNoOverlappingAssignments(replacementBundle.assets);
+ensureSuccessionRelationships(replacementBundle.relationships);
+results.push("replacement assets may retain the same engineering tag over time without reusing canonical identity");
+
+const chillerBundle = validateIdentityBundle(
+  "multi-source chiller identity convergence",
+  "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+);
+ensureUniqueCanonicalIds(chillerBundle.assets);
+ensureAssignmentValidity(chillerBundle.assets);
+ensureNoOverlappingAssignments(chillerBundle.assets);
+results.push("an asset may hold multiple external identifiers across enterprise systems at the same time");
+
+const plcBundle = validateIdentityBundle(
+  "plc opc ua identity migration",
+  "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json"
+);
+ensureUniqueCanonicalIds(plcBundle.assets);
+ensureAssignmentValidity(plcBundle.assets);
+ensureNoOverlappingAssignments(plcBundle.assets);
+results.push("OPC UA node identities may change over time without implying a new asset identity");
+
+const acquisitionBundle = validateIdentityBundle(
+  "duplicate engineering tags across different scopes",
+  "conformance/fixtures/v0.5/valid/identity-bundle-acquired-plants-duplicate-tags.json"
+);
+ensureUniqueCanonicalIds(acquisitionBundle.assets);
+ensureAssignmentValidity(acquisitionBundle.assets);
+ensureNoOverlappingAssignments(acquisitionBundle.assets);
+results.push("duplicate engineering tags may coexist across different scope rules");
+
+const recommissionBundle = validateIdentityBundle(
+  "asset decommission and recommission",
+  "conformance/fixtures/v0.5/valid/identity-bundle-decommission-recommission.json"
+);
+ensureUniqueCanonicalIds(recommissionBundle.assets);
+ensureAssignmentValidity(recommissionBundle.assets);
+ensureNoOverlappingAssignments(recommissionBundle.assets);
+ensureSuccessionRelationships(recommissionBundle.relationships);
+results.push("an asset may be decommissioned and later recommissioned while preserving canonical identity");
+
+const splitBundle = validateIdentityBundle(
+  "asset split into successors",
+  "conformance/fixtures/v0.5/valid/identity-bundle-asset-split.json"
+);
+ensureUniqueCanonicalIds(splitBundle.assets);
+ensureAssignmentValidity(splitBundle.assets);
+ensureNoOverlappingAssignments(splitBundle.assets);
+ensureSuccessionRelationships(splitBundle.relationships);
+results.push("asset split scenarios preserve predecessor and successor identity semantics");
+
+const mergeBundle = validateIdentityBundle(
+  "asset merge into managed operational asset",
+  "conformance/fixtures/v0.5/valid/identity-bundle-asset-merge.json"
+);
+ensureUniqueCanonicalIds(mergeBundle.assets);
+ensureAssignmentValidity(mergeBundle.assets);
+ensureNoOverlappingAssignments(mergeBundle.assets);
+ensureSuccessionRelationships(mergeBundle.relationships);
+results.push("asset merge scenarios preserve managed-asset succession semantics");
+
+expectInvalidIdentityBundle(
+  "canonical ssom identifier reuse",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-duplicate-canonical-id.json",
+  "must not be reused"
+);
+results.push("canonical SSOM asset identifiers cannot be reused");
+
+expectInvalidIdentityBundle(
+  "overlapping identifier assignments",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-overlapping-identifier-assignment.json",
+  "overlaps across assets"
+);
+results.push("overlapping identifier assignments in the same scope and authority are rejected");
+
+expectInvalidIdentityBundle(
+  "self-referencing successor relationship",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-self-successor.json",
+  "must not self-reference"
+);
+results.push("successor relationships cannot self-reference");
+
+expectInvalidIdentityBundle(
+  "malformed identifier validity period",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-invalid-identifier-validity.json",
+  "invalid validity period"
+);
+results.push("identifier validity periods must be well formed and non-inverted");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {

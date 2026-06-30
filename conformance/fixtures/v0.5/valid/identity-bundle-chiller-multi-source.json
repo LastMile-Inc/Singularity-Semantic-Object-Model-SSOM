@@ -1,0 +1,267 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:chiller-ch01",
+      "asset_type": "smart_chiller",
+      "display_name": "Chiller CH-01",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": [
+        "facility_equipment"
+      ],
+      "device_roles": [
+        "control_device",
+        "communication_device"
+      ],
+      "lifecycle_roles": [
+        "serialized_asset",
+        "maintainable_asset",
+        "monitored_asset",
+        "cyber_managed_asset"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "bms",
+            "source_reference": "BMS/CH01",
+            "authority": "campus_bms"
+          },
+          {
+            "source_platform": "cmdb",
+            "source_reference": "CI0004432",
+            "authority": "servicenow-cmdb"
+          }
+        ],
+        "confidence": 0.97,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-ch01-engineering-tag",
+            "identifier_value": "CH-01",
+            "identifier_role": "engineering_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "hq-campus"
+            },
+            "identifier_authority": {
+              "authority_id": "campus_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.99,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "campus_eam",
+              "source_reference": "CH-01",
+              "lineage_id": "lin-ch01-eng-tag",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-bms",
+            "identifier_value": "BMS/CH01",
+            "identifier_role": "bms_object_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "source_system",
+              "scope_value": "campus_bms"
+            },
+            "identifier_authority": {
+              "authority_id": "campus_bms",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "bms",
+              "source_authority_id": "campus_bms",
+              "source_reference": "BMS/CH01",
+              "lineage_id": "lin-ch01-bms",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-scada",
+            "identifier_value": "SCADA-CH01",
+            "identifier_role": "scada_object_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "source_system",
+              "scope_value": "facilities_scada"
+            },
+            "identifier_authority": {
+              "authority_id": "facilities_scada",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.94,
+            "provenance": {
+              "source_platform": "scada",
+              "source_authority_id": "facilities_scada",
+              "source_reference": "SCADA-CH01",
+              "lineage_id": "lin-ch01-scada",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-cmms",
+            "identifier_value": "CMMS-EQ-8821",
+            "identifier_role": "maintenance_vendor_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "source_system",
+              "scope_value": "cmms_primary"
+            },
+            "identifier_authority": {
+              "authority_id": "cmms_primary",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.93,
+            "provenance": {
+              "source_platform": "cmms",
+              "source_authority_id": "cmms_primary",
+              "source_reference": "CMMS-EQ-8821",
+              "lineage_id": "lin-ch01-cmms",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-cmdb",
+            "identifier_value": "CI0004432",
+            "identifier_role": "cmdb_ci_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "source_system",
+              "scope_value": "servicenow-cmdb"
+            },
+            "identifier_authority": {
+              "authority_id": "servicenow-cmdb",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.95,
+            "provenance": {
+              "source_platform": "cmdb",
+              "source_authority_id": "servicenow-cmdb",
+              "source_reference": "CI0004432",
+              "lineage_id": "lin-ch01-cmdb",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-oem",
+            "identifier_value": "OEM-CH-4432",
+            "identifier_role": "oem_cloud_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "oem_tenant",
+              "scope_value": "acme-chillers-us-east"
+            },
+            "identifier_authority": {
+              "authority_id": "acme-chiller-cloud",
+              "authority_type": "vendor"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.92,
+            "provenance": {
+              "source_platform": "oem_cloud",
+              "source_authority_id": "acme-chiller-cloud",
+              "source_reference": "OEM-CH-4432",
+              "lineage_id": "lin-ch01-oem",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-eam",
+            "identifier_value": "EAM-CH-01-4401",
+            "identifier_role": "eam_equipment_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "source_system",
+              "scope_value": "campus_eam"
+            },
+            "identifier_authority": {
+              "authority_id": "campus_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.97,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "campus_eam",
+              "source_reference": "EAM-CH-01-4401",
+              "lineage_id": "lin-ch01-eam",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-serial",
+            "identifier_value": "ACME-CH-778899",
+            "identifier_role": "manufacturer_serial_number",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "enterprise",
+              "scope_value": "lastmile-demo"
+            },
+            "identifier_authority": {
+              "authority_id": "acme-chiller-oem",
+              "authority_type": "vendor"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.99,
+            "provenance": {
+              "source_platform": "oem_registry",
+              "source_authority_id": "acme-chiller-oem",
+              "source_reference": "serial:ACME-CH-778899",
+              "lineage_id": "lin-ch01-serial",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-ch01-model",
+            "identifier_value": "ACME-CHILLER-X900",
+            "identifier_role": "manufacturer_model_identifier",
+            "semantic_usage": "alias",
+            "identifier_scope": {
+              "scope_type": "enterprise",
+              "scope_value": "lastmile-demo"
+            },
+            "identifier_authority": {
+              "authority_id": "acme-chiller-oem",
+              "authority_type": "vendor"
+            },
+            "verification_status": "verified",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "confidence": 0.98,
+            "provenance": {
+              "source_platform": "oem_registry",
+              "source_authority_id": "acme-chiller-oem",
+              "source_reference": "model:ACME-CHILLER-X900",
+              "lineage_id": "lin-ch01-model",
+              "ingest_time": "2026-06-29T10:00:00Z",
+              "processing_time": "2026-06-29T10:00:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

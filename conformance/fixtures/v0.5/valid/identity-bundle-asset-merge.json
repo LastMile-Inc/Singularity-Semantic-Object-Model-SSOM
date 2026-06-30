@@ -1,0 +1,216 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:air-handler-ahu-1",
+      "asset_type": "air_handler",
+      "display_name": "Air Handler AHU-1",
+      "lifecycle_state": "retired",
+      "asset_form": "machine",
+      "equipment_roles": [
+        "facility_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "AHU-1",
+            "authority": "facilities_eam"
+          }
+        ],
+        "confidence": 0.95,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-ahu1-tag",
+            "identifier_value": "AHU-1",
+            "identifier_role": "asset_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "campus-west"
+            },
+            "identifier_authority": {
+              "authority_id": "facilities_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2020-01-01T00:00:00Z",
+            "valid_to": "2026-03-31T23:59:59Z",
+            "confidence": 0.97,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "facilities_eam",
+              "source_reference": "AHU-1",
+              "lineage_id": "lin-ahu1-tag",
+              "ingest_time": "2026-06-29T11:25:00Z",
+              "processing_time": "2026-06-29T11:25:01Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:air-handler-ahu-2",
+      "asset_type": "air_handler",
+      "display_name": "Air Handler AHU-2",
+      "lifecycle_state": "retired",
+      "asset_form": "machine",
+      "equipment_roles": [
+        "facility_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "AHU-2",
+            "authority": "facilities_eam"
+          }
+        ],
+        "confidence": 0.95,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-ahu2-tag",
+            "identifier_value": "AHU-2",
+            "identifier_role": "asset_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "campus-west"
+            },
+            "identifier_authority": {
+              "authority_id": "facilities_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2020-01-01T00:00:00Z",
+            "valid_to": "2026-03-31T23:59:59Z",
+            "confidence": 0.97,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "facilities_eam",
+              "source_reference": "AHU-2",
+              "lineage_id": "lin-ahu2-tag",
+              "ingest_time": "2026-06-29T11:25:00Z",
+              "processing_time": "2026-06-29T11:25:01Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:air-handler-corridor-west",
+      "asset_type": "air_handler_cluster",
+      "display_name": "West Corridor Managed Air Handler",
+      "lifecycle_state": "in_service",
+      "asset_form": "system",
+      "equipment_roles": [
+        "facility_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "cmdb",
+            "source_reference": "CI0088221",
+            "authority": "servicenow-cmdb"
+          }
+        ],
+        "confidence": 0.93,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-west-corridor-cluster",
+            "identifier_value": "WEST-CORRIDOR-AHU",
+            "identifier_role": "digital_twin_id",
+            "semantic_usage": "alias",
+            "identifier_scope": {
+              "scope_type": "enterprise",
+              "scope_value": "lastmile-demo"
+            },
+            "identifier_authority": {
+              "authority_id": "digital_twin_registry",
+              "authority_type": "registry"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-04-01T00:00:00Z",
+            "confidence": 0.94,
+            "provenance": {
+              "source_platform": "digital_twin",
+              "source_authority_id": "digital_twin_registry",
+              "source_reference": "WEST-CORRIDOR-AHU",
+              "lineage_id": "lin-west-corridor-cluster",
+              "ingest_time": "2026-06-29T11:25:00Z",
+              "processing_time": "2026-06-29T11:25:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:west-corridor-merged-from-ahu1",
+      "relationship_type": "merged_from",
+      "from_ref": "urn:ssom:asset:air-handler-corridor-west",
+      "to_ref": "urn:ssom:asset:air-handler-ahu-1",
+      "valid_from": "2026-04-01T00:00:00Z",
+      "confidence": 0.94,
+      "provenance": {
+        "source_platform": "cmdb",
+        "source_authority_id": "servicenow-cmdb",
+        "source_reference": "merge:west-corridor",
+        "lineage_id": "lin-west-corridor-ahu1",
+        "ingest_time": "2026-06-29T11:25:00Z",
+        "processing_time": "2026-06-29T11:25:01Z"
+      }
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:west-corridor-merged-from-ahu2",
+      "relationship_type": "merged_from",
+      "from_ref": "urn:ssom:asset:air-handler-corridor-west",
+      "to_ref": "urn:ssom:asset:air-handler-ahu-2",
+      "valid_from": "2026-04-01T00:00:00Z",
+      "confidence": 0.94,
+      "provenance": {
+        "source_platform": "cmdb",
+        "source_authority_id": "servicenow-cmdb",
+        "source_reference": "merge:west-corridor",
+        "lineage_id": "lin-west-corridor-ahu2",
+        "ingest_time": "2026-06-29T11:25:00Z",
+        "processing_time": "2026-06-29T11:25:01Z"
+      }
+    }
+  ],
+  "identity_lifecycle_events": [
+    {
+      "event_id": "urn:ssom:identity-event:west-corridor-merge-20260401",
+      "semantic_truth_state": "identity_lifecycle_event",
+      "ssom_version": "0.5.0",
+      "event_type": "merge",
+      "subject_refs": [
+        "urn:ssom:asset:air-handler-ahu-1",
+        "urn:ssom:asset:air-handler-ahu-2"
+      ],
+      "resulting_asset_refs": [
+        "urn:ssom:asset:air-handler-corridor-west"
+      ],
+      "reason": "Two physical air handlers were merged into one managed operational asset for corridor-level monitoring and planning.",
+      "effective_time": "2026-04-01T00:00:00Z",
+      "provenance": {
+        "source_platform": "cmdb",
+        "source_authority_id": "servicenow-cmdb",
+        "source_reference": "merge:west-corridor",
+        "lineage_id": "lin-west-corridor-merge-event",
+        "ingest_time": "2026-06-29T11:25:00Z",
+        "processing_time": "2026-06-29T11:25:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-04-01T00:00:00Z",
+        "source_time": "2026-04-01T00:00:00Z",
+        "receive_time": "2026-06-29T11:24:55Z",
+        "processing_time": "2026-06-29T11:25:01Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

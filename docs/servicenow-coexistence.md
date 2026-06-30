@@ -1,11 +1,12 @@
 # SSOM and ServiceNow Coexistence
 
-SSOM does not require ServiceNow CMDB or CSDM to become a complete industrial semantic model. ServiceNow can remain the workflow and system-of-action layer, while SSOM provides the canonical industrial asset, equipment, device, relationship, evidence, condition, and operational-intelligence context.
+SSOM does not require ServiceNow CMDB or CSDM to become a complete industrial semantic model. ServiceNow can remain the workflow and system-of-action layer, while SSOM provides the canonical industrial asset, identity continuity, equipment, device, relationship, evidence, condition, and operational-intelligence context.
 
 ## Mapping guidance
 
 | ServiceNow Construct | SSOM Interpretation |
 | --- | --- |
+| CMDB CI sys_id or CI number | External identifier assignment, not canonical SSOM identity |
 | Equipment Model Entity | Functional or operational hierarchy node, such as site, area, line, unit, or equipment structure |
 | OT Device CI | Asset with Device-oriented operational roles |
 | Physical equipment CI or EAM asset | Asset with Equipment-oriented operational roles |
@@ -16,6 +17,8 @@ SSOM does not require ServiceNow CMDB or CSDM to become a complete industrial se
 ## Coexistence principles
 
 - ServiceNow identifiers, CI classes, and workflow records may appear in SSOM provenance or source-specific classification assertions.
+- ServiceNow CI identifiers should be preserved as time-bound external identifier assignments with source authority and scope.
 - SSOM does not require a one-to-one mapping between ServiceNow class hierarchies and SSOM operational roles.
 - A single SSOM Asset may consolidate evidence from CMDB, EAM, historian, control-system, and cybersecurity sources.
+- A replacement Asset may retain the same ServiceNow-facing tag, CI display name, or functional location while remaining a different canonical SSOM Asset.
 - Smart operational assets such as PLCs, VFDs, and robot cells may be represented as both Equipment and Device in SSOM even when upstream platforms separate those concerns.

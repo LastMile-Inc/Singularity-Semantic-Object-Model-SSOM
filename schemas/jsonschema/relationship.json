@@ -19,7 +19,7 @@
     },
     "relationship_type": {
       "type": "string",
-      "description": "Core vocabulary includes contains, located_in, part_of, is_part_of, feeds, depends_on, controls, monitors, measures, actuates, protects, communicates_with, is_connected_to, is_installed_on, is_contained_in, drives, powered_by, is_powered_by, is_managed_by, has_control_target, has_measurement_target, has_protection_target, serves, and has_sensor."
+      "description": "Core vocabulary includes contains, located_in, part_of, is_part_of, feeds, depends_on, controls, monitors, measures, actuates, protects, communicates_with, is_connected_to, is_installed_on, is_contained_in, drives, powered_by, is_powered_by, is_managed_by, has_control_target, has_measurement_target, has_protection_target, serves, has_sensor, replaces, replaced_by, succeeds, preceded_by, split_into, merged_from, decommissioned_as, and recommissioned_as."
     },
     "from_ref": {
       "type": "string"

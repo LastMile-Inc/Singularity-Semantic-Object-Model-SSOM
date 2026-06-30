@@ -52,6 +52,192 @@
         "safety_related_asset"
       ]
     },
+    "identifierRole": {
+      "type": "string",
+      "enum": [
+        "canonical_ssom_id",
+        "manufacturer_serial_number",
+        "manufacturer_model_identifier",
+        "engineering_tag",
+        "asset_tag",
+        "functional_location_reference",
+        "eam_equipment_id",
+        "cmdb_ci_id",
+        "historian_tag",
+        "opc_ua_node_id",
+        "opc_ua_namespace_uri",
+        "scada_object_id",
+        "bms_object_id",
+        "oem_cloud_id",
+        "network_identity",
+        "finance_asset_id",
+        "maintenance_vendor_id",
+        "digital_twin_id"
+      ]
+    },
+    "identifierSemanticUsage": {
+      "type": "string",
+      "enum": [
+        "external_identity",
+        "alias",
+        "contextual_reference"
+      ]
+    },
+    "identifierVerificationStatus": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "verified",
+        "unverified",
+        "disputed",
+        "superseded"
+      ]
+    },
+    "identifierScope": {
+      "type": "object",
+      "required": [
+        "scope_type",
+        "scope_value"
+      ],
+      "properties": {
+        "scope_type": {
+          "type": "string",
+          "enum": [
+            "enterprise",
+            "site",
+            "area",
+            "source_system",
+            "namespace",
+            "oem_tenant",
+            "functional_location",
+            "network_domain",
+            "custom"
+          ]
+        },
+        "scope_value": {
+          "type": "string"
+        },
+        "scope_path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "identifierAuthority": {
+      "type": "object",
+      "required": [
+        "authority_id"
+      ],
+      "properties": {
+        "authority_id": {
+          "type": "string"
+        },
+        "authority_type": {
+          "type": "string",
+          "enum": [
+            "source_system",
+            "organization",
+            "vendor",
+            "namespace",
+            "registry",
+            "custom"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "identifierAssignment": {
+      "type": "object",
+      "required": [
+        "assignment_id",
+        "identifier_value",
+        "identifier_role",
+        "semantic_usage",
+        "identifier_scope",
+        "identifier_authority",
+        "verification_status",
+        "confidence",
+        "provenance"
+      ],
+      "properties": {
+        "assignment_id": {
+          "type": "string"
+        },
+        "identifier_value": {
+          "type": "string"
+        },
+        "identifier_role": {
+          "$ref": "common.json#/$defs/identifierRole"
+        },
+        "semantic_usage": {
+          "$ref": "common.json#/$defs/identifierSemanticUsage"
+        },
+        "identifier_scope": {
+          "$ref": "common.json#/$defs/identifierScope"
+        },
+        "identifier_authority": {
+          "$ref": "common.json#/$defs/identifierAuthority"
+        },
+        "verification_status": {
+          "$ref": "common.json#/$defs/identifierVerificationStatus"
+        },
+        "assigned_by": {
+          "type": "string"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confidence": {
+          "$ref": "common.json#/$defs/confidenceScore"
+        },
+        "source_assertion_ref": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "common.json#/$defs/provenance"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "identityLifecycleEventType": {
+      "type": "string",
+      "enum": [
+        "commissioning",
+        "decommissioning",
+        "replacement",
+        "recommissioning",
+        "relocation",
+        "tag_reassignment",
+        "merge",
+        "split",
+        "source_system_migration"
+      ]
+    },
+    "assetSuccessionType": {
+      "type": "string",
+      "enum": [
+        "replaces",
+        "replaced_by",
+        "succeeds",
+        "preceded_by",
+        "split_into",
+        "merged_from",
+        "decommissioned_as",
+        "recommissioned_as"
+      ]
+    },
     "classificationAssertion": {
       "type": "object",
       "required": [

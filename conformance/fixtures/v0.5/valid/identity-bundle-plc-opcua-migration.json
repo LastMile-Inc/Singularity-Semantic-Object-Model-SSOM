@@ -1,0 +1,167 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:plc-17",
+      "asset_type": "plc",
+      "display_name": "PLC-17",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "device_roles": [
+        "control_device",
+        "compute_device"
+      ],
+      "lifecycle_roles": [
+        "serialized_asset",
+        "maintainable_asset",
+        "cyber_managed_asset"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "opcuaserver",
+            "source_reference": "ns=2;s=PLC17/Main",
+            "authority": "opcua-primary"
+          }
+        ],
+        "confidence": 0.95,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-plc17-tag",
+            "identifier_value": "PLC-17",
+            "identifier_role": "engineering_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "plant-2"
+            },
+            "identifier_authority": {
+              "authority_id": "controls_master",
+              "authority_type": "organization"
+            },
+            "verification_status": "verified",
+            "valid_from": "2023-01-01T00:00:00Z",
+            "confidence": 0.99,
+            "provenance": {
+              "source_platform": "controls_master",
+              "source_authority_id": "controls_master",
+              "source_reference": "PLC-17",
+              "lineage_id": "lin-plc17-tag",
+              "ingest_time": "2026-06-29T11:00:00Z",
+              "processing_time": "2026-06-29T11:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-plc17-namespace",
+            "identifier_value": "urn:vendor:plant2:plc17",
+            "identifier_role": "opc_ua_namespace_uri",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "namespace",
+              "scope_value": "opcua-primary"
+            },
+            "identifier_authority": {
+              "authority_id": "opcua-primary",
+              "authority_type": "namespace"
+            },
+            "verification_status": "verified",
+            "valid_from": "2023-01-01T00:00:00Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "opcuaserver",
+              "source_authority_id": "opcua-primary",
+              "source_reference": "urn:vendor:plant2:plc17",
+              "lineage_id": "lin-plc17-namespace",
+              "ingest_time": "2026-06-29T11:00:00Z",
+              "processing_time": "2026-06-29T11:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-plc17-node-v1",
+            "identifier_value": "ns=2;s=PLC17/Main",
+            "identifier_role": "opc_ua_node_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "namespace",
+              "scope_value": "urn:vendor:plant2:plc17"
+            },
+            "identifier_authority": {
+              "authority_id": "opcua-primary",
+              "authority_type": "source_system"
+            },
+            "verification_status": "superseded",
+            "valid_from": "2023-01-01T00:00:00Z",
+            "valid_to": "2026-06-29T08:59:59Z",
+            "confidence": 0.95,
+            "provenance": {
+              "source_platform": "opcuaserver",
+              "source_authority_id": "opcua-primary",
+              "source_reference": "ns=2;s=PLC17/Main",
+              "lineage_id": "lin-plc17-node-v1",
+              "ingest_time": "2026-06-29T11:00:00Z",
+              "processing_time": "2026-06-29T11:00:01Z"
+            }
+          },
+          {
+            "assignment_id": "assign-plc17-node-v2",
+            "identifier_value": "ns=4;s=Controllers/PLC17/Main",
+            "identifier_role": "opc_ua_node_id",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "namespace",
+              "scope_value": "urn:vendor:plant2:plc17"
+            },
+            "identifier_authority": {
+              "authority_id": "opcua-primary",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-06-29T09:00:00Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "opcuaserver",
+              "source_authority_id": "opcua-primary",
+              "source_reference": "ns=4;s=Controllers/PLC17/Main",
+              "lineage_id": "lin-plc17-node-v2",
+              "ingest_time": "2026-06-29T11:00:00Z",
+              "processing_time": "2026-06-29T11:00:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "identity_lifecycle_events": [
+    {
+      "event_id": "urn:ssom:identity-event:plc17-opcua-upgrade-20260629",
+      "semantic_truth_state": "identity_lifecycle_event",
+      "ssom_version": "0.5.0",
+      "event_type": "source_system_migration",
+      "subject_refs": [
+        "urn:ssom:asset:plc-17"
+      ],
+      "affected_identifier_values": [
+        "ns=2;s=PLC17/Main",
+        "ns=4;s=Controllers/PLC17/Main"
+      ],
+      "reason": "Firmware and namespace upgrade changed the OPC UA node identity while the underlying PLC asset remained the same.",
+      "confidence": 0.95,
+      "effective_time": "2026-06-29T09:00:00Z",
+      "provenance": {
+        "source_platform": "opcuaserver",
+        "source_authority_id": "opcua-primary",
+        "source_reference": "upgrade-job-7741",
+        "lineage_id": "lin-plc17-upgrade-event",
+        "ingest_time": "2026-06-29T11:05:00Z",
+        "processing_time": "2026-06-29T11:05:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:00:00Z",
+        "source_time": "2026-06-29T09:00:00Z",
+        "receive_time": "2026-06-29T11:04:55Z",
+        "processing_time": "2026-06-29T11:05:01Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

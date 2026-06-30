@@ -1,0 +1,146 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:compressor-c77",
+      "asset_type": "compressor",
+      "display_name": "Compressor C-77",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": [
+        "utility_equipment"
+      ],
+      "lifecycle_roles": [
+        "serialized_asset",
+        "maintainable_asset"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "compressor:C-77",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.96,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-c77-tag",
+            "identifier_value": "C-77",
+            "identifier_role": "engineering_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "plant-4"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2022-01-01T00:00:00Z",
+            "confidence": 0.99,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "compressor:C-77",
+              "lineage_id": "lin-c77-tag",
+              "ingest_time": "2026-06-29T11:15:00Z",
+              "processing_time": "2026-06-29T11:15:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "functional_locations": [
+    {
+      "location_id": "urn:ssom:functional-location:plant-4-compressor-bay-1",
+      "display_name": "Plant-4 Compressor Bay 1",
+      "location_type": "functional_location",
+      "external_references": [
+        {
+          "source_platform": "maintenance_master",
+          "source_reference": "Plant-4/Compressor-Bay-1",
+          "authority": "maintenance_master"
+        }
+      ],
+      "ssom_version": "0.5.0"
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:c77-recommissioned-as-c77",
+      "relationship_type": "recommissioned_as",
+      "from_ref": "urn:ssom:asset:compressor-c77",
+      "to_ref": "urn:ssom:functional-location:plant-4-compressor-bay-1",
+      "valid_from": "2026-04-15T08:00:00Z",
+      "confidence": 0.9,
+      "provenance": {
+        "source_platform": "maintenance_master",
+        "source_authority_id": "maintenance_master",
+        "source_reference": "recommission:C-77",
+        "lineage_id": "lin-c77-recommissioned-as",
+        "ingest_time": "2026-06-29T11:15:00Z",
+        "processing_time": "2026-06-29T11:15:01Z"
+      }
+    }
+  ],
+  "identity_lifecycle_events": [
+    {
+      "event_id": "urn:ssom:identity-event:c77-decommission-20260201",
+      "semantic_truth_state": "identity_lifecycle_event",
+      "ssom_version": "0.5.0",
+      "event_type": "decommissioning",
+      "subject_refs": [
+        "urn:ssom:asset:compressor-c77"
+      ],
+      "reason": "Compressor removed from service during overhaul.",
+      "effective_time": "2026-02-01T08:00:00Z",
+      "provenance": {
+        "source_platform": "maintenance_master",
+        "source_authority_id": "maintenance_master",
+        "source_reference": "decom:C-77",
+        "lineage_id": "lin-c77-decom-event",
+        "ingest_time": "2026-06-29T11:15:00Z",
+        "processing_time": "2026-06-29T11:15:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-02-01T08:00:00Z",
+        "source_time": "2026-02-01T08:00:00Z",
+        "receive_time": "2026-06-29T11:14:55Z",
+        "processing_time": "2026-06-29T11:15:01Z",
+        "delivery_classification": "manual_entry"
+      }
+    },
+    {
+      "event_id": "urn:ssom:identity-event:c77-recommission-20260415",
+      "semantic_truth_state": "identity_lifecycle_event",
+      "ssom_version": "0.5.0",
+      "event_type": "recommissioning",
+      "subject_refs": [
+        "urn:ssom:asset:compressor-c77"
+      ],
+      "location_refs": [
+        "urn:ssom:functional-location:plant-4-compressor-bay-1"
+      ],
+      "reason": "Compressor recommissioned after overhaul and alignment verification.",
+      "effective_time": "2026-04-15T08:00:00Z",
+      "provenance": {
+        "source_platform": "maintenance_master",
+        "source_authority_id": "maintenance_master",
+        "source_reference": "recommission:C-77",
+        "lineage_id": "lin-c77-recom-event",
+        "ingest_time": "2026-06-29T11:15:00Z",
+        "processing_time": "2026-06-29T11:15:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-04-15T08:00:00Z",
+        "source_time": "2026-04-15T08:00:00Z",
+        "receive_time": "2026-06-29T11:14:57Z",
+        "processing_time": "2026-06-29T11:15:01Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}
