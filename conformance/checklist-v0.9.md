@@ -56,6 +56,13 @@
 - [ ] The profile covers a networked vulnerable VFD, a PLC communicating through a conduit, and a safety controller with cyber-managed identity.
 - [ ] The profile is bounded as foundational OT cyber interoperability context rather than a complete cybersecurity management surface.
 
+## v1.0 Promotion Proof Coverage
+- [ ] Smart-pump proof bundles preserve equipment, device, lifecycle, control, monitoring, cyber-risk, and work-outcome semantics in one end-to-end evidence package.
+- [ ] Chiller multi-system proof bundles preserve seven-system identity convergence, source disagreement, workflow curation, and outcome feedback.
+- [ ] AI comparability proof bundles separate comparable and non-comparable evidence before benchmark or model-input claims are made.
+- [ ] ServiceNow outcome-feedback proof bundles preserve recommendation-to-execution-to-verification-to-updated-context closure without cross-tenant leakage.
+- [ ] Invalid proof bundles reject unsupported cyber relationship codes, raw telemetry workflow projection, non-comparable feature inclusion, non-managed cyber assets, and duplicate industry-profile role declarations.
+
 ## Industry Profiles
 - [ ] Process manufacturing, discrete manufacturing, utilities and electric power, water and wastewater, and facilities and data centers each have a bounded profile scaffold.
 - [ ] Each industry profile defines scope, required or optional roles, measurement expectations, event or alarm expectations, reliability or work requirements, safety or cyber applicability, ServiceNow implications, standards applicability, exclusions, and an end-to-end example.

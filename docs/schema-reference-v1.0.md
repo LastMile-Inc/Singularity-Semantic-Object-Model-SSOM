@@ -82,6 +82,14 @@ This document is the release-discovery index for the SSOM v1.0 promotion program
 - `schemas/jsonschema/cyber-foundation-bundle.json`
 - `schemas/jsonschema/industry-profile-bundle.json`
 
+## v1.0 promotion proof schemas
+
+- `schemas/jsonschema/smart-pump-cyber-proof-bundle.json`
+- `schemas/jsonschema/chiller-multi-system-proof-bundle.json`
+- `schemas/jsonschema/ai-comparability-proof-bundle.json`
+- `schemas/jsonschema/servicenow-outcome-feedback-bundle.json`
+- `schemas/jsonschema/industry-profile-invalid-matrix.json`
+
 ## Profile documents
 
 - `docs/servicenow-serving-projection-profile-v0.9.md`
@@ -94,6 +102,19 @@ This document is the release-discovery index for the SSOM v1.0 promotion program
 - `conformance/validate-schemas.mjs`
 - `conformance/checklist-v0.9.md`
 - `conformance/fixtures/`
+
+### Workstream 2 proof and adversarial fixtures
+
+- `conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json`
+- `conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json`
+- `conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json`
+- `conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json`
+- `conformance/fixtures/v1.0/invalid/smart-pump-cyber-proof-bundle-unauthorized-risk.json`
+- `conformance/fixtures/v1.0/invalid/chiller-multi-system-proof-bundle-prohibited-telemetry.json`
+- `conformance/fixtures/v1.0/invalid/ai-comparability-proof-bundle-ineligible-feature.json`
+- `conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json`
+- `conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json`
+- `conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json`
 
 ## BigQuery and architecture guidance
 

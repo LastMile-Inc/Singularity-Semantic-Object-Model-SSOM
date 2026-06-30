@@ -1,0 +1,45 @@
+{
+  "bundle_id": "urn:ssom:proof:chiller-multi-system-invalid-v1",
+  "proof_version": "1.0.0-draft",
+  "canonical_asset_id": "urn:ssom:asset:chiller-7a",
+  "source_systems": ["bms", "scada", "cmms", "eam", "oem_cloud", "historian", "servicenow"],
+  "time_bound_identifiers": [
+    { "source_system": "bms", "identifier_value": "BMS-CH-7A", "scope": "site-b", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "scada", "identifier_value": "SCADA-CH-7A", "scope": "site-b", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "cmms", "identifier_value": "CMMS-CH-7A", "scope": "enterprise", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "eam", "identifier_value": "EAM-CH-7A", "scope": "enterprise", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "oem_cloud", "identifier_value": "OEM-CH-7A", "scope": "vendor", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "historian", "identifier_value": "HIST-CH-7A", "scope": "site-b", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null },
+    { "source_system": "servicenow", "identifier_value": "CI-CHILLER7A", "scope": "workflow", "valid_from": "2026-01-01T00:00:00Z", "valid_to": null }
+  ],
+  "source_conflicts": [
+    { "conflict_id": "urn:ssom:conflict:chiller7a-condition", "sources_in_conflict": ["bms", "oem_cloud"], "preserved_as_distinct": true }
+  ],
+  "measurement_contexts": [
+    { "source_system": "bms", "measurement_type": "temperature", "evidence_ref": "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json" },
+    { "source_system": "historian", "measurement_type": "pressure", "evidence_ref": "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json" }
+  ],
+  "condition_alarm_context": {
+    "condition_summary": "condition preserved",
+    "alarm_summary": "alarm preserved",
+    "preserves_source_disagreement": true
+  },
+  "maintenance_context": {
+    "work_execution_ref": "urn:ssom:action:p101-bearing-work-completed",
+    "verification_ref": "urn:ssom:work-verification:p101-bearing-postwork",
+    "task_closure_is_not_success": true
+  },
+  "servicenow_projection": {
+    "projection_ref": "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+    "projected_payload_classes": ["current_condition_summary", "raw_historian_samples"],
+    "workflow_refs": ["TASK-CHILLER7A-RECONCILE"]
+  },
+  "outcome_feedback": {
+    "outcome_ref": "urn:ssom:outcome:p101-bearing-work-outcome",
+    "updated_context_refs": ["conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"]
+  },
+  "supporting_artifacts": [
+    "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+  ]
+}

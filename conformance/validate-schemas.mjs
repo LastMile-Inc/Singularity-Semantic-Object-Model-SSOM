@@ -793,6 +793,19 @@ function ensureCyberFoundationSemantics(bundle, testName) {
   }
 }
 
+function expectInvalidCyberFoundationBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateCyberFoundationBundle(testName, relativePath);
+    ensureCyberFoundationSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 function validateIndustryProfileBundle(testName, relativePath) {
   return validateFixture(testName, "industry-profile-bundle.json", relativePath);
 }
@@ -824,6 +837,215 @@ function ensureIndustryProfileSemantics(bundle, testName) {
     (bundle.safety_cyber_applicability?.notes || []).length > 0,
     `${testName} must include bounded safety or cyber applicability notes.`
   );
+}
+
+function expectInvalidIndustryProfileBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIndustryProfileBundle(testName, relativePath);
+    ensureIndustryProfileSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateSmartPumpCyberProofBundle(testName, relativePath) {
+  return validateFixture(testName, "smart-pump-cyber-proof-bundle.json", relativePath);
+}
+
+function ensureSmartPumpCyberProofSemantics(bundle, testName) {
+  assert(bundle.lifecycle_roles.includes("cyber_managed_asset"), `${testName} must keep the smart pump in a cyber-managed lifecycle role.`);
+  assert(bundle.device_roles.includes("measurement_device"), `${testName} must preserve measurement-device context.`);
+  assert(bundle.control_context.relationship_type === "controls", `${testName} must preserve a governed control relationship.`);
+
+  for (const relativePath of [...(bundle.control_context.evidence_refs || []), ...(bundle.monitoring_context.evidence_refs || []), ...(bundle.supporting_artifacts || [])]) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "smart-pump proof artifact");
+    }
+  }
+
+  for (const relationshipType of bundle.cyber_context.supported_relationships || []) {
+    assert(relationshipRegistryIndex.has(relationshipType), `${testName} must use governed cyber relationship types.`);
+  }
+
+  for (const conclusion of bundle.cyber_context.canonical_risk_conclusions || []) {
+    assert((conclusion.evidence_refs || []).length > 0, `${testName} must not promote a canonical cyber risk without evidence.`);
+    assert(["reviewed", "approved"].includes(conclusion.approval_state), `${testName} must keep cyber risk approval in a governed review state.`);
+  }
+
+  const provenancePlatforms = new Set((bundle.source_provenance || []).map((entry) => entry.source_platform));
+  assert(provenancePlatforms.has("historian"), `${testName} must preserve historian provenance.`);
+  assert(provenancePlatforms.has("ot-cyber-monitor"), `${testName} must preserve OT cyber provenance.`);
+  assert(bundle.work_and_outcome_context.verification_ref === "urn:ssom:work-verification:p101-bearing-postwork", `${testName} must preserve post-work verification context.`);
+}
+
+function expectInvalidSmartPumpCyberProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateSmartPumpCyberProofBundle(testName, relativePath);
+    ensureSmartPumpCyberProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateChillerMultiSystemProofBundle(testName, relativePath) {
+  return validateFixture(testName, "chiller-multi-system-proof-bundle.json", relativePath);
+}
+
+function ensureChillerMultiSystemProofSemantics(bundle, testName) {
+  const expectedSystems = ["bms", "scada", "cmms", "eam", "oem_cloud", "historian", "servicenow"];
+  for (const system of expectedSystems) {
+    assert(bundle.source_systems.includes(system), `${testName} must preserve source system ${system}.`);
+  }
+
+  const sourceSystems = new Set(bundle.source_systems || []);
+  for (const identifier of bundle.time_bound_identifiers || []) {
+    assert(sourceSystems.has(identifier.source_system), `${testName} time-bound identifiers must reference declared source systems.`);
+  }
+
+  assert((bundle.source_conflicts || []).some((entry) => entry.preserved_as_distinct === true), `${testName} must preserve source conflicts as distinct rather than forced reconciliation.`);
+  assert(bundle.condition_alarm_context.preserves_source_disagreement === true, `${testName} must preserve condition or alarm disagreement.`);
+  assert(bundle.maintenance_context.task_closure_is_not_success === true, `${testName} must preserve the distinction between task closure and success.`);
+
+  const prohibitedProjectionClasses = new Set(["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]);
+  for (const payloadClass of bundle.servicenow_projection.projected_payload_classes || []) {
+    assert(!prohibitedProjectionClasses.has(payloadClass), `${testName} must not project prohibited raw telemetry payload classes into workflow-facing bundles.`);
+  }
+
+  for (const relativePath of [...(bundle.outcome_feedback.updated_context_refs || []), ...(bundle.supporting_artifacts || [])]) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "chiller proof artifact");
+    }
+  }
+}
+
+function expectInvalidChillerMultiSystemProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateChillerMultiSystemProofBundle(testName, relativePath);
+    ensureChillerMultiSystemProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateAiComparabilityProofBundle(testName, relativePath) {
+  return validateFixture(testName, "ai-comparability-proof-bundle.json", relativePath);
+}
+
+function ensureAiComparabilityProofSemantics(bundle, testName) {
+  const siteContexts = new Map((bundle.site_contexts || []).map((entry) => [entry.site_id, entry]));
+  const assessments = new Map((bundle.comparability_assessments || []).map((entry) => [entry.assessment_id, entry]));
+  const featureIds = new Set((bundle.feature_lineage_records || []).map((entry) => entry.feature_id));
+
+  for (const siteContext of bundle.site_contexts || []) {
+    for (const relativePath of siteContext.source_evidence_refs || []) {
+      if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+        assertWorkspacePathExists(relativePath, testName, "AI comparability source evidence");
+      }
+    }
+    if (!siteContext.comparable_view_eligible) {
+      assert(siteContext.canonical_unit_code === null || siteContext.calibration_state === "unknown", `${testName} ineligible site contexts must remain explicitly non-comparable.`);
+    }
+  }
+
+  for (const assessment of bundle.comparability_assessments || []) {
+    for (const siteId of assessment.compared_site_ids || []) {
+      assert(siteContexts.has(siteId), `${testName} comparability assessments must reference known site contexts.`);
+    }
+    if (assessment.eligible) {
+      assert((assessment.disqualifying_reasons || []).length === 0, `${testName} eligible assessments must not carry disqualifying reasons.`);
+      for (const siteId of assessment.compared_site_ids || []) {
+        assert(siteContexts.get(siteId).comparable_view_eligible === true, `${testName} eligible assessments must only include comparable site contexts.`);
+      }
+    } else {
+      assert((assessment.disqualifying_reasons || []).length > 0, `${testName} ineligible assessments must record disqualifying reasons.`);
+    }
+  }
+
+  for (const feature of bundle.feature_lineage_records || []) {
+    const assessment = assessments.get(feature.assessment_ref);
+    assert(assessment, `${testName} feature lineage must reference a known comparability assessment.`);
+    for (const siteId of feature.included_site_ids || []) {
+      assert(assessment.compared_site_ids.includes(siteId), `${testName} feature lineage must only include sites from its assessment.`);
+      assert(siteContexts.get(siteId)?.comparable_view_eligible === true, `${testName} feature lineage must not include non-comparable site evidence.`);
+    }
+    for (const relativePath of [...(feature.evidence_refs || []), ...(feature.excluded_evidence_refs || [])]) {
+      if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+        assertWorkspacePathExists(relativePath, testName, "AI comparability feature evidence");
+      }
+    }
+  }
+
+  for (const output of bundle.benchmark_outputs || []) {
+    const assessment = assessments.get(output.assessment_ref);
+    assert(assessment, `${testName} benchmark outputs must reference a known assessment.`);
+    for (const featureId of output.included_feature_ids || []) {
+      assert(featureIds.has(featureId), `${testName} benchmark outputs must reference known features.`);
+    }
+    if (!assessment.eligible) {
+      assert(!output.comparability_claim.includes("comparable"), `${testName} must not issue a comparability claim from an ineligible assessment.`);
+    }
+  }
+}
+
+function expectInvalidAiComparabilityProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateAiComparabilityProofBundle(testName, relativePath);
+    ensureAiComparabilityProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateServicenowOutcomeFeedbackBundle(testName, relativePath) {
+  return validateFixture(testName, "servicenow-outcome-feedback-bundle.json", relativePath);
+}
+
+function ensureServicenowOutcomeFeedbackSemantics(bundle, testName) {
+  assert(bundle.workflow_projection.projected_tenant_id === bundle.tenant_id, `${testName} must not cross tenant boundaries in workflow projections.`);
+  assert(bundle.workflow_execution_context.related_tenant_id === bundle.tenant_id, `${testName} workflow execution context must remain in the originating tenant.`);
+  assert(bundle.verification_context.verified === true, `${testName} outcome closure must preserve positive verification evidence.`);
+  assert(bundle.outcome_context.originating_recommendation_ref === bundle.originating_recommendation_ref, `${testName} outcome context must preserve the originating recommendation link.`);
+  if (bundle.outcome_context.success_disposition === "ineffective") {
+    assert(bundle.updated_context.updated_recommendation_ref, `${testName} ineffective outcomes must drive a follow-up recommendation.`);
+  }
+  for (const relativePath of bundle.supporting_artifacts || []) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "ServiceNow outcome-feedback artifact");
+    }
+  }
+}
+
+function expectInvalidServicenowOutcomeFeedbackBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateServicenowOutcomeFeedbackBundle(testName, relativePath);
+    ensureServicenowOutcomeFeedbackSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateIndustryProfileInvalidMatrix(testName, relativePath) {
+  return validateFixture(testName, "industry-profile-invalid-matrix.json", relativePath);
 }
 
 function ensureCandidateSpecificationPackageSemantics(testName) {
@@ -913,6 +1135,13 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
       "schemas/jsonschema/safety-foundation-bundle.json",
       "schemas/jsonschema/cyber-foundation-bundle.json",
       "schemas/jsonschema/industry-profile-bundle.json",
+      "schemas/jsonschema/smart-pump-cyber-proof-bundle.json",
+      "schemas/jsonschema/chiller-multi-system-proof-bundle.json",
+      "schemas/jsonschema/ai-comparability-proof-bundle.json",
+      "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
+      "schemas/jsonschema/industry-profile-invalid-matrix.json",
+      "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json",
+      "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
       "docs/standards-crosswalk-matrix-v0.9.json",
       "docs/bigquery-reference-architecture-v0.9.md",
       "conformance/validate-schemas.mjs",
@@ -970,10 +1199,25 @@ function ensureReleaseDiscoveryIntegrity(testName) {
     "schemas/jsonschema/safety-foundation-bundle.json",
     "schemas/jsonschema/cyber-foundation-bundle.json",
     "schemas/jsonschema/industry-profile-bundle.json",
+    "schemas/jsonschema/smart-pump-cyber-proof-bundle.json",
+    "schemas/jsonschema/chiller-multi-system-proof-bundle.json",
+    "schemas/jsonschema/ai-comparability-proof-bundle.json",
+    "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
+    "schemas/jsonschema/industry-profile-invalid-matrix.json",
     "docs/servicenow-serving-projection-profile-v0.9.md",
     "docs/functional-safety-foundation-profile-v0.9.md",
     "docs/ot-cybersecurity-foundation-profile-v0.9.md",
     "docs/industry-profile-index-v0.9.md",
+    "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json",
+    "conformance/fixtures/v1.0/invalid/smart-pump-cyber-proof-bundle-unauthorized-risk.json",
+    "conformance/fixtures/v1.0/invalid/chiller-multi-system-proof-bundle-prohibited-telemetry.json",
+    "conformance/fixtures/v1.0/invalid/ai-comparability-proof-bundle-ineligible-feature.json",
+    "conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json",
+    "conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json",
+    "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
     "docs/standards-crosswalk-matrix-v0.9.json",
     "docs/source-system-mapping-guidance-v0.9.json",
     "docs/transformation-loss-register-v0.9.json",
@@ -2804,6 +3048,34 @@ const cyberFoundationBundle = validateCyberFoundationBundle(
 ensureCyberFoundationSemantics(cyberFoundationBundle, "OT cybersecurity foundation profile");
 results.push("OT cybersecurity foundation profiles preserve cyber-managed identity, firmware or software context, zones, conduits, posture, vulnerability, and mitigation references without claiming full control-framework coverage");
 
+const smartPumpCyberProofBundle = validateSmartPumpCyberProofBundle(
+  "smart pump cyber-aware end-to-end proof bundle",
+  "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json"
+);
+ensureSmartPumpCyberProofSemantics(smartPumpCyberProofBundle, "smart pump cyber-aware end-to-end proof bundle");
+results.push("smart-pump end-to-end proofs preserve equipment, device, lifecycle, control, monitoring, cyber-risk, and work-outcome semantics without collapsing governed evidence into a single risk label");
+
+const chillerMultiSystemProofBundle = validateChillerMultiSystemProofBundle(
+  "integrated data-center chiller multi-system proof bundle",
+  "conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json"
+);
+ensureChillerMultiSystemProofSemantics(chillerMultiSystemProofBundle, "integrated data-center chiller multi-system proof bundle");
+results.push("multi-system chiller proofs preserve seven-system identity convergence, source disagreement, workflow curation, and outcome feedback without treating task closure as operational success");
+
+const aiComparabilityProofBundle = validateAiComparabilityProofBundle(
+  "cross-site AI normalization and comparability proof bundle",
+  "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json"
+);
+ensureAiComparabilityProofSemantics(aiComparabilityProofBundle, "cross-site AI normalization and comparability proof bundle");
+results.push("cross-site AI comparability proofs separate eligible and ineligible evidence so normalized benchmark claims remain policy-bound and lineage-backed");
+
+const servicenowOutcomeFeedbackBundle = validateServicenowOutcomeFeedbackBundle(
+  "ServiceNow outcome-feedback closure bundle",
+  "conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json"
+);
+ensureServicenowOutcomeFeedbackSemantics(servicenowOutcomeFeedbackBundle, "ServiceNow outcome-feedback closure bundle");
+results.push("ServiceNow outcome-feedback proofs close the loop from recommendation to workflow execution to verification to updated condition or follow-up recommendation without crossing tenant boundaries");
+
 for (const [label, relativePath] of [
   ["process manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"],
   ["discrete manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"],
@@ -2815,6 +3087,19 @@ for (const [label, relativePath] of [
   ensureIndustryProfileSemantics(profileBundle, label);
 }
 results.push("initial industry profiles stay bounded, fixture-backed, and tied to end-to-end examples without pushing vertical-specific vocabulary into SSOM core");
+
+const industryInvalidMatrix = validateIndustryProfileInvalidMatrix(
+  "industry profile invalid coverage matrix",
+  "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json"
+);
+for (const failure of industryInvalidMatrix.profile_failures || []) {
+  expectInvalidIndustryProfileBundle(
+    `${failure.profile_id} invalid duplicate-role coverage`,
+    failure.fixture_path,
+    failure.expected_failure_fragment
+  );
+}
+results.push("industry-profile conformance now includes explicit invalid coverage proving required roles cannot be duplicated inside optional-role lists");
 
 ensureCandidateSpecificationPackageSemantics("candidate-specification package");
 results.push("candidate-specification and release-readiness artifacts cover qualified external positioning, publication posture, and review boundaries");
@@ -2842,6 +3127,41 @@ expectInvalidEventAlarmBundle(
   "must not be represented solely as uncontrolled string content in Observation"
 );
 results.push("alarm semantics cannot be represented solely as uncontrolled string content in Observation");
+
+expectInvalidSmartPumpCyberProofBundle(
+  "smart pump cyber proof unauthorized risk promotion",
+  "conformance/fixtures/v1.0/invalid/smart-pump-cyber-proof-bundle-unauthorized-risk.json",
+  "must use governed cyber relationship types"
+);
+results.push("smart-pump cyber proofs reject unsupported relationship types and unsupported auto-promoted risk conclusions");
+
+expectInvalidChillerMultiSystemProofBundle(
+  "chiller proof prohibited raw telemetry projection",
+  "conformance/fixtures/v1.0/invalid/chiller-multi-system-proof-bundle-prohibited-telemetry.json",
+  "must not project prohibited raw telemetry payload classes into workflow-facing bundles"
+);
+results.push("multi-system workflow proofs reject raw telemetry classes in workflow-facing projections");
+
+expectInvalidAiComparabilityProofBundle(
+  "AI comparability proof with ineligible feature inclusion",
+  "conformance/fixtures/v1.0/invalid/ai-comparability-proof-bundle-ineligible-feature.json",
+  "feature lineage must not include non-comparable site evidence"
+);
+results.push("AI comparability proofs reject feature lineage that includes non-comparable site evidence");
+
+expectInvalidServicenowOutcomeFeedbackBundle(
+  "ServiceNow outcome-feedback cross-tenant closure",
+  "conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json",
+  "must not cross tenant boundaries in workflow projections"
+);
+results.push("ServiceNow outcome-feedback proofs reject cross-tenant workflow closure projections");
+
+expectInvalidCyberFoundationBundle(
+  "cyber managed asset requirement for cyber foundation bundle",
+  "conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json",
+  "must represent a cyber-managed asset"
+);
+results.push("cyber foundation coverage rejects asset contexts that are not explicitly cyber-managed");
 
 expectInvalidEventAlarmBundle(
   "invalid alarm lifecycle transition chain",

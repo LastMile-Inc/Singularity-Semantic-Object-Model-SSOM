@@ -1,0 +1,111 @@
+{
+  "bundle_id": "urn:ssom:cyber-foundation:invalid-non-managed-v1",
+  "profile_id": "cyber-context-profile",
+  "profile_version": "0.9.0",
+  "scope_boundary": "Invalid cyber bundle used to prove non-managed assets cannot be claimed as cyber context entries.",
+  "asset_contexts": [
+    {
+      "scenario_id": "invalid-non-managed-vfd",
+      "scenario_label": "Non-managed VFD incorrectly treated as cyber context",
+      "canonical_asset_id": "urn:ssom:asset:vfd-12",
+      "asset_label": "VFD-12",
+      "cyber_managed_asset": false,
+      "firmware_identity": "firmware:vfd-12:2.3.1",
+      "software_identity": "software:vfd-12-control:7.4.0",
+      "network_identity": "10.10.14.12",
+      "zone_id": "urn:ssom:zone:line-control",
+      "conduit_ids": ["urn:ssom:conduit:line-control-to-dmz"],
+      "protocol_contexts": ["EtherNet/IP"],
+      "vulnerability_refs": ["urn:ssom:vulnerability:vfd-12-firmware-2-3-1"],
+      "security_posture_ref": "urn:ssom:security-posture:vfd-12",
+      "related_operational_assets": ["urn:ssom:asset:motor-m101"]
+    },
+    {
+      "scenario_id": "plc-zone-conduit-communication",
+      "scenario_label": "PLC in a zone communicating through a conduit",
+      "canonical_asset_id": "urn:ssom:asset:plc-17",
+      "asset_label": "PLC-17",
+      "cyber_managed_asset": true,
+      "firmware_identity": "firmware:plc-17:5.8.2",
+      "software_identity": "software:plc-17-runtime:11.2",
+      "network_identity": "10.10.14.17",
+      "zone_id": "urn:ssom:zone:line-control",
+      "conduit_ids": ["urn:ssom:conduit:line-control-to-dmz"],
+      "protocol_contexts": ["OPC UA"],
+      "vulnerability_refs": ["urn:ssom:vulnerability:plc-17-hardening-gap"],
+      "security_posture_ref": "urn:ssom:security-posture:plc-17",
+      "related_operational_assets": ["urn:ssom:asset:vfd-12"]
+    },
+    {
+      "scenario_id": "safety-controller-cyber-managed-identity",
+      "scenario_label": "Safety controller with cyber-managed identity",
+      "canonical_asset_id": "urn:ssom:asset:safety-controller-201",
+      "asset_label": "Safety Controller 201",
+      "cyber_managed_asset": true,
+      "firmware_identity": "firmware:safety-controller-201:1.9.4",
+      "software_identity": "software:safety-controller-201-runtime:4.1",
+      "network_identity": "10.10.20.45",
+      "zone_id": "urn:ssom:zone:safety-control",
+      "conduit_ids": ["urn:ssom:conduit:safety-control-to-line-control"],
+      "protocol_contexts": ["SafetyNet/IP"],
+      "vulnerability_refs": [],
+      "security_posture_ref": "urn:ssom:security-posture:safety-controller-201",
+      "related_operational_assets": ["urn:ssom:asset:sdv-201"]
+    }
+  ],
+  "zones": [
+    { "zone_id": "urn:ssom:zone:line-control", "zone_label": "Line Control Zone", "zone_kind": "control" },
+    { "zone_id": "urn:ssom:zone:dmz", "zone_label": "Industrial DMZ", "zone_kind": "dmz" },
+    { "zone_id": "urn:ssom:zone:safety-control", "zone_label": "Safety Control Zone", "zone_kind": "safety" }
+  ],
+  "conduits": [
+    {
+      "conduit_id": "urn:ssom:conduit:line-control-to-dmz",
+      "conduit_label": "Line Control to DMZ",
+      "from_zone_id": "urn:ssom:zone:line-control",
+      "to_zone_id": "urn:ssom:zone:dmz",
+      "protocol_contexts": ["OPC UA", "EtherNet/IP"]
+    },
+    {
+      "conduit_id": "urn:ssom:conduit:safety-control-to-line-control",
+      "conduit_label": "Safety Control to Line Control",
+      "from_zone_id": "urn:ssom:zone:safety-control",
+      "to_zone_id": "urn:ssom:zone:line-control",
+      "protocol_contexts": ["SafetyNet/IP"]
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "vulnerability_ref": "urn:ssom:vulnerability:vfd-12-firmware-2-3-1",
+      "vulnerability_label": "VFD firmware advisory 2.3.1",
+      "source_reference": "ADV-2026-VFD-231",
+      "affected_identity": "firmware:vfd-12:2.3.1",
+      "severity": "high"
+    },
+    {
+      "vulnerability_ref": "urn:ssom:vulnerability:plc-17-hardening-gap",
+      "vulnerability_label": "PLC hardening gap",
+      "source_reference": "HARDENING-REVIEW-PLC17",
+      "affected_identity": "software:plc-17-runtime:11.2",
+      "severity": "medium"
+    }
+  ],
+  "security_postures": [
+    { "security_posture_ref": "urn:ssom:security-posture:vfd-12", "posture_state": "known_vulnerable", "severity": "high", "last_assessed_time": "2026-06-29T08:00:00Z" },
+    { "security_posture_ref": "urn:ssom:security-posture:plc-17", "posture_state": "review_required", "severity": "medium", "last_assessed_time": "2026-06-29T10:00:00Z" },
+    { "security_posture_ref": "urn:ssom:security-posture:safety-controller-201", "posture_state": "monitored", "severity": "medium", "last_assessed_time": "2026-06-29T10:15:00Z" }
+  ],
+  "mitigation_actions": [
+    { "mitigation_action_id": "urn:ssom:mitigation:vfd-12-firmware-plan", "target_asset_id": "urn:ssom:asset:vfd-12", "action_type": "patch_or_firmware_mitigation", "status": "planned", "planned_or_executed_at": "2026-07-02T12:00:00Z" }
+  ],
+  "cyber_events": [
+    { "event_id": "urn:ssom:cyber-event:vfd-12-advisory", "event_type": "vulnerability_detected", "target_asset_id": "urn:ssom:asset:vfd-12", "event_time": "2026-06-29T08:05:00Z", "security_posture_ref": "urn:ssom:security-posture:vfd-12", "vulnerability_refs": ["urn:ssom:vulnerability:vfd-12-firmware-2-3-1"] }
+  ],
+  "relationships": [
+    { "relationship_id": "urn:ssom:cyber-relationship:line-control-contains-plc17", "from_ref": "urn:ssom:zone:line-control", "to_ref": "urn:ssom:asset:plc-17", "relationship_type": "contains" },
+    { "relationship_id": "urn:ssom:cyber-relationship:line-control-contains-vfd12", "from_ref": "urn:ssom:zone:line-control", "to_ref": "urn:ssom:asset:vfd-12", "relationship_type": "contains" },
+    { "relationship_id": "urn:ssom:cyber-relationship:safety-zone-contains-safety-controller", "from_ref": "urn:ssom:zone:safety-control", "to_ref": "urn:ssom:asset:safety-controller-201", "relationship_type": "contains" },
+    { "relationship_id": "urn:ssom:cyber-relationship:plc17-communicates-through-conduit", "from_ref": "urn:ssom:asset:plc-17", "to_ref": "urn:ssom:conduit:line-control-to-dmz", "relationship_type": "communicates_with" },
+    { "relationship_id": "urn:ssom:cyber-relationship:safety-controller-protects-sdv201", "from_ref": "urn:ssom:asset:safety-controller-201", "to_ref": "urn:ssom:asset:sdv-201", "relationship_type": "protects" }
+  ]
+}
