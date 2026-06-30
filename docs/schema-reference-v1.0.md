@@ -122,6 +122,11 @@ This document is the release-discovery index for the SSOM v1.0 promotion program
 - `docs/IMPLEMENTATION-BOUNDARY-GUIDANCE.md`
 - `reference-implementation/bigquery/schema.sql`
 - `reference-implementation/bigquery/example-queries.sql`
+- `reference-validation/README.md`
+- `reference-validation/bigquery/nonproduction-validation-plan-v1.0.md`
+- `reference-validation/bigquery/nonprod-validation-queries.sql`
+- `reference-validation/bigquery/reproducibility-checklist-v1.0.md`
+- `reference-validation/bigquery/runtime-capture-template-v1.0.md`
 
 ## Release-readiness surfaces
 

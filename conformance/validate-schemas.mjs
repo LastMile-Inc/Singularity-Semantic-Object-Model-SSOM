@@ -1143,6 +1143,78 @@ function expectInvalidLastMilePlatformOperationsProfile(testName, relativePath, 
   }
 }
 
+function ensureReferenceValidationPackageSemantics(testName) {
+  const packageReadme = readText("reference-validation/README.md");
+  const nonprodPlan = readText("reference-validation/bigquery/nonproduction-validation-plan-v1.0.md");
+  const queries = readText("reference-validation/bigquery/nonprod-validation-queries.sql");
+  const reproducibilityChecklist = readText("reference-validation/bigquery/reproducibility-checklist-v1.0.md");
+  const runtimeTemplate = readText("reference-validation/bigquery/runtime-capture-template-v1.0.md");
+
+  assertIncludesAll(
+    packageReadme,
+    [
+      "non-production",
+      "reproducible",
+      "Do not invent performance",
+      "parameterized",
+      "BigQuery"
+    ],
+    testName,
+    "reference-validation package README"
+  );
+
+  assertIncludesAll(
+    nonprodPlan,
+    [
+      "non-production",
+      "query job IDs",
+      "projection-boundary checks",
+      "comparability checks",
+      "outcome-feedback checks",
+      "does not claim any benchmark, latency, throughput, or cost result"
+    ],
+    testName,
+    "non-production validation plan"
+  );
+
+  assertIncludesAll(
+    queries,
+    [
+      "DECLARE target_project STRING",
+      "serving_projection_current",
+      "canonical_fact_history",
+      "comparability_inputs",
+      "work_outcome_lineage",
+      "Runtime capture reminder"
+    ],
+    testName,
+    "non-production validation queries"
+  );
+
+  assertIncludesAll(
+    reproducibilityChecklist,
+    [
+      "target project is non-production",
+      "query job IDs",
+      "actual BigQuery job metadata"
+    ],
+    testName,
+    "reference-validation reproducibility checklist"
+  );
+
+  assertIncludesAll(
+    runtimeTemplate,
+    [
+      "Repository commit",
+      "Query job IDs",
+      "Actual bytes processed",
+      "No benchmark, latency, throughput, storage, or cost claim"
+    ],
+    testName,
+    "reference-validation runtime capture template"
+  );
+}
+
 function ensureCandidateSpecificationPackageSemantics(testName) {
   const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
   const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
@@ -1243,7 +1315,8 @@ function ensureCandidateSpecificationPackageSemantics(testName) {
       "conformance/validate-schemas.mjs",
       "docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md",
       "schemas/jsonschema/last-mile-platform-operations-profile.json",
-      "reference-validation/"
+      "reference-validation/README.md",
+      "reference-validation/bigquery/nonproduction-validation-plan-v1.0.md"
     ],
     testName,
     "v1.0 discovery surface"
@@ -1334,7 +1407,12 @@ function ensureReleaseDiscoveryIntegrity(testName) {
     "conformance/checklist-v0.9.md",
     "docs/candidate-specification-package-v0.9.md",
     "docs/release-readiness-assessment-v0.9.md",
-    "docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md"
+    "docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md",
+    "reference-validation/README.md",
+    "reference-validation/bigquery/nonproduction-validation-plan-v1.0.md",
+    "reference-validation/bigquery/nonprod-validation-queries.sql",
+    "reference-validation/bigquery/reproducibility-checklist-v1.0.md",
+    "reference-validation/bigquery/runtime-capture-template-v1.0.md"
   ]) {
     assertWorkspacePathExists(referencedPath, testName, "discovery-surface artifact");
   }
@@ -3130,6 +3208,9 @@ results.push("README standards language remains qualified and avoids unsupported
 
 ensureBigQueryReferenceArchitectureSemantics("BigQuery reference architecture");
 results.push("BigQuery reference architecture stays layered, typed, lineage-aware, and explicitly non-normative while covering serving and AI projections");
+
+ensureReferenceValidationPackageSemantics("reference-validation package");
+results.push("reference-validation materials remain non-production, parameterized, reproducible, and free of invented performance claims");
 
 const servicenowServingProjectionBundle = validateServicenowServingProjectionBundle(
   "ServiceNow serving projection profile",

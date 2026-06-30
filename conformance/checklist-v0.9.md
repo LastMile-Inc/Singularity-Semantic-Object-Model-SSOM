@@ -40,6 +40,7 @@
 - [ ] Frequently queried telemetry and event fields are typed columns rather than JSON-only access paths.
 - [ ] Corrected and superseded facts are append-preserving and lineage-aware.
 - [ ] Serving projections and AI feature tables are rebuildable from canonical history.
+- [ ] Reference-validation materials stay non-production, reproducible, parameterized, and free of invented performance claims.
 
 ## ServiceNow Serving Projection Profile
 - [ ] ServiceNow projections remain curated, typed, and rebuildable rather than becoming the canonical evidence store.

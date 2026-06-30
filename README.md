@@ -176,6 +176,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Migration guidance: [docs/migration-v0.9.md](docs/migration-v0.9.md)
 - BigQuery reference DDL: [reference-implementation/bigquery/schema.sql](reference-implementation/bigquery/schema.sql)
 - BigQuery reference queries: [reference-implementation/bigquery/example-queries.sql](reference-implementation/bigquery/example-queries.sql)
+- Reference validation package: [reference-validation/README.md](reference-validation/README.md)
 - Previous migration guidance: [docs/migration-v0.8.md](docs/migration-v0.8.md)
 - Previous migration guidance: [docs/migration-v0.7.md](docs/migration-v0.7.md)
 - Previous migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)
