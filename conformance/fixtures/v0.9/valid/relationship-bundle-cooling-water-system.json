@@ -1,0 +1,281 @@
+{
+  "asset_classes": [
+    {
+      "class_id": "urn:ssom:asset-class:centrifugal-pump",
+      "display_name": "Centrifugal Pump",
+      "class_scheme": "ssom-example",
+      "class_code": "centrifugal_pump",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "asset-taxonomy",
+        "source_authority_id": "engineering",
+        "source_reference": "class:centrifugal_pump",
+        "lineage_id": "lin-class-pump",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    },
+    {
+      "class_id": "urn:ssom:asset-class:vibration-sensor",
+      "display_name": "Vibration Sensor",
+      "class_scheme": "ssom-example",
+      "class_code": "vibration_sensor",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "asset-taxonomy",
+        "source_authority_id": "engineering",
+        "source_reference": "class:vibration_sensor",
+        "lineage_id": "lin-class-sensor",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    }
+  ],
+  "equipment_models": [
+    {
+      "model_id": "urn:ssom:equipment-model:acme-pump-px200",
+      "display_name": "ACME PX200 Pump",
+      "manufacturer_name": "ACME Pumps",
+      "model_code": "PX200",
+      "asset_class_ref": "urn:ssom:asset-class:centrifugal-pump",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "model-catalog",
+        "source_authority_id": "engineering",
+        "source_reference": "model:PX200",
+        "lineage_id": "lin-model-px200",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    }
+  ],
+  "operational_boundaries": [
+    {
+      "boundary_id": "urn:ssom:operational-boundary:cw-01",
+      "boundary_type": "system",
+      "display_name": "Cooling Water System CW-01",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "engineering-model",
+        "source_authority_id": "engineering",
+        "source_reference": "sys:CW-01",
+        "lineage_id": "lin-boundary-cw01",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:cw-01-circulation",
+      "boundary_type": "functional_system",
+      "display_name": "CW-01 Circulation Loop",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:cw-01",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "engineering-model",
+        "source_authority_id": "engineering",
+        "source_reference": "func:CW-01-LOOP",
+        "lineage_id": "lin-boundary-cwloop",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:cw-01-control",
+      "boundary_type": "control_entity",
+      "display_name": "CW-01 Control Cell",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:cw-01",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "controls-design",
+        "source_authority_id": "controls",
+        "source_reference": "ctrl:CW-01",
+        "lineage_id": "lin-boundary-cwctrl",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    }
+  ],
+  "functional_locations": [
+    {
+      "location_id": "urn:ssom:functional-location:plant2-area-b-unit14",
+      "display_name": "Plant-2/Area-B/Unit-14",
+      "location_type": "process_area",
+      "ssom_version": "0.9.0"
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:pump-p101",
+      "asset_type": "centrifugal_pump",
+      "display_name": "Pump P-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": ["process_equipment"],
+      "lifecycle_roles": ["serialized_asset", "maintainable_asset"],
+      "ssom_version": "0.9.0",
+      "asset_class_ref": "urn:ssom:asset-class:centrifugal-pump",
+      "equipment_model_ref": "urn:ssom:equipment-model:acme-pump-px200",
+      "identity": {
+        "source_references": [{ "source_platform": "eam", "source_reference": "asset:P-101" }],
+        "confidence": 0.98
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:motor-m101",
+      "asset_type": "electric_motor",
+      "display_name": "Motor M-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "component",
+      "equipment_roles": ["utility_equipment"],
+      "lifecycle_roles": ["serialized_asset", "maintainable_asset"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "eam", "source_reference": "asset:M-101" }],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:vfd-12",
+      "asset_type": "variable_frequency_drive",
+      "display_name": "VFD-12",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "equipment_roles": ["utility_equipment"],
+      "device_roles": ["control_device", "actuation_device"],
+      "lifecycle_roles": ["serialized_asset", "cyber_managed_asset"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "scada", "source_reference": "drive:VFD-12" }],
+        "confidence": 0.96
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:plc-17",
+      "asset_type": "plc",
+      "display_name": "PLC-17",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "device_roles": ["control_device", "compute_device"],
+      "lifecycle_roles": ["serialized_asset", "cyber_managed_asset"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:PLC-17" }],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:vb-101",
+      "asset_type": "vibration_sensor",
+      "display_name": "VB-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "instrument",
+      "device_roles": ["sensing_device", "measurement_device"],
+      "lifecycle_roles": ["serialized_asset", "monitored_asset"],
+      "ssom_version": "0.9.0",
+      "asset_class_ref": "urn:ssom:asset-class:vibration-sensor",
+      "identity": {
+        "source_references": [{ "source_platform": "instrument-index", "source_reference": "inst:VB-101" }],
+        "confidence": 0.95
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:cw01-contains-p101",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:cw-01",
+      "to_ref": "urn:ssom:asset:pump-p101",
+      "confidence": 0.98,
+      "provenance": {
+        "source_platform": "engineering-model",
+        "source_authority_id": "engineering",
+        "source_reference": "sys:CW-01>P-101",
+        "lineage_id": "lin-rel-cw01-p101",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:p101-is-contained-in-cwloop",
+      "relationship_type": "is_contained_in",
+      "from_ref": "urn:ssom:asset:pump-p101",
+      "to_ref": "urn:ssom:operational-boundary:cw-01-circulation",
+      "confidence": 0.96,
+      "provenance": {
+        "source_platform": "engineering-model",
+        "source_authority_id": "engineering",
+        "source_reference": "P-101>LOOP",
+        "lineage_id": "lin-rel-p101-loop",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:p101-is-installed-in-unit14",
+      "relationship_type": "is_installed_in",
+      "from_ref": "urn:ssom:asset:pump-p101",
+      "to_ref": "urn:ssom:functional-location:plant2-area-b-unit14",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.94,
+      "provenance": {
+        "source_platform": "functional_location_registry",
+        "source_authority_id": "functional_location_registry",
+        "source_reference": "P101@Unit14",
+        "lineage_id": "lin-rel-p101-unit14",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:unit14-hosts-plc17",
+      "relationship_type": "hosts",
+      "from_ref": "urn:ssom:functional-location:plant2-area-b-unit14",
+      "to_ref": "urn:ssom:asset:plc-17",
+      "confidence": 0.88,
+      "provenance": {
+        "source_platform": "ot_cmdb",
+        "source_authority_id": "ot_cmdb",
+        "source_reference": "Unit14>PLC17",
+        "lineage_id": "lin-rel-unit14-plc17",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:plc17-controls-vfd12",
+      "relationship_type": "controls",
+      "from_ref": "urn:ssom:asset:plc-17",
+      "to_ref": "urn:ssom:asset:vfd-12",
+      "confidence": 0.95,
+      "provenance": {
+        "source_platform": "controls_design",
+        "source_authority_id": "controls",
+        "source_reference": "PLC17>VFD12",
+        "lineage_id": "lin-rel-plc-vfd",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:vb101-monitors-p101",
+      "relationship_type": "monitors",
+      "from_ref": "urn:ssom:asset:vb-101",
+      "to_ref": "urn:ssom:asset:pump-p101",
+      "confidence": 0.93,
+      "provenance": {
+        "source_platform": "monitoring_design",
+        "source_authority_id": "reliability",
+        "source_reference": "VB101>P101",
+        "lineage_id": "lin-rel-vb-p101",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      },
+      "direction": "directed"
+    }
+  ]
+}

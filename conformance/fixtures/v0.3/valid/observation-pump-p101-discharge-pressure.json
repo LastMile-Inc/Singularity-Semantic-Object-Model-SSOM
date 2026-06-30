@@ -1,0 +1,29 @@
+{
+  "record_id": "urn:ssom:record:p101-discharge-pressure-20260629t100900z",
+  "ssom_version": "0.3.0",
+  "subject_ref": "urn:ssom:asset:pump-p101",
+  "metric": "discharge_pressure",
+  "value": 4.8,
+  "unit": "bar",
+  "event_time": "2026-06-29T10:09:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.99
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:PT-101.PV",
+    "lineage_id": "ln-obs-p101-pressure",
+    "ingest_time": "2026-06-29T10:09:01Z",
+    "processing_time": "2026-06-29T10:09:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:09:00Z",
+    "source_time": "2026-06-29T10:09:00Z",
+    "receive_time": "2026-06-29T10:09:01Z",
+    "processing_time": "2026-06-29T10:09:02Z",
+    "delivery_classification": "live"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "bundle_id": "urn:ssom:proof:smart-pump-cyber-v1",
+  "proof_version": "1.0.0-draft",
+  "canonical_asset_id": "urn:ssom:asset:pump-p101-v2",
+  "equipment_roles": ["process_equipment"],
+  "device_roles": ["measurement_device", "communication_device"],
+  "lifecycle_roles": ["maintainable_asset", "monitored_asset", "cyber_managed_asset"],
+  "control_context": {
+    "related_controller_asset_id": "urn:ssom:asset:plc-17",
+    "relationship_type": "controls",
+    "evidence_refs": [
+      "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+    ]
+  },
+  "monitoring_context": {
+    "measurement_type": "vibration_velocity",
+    "condition_summary": "bearing recurrence risk remains active",
+    "temporal_integrity_summary": "event time and receive time remain distinct across historian and workflow evidence",
+    "evidence_refs": [
+      "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+    ]
+  },
+  "cyber_context": {
+    "firmware_identity": "firmware:p101-sensor-gateway:3.4.2",
+    "software_identity": "software:p101-condition-agent:1.8.0",
+    "network_identity": "10.20.14.101",
+    "vulnerability_refs": ["urn:ssom:vulnerability:p101-gateway-buffer-handling"],
+    "security_posture_ref": "urn:ssom:security-posture:p101-smart-pump",
+    "supported_relationships": ["communicates_with", "monitors", "controls"],
+    "canonical_risk_conclusions": [
+      {
+        "conclusion_id": "urn:ssom:cyber-risk:p101-20260705",
+        "conclusion_state": "heightened_monitoring_required",
+        "evidence_refs": [
+          "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+          "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+        ],
+        "derived_from_source_facts": ["gateway-advisory-2026-07-05", "historian-vibration-trend"],
+        "approval_state": "reviewed",
+        "effective_time": "2026-07-05T12:00:00Z"
+      }
+    ]
+  },
+  "work_and_outcome_context": {
+    "work_execution_ref": "urn:ssom:action:p101-bearing-work-completed",
+    "verification_ref": "urn:ssom:work-verification:p101-bearing-postwork",
+    "outcome_ref": "urn:ssom:outcome:p101-bearing-work-outcome",
+    "outcome_summary": "Maintenance and outcome context remain explicit and do not erase ongoing cyber or recurrence considerations."
+  },
+  "source_provenance": [
+    {
+      "source_platform": "historian",
+      "fact_summary": "Elevated vibration preserved as source evidence.",
+      "evidence_ref": "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+      "event_time": "2026-07-03T07:00:00Z"
+    },
+    {
+      "source_platform": "ot-cyber-monitor",
+      "fact_summary": "Smart-pump gateway firmware advisory preserved as source cyber fact.",
+      "evidence_ref": "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+      "event_time": "2026-07-05T11:30:00Z"
+    }
+  ],
+  "supporting_artifacts": [
+    "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+    "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+    "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+  ]
+}

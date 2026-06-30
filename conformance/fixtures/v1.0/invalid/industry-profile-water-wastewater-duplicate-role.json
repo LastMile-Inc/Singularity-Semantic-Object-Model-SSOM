@@ -1,0 +1,39 @@
+{
+  "profile_id": "water-wastewater-profile",
+  "profile_version": "1.0.0-draft",
+  "industry_label": "Water and Wastewater",
+  "intended_scope": "Invalid coverage fixture for water or wastewater duplicate-role rejection.",
+  "core_ssom_objects_used": ["Asset", "Observation", "Condition", "Recommendation", "Work Outcome"],
+  "required_roles": ["utility_equipment", "maintainable_asset"],
+  "optional_roles": ["maintainable_asset", "cyber_managed_asset"],
+  "profile_specific_relationships": ["contains", "monitors"],
+  "measurement_signal_expectations": ["Typed measurements remain required."],
+  "event_alarm_expectations": ["Alarms remain distinct from conditions."],
+  "reliability_work_requirements": ["Verification remains distinct from execution."],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Bounded safety context may apply.",
+    "cyber_profile_applicability": "Bounded cyber context may apply.",
+    "notes": ["This fixture exists only to prove duplicate-role rejection."]
+  },
+  "servicenow_serving_projection_implications": ["Workflow projections remain curated."],
+  "standards_mapping_applicability": ["OPC UA", "ISA-95"],
+  "profile_specific_conformance_fixtures": ["conformance/fixtures/v0.6/valid/observation-flow-gpm-normalized.json"],
+  "known_exclusions": ["Treatment chemistry optimization logic."],
+  "end_to_end_example": {
+    "scenario_id": "invalid-water-duplicate-role",
+    "scenario_label": "Invalid duplicate-role industry profile",
+    "narrative_summary": "Optional roles must not repeat required roles.",
+    "involved_entities": [
+      { "entity_id": "urn:ssom:asset:pump-lift-1", "entity_kind": "asset", "roles": ["utility_equipment"] },
+      { "entity_id": "urn:ssom:asset:plc-lift-1", "entity_kind": "asset", "roles": ["control_device"] }
+    ],
+    "stages": [
+      { "stage_type": "measurement_signal", "summary": "Typed measurements preserved." },
+      { "stage_type": "event_alarm", "summary": "Operational alarms preserved." },
+      { "stage_type": "reliability_work", "summary": "Work evidence preserved." },
+      { "stage_type": "serving_projection", "summary": "Curated workflow projection preserved." },
+      { "stage_type": "outcome", "summary": "Outcome remains separate." }
+    ],
+    "related_repo_artifacts": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"]
+  }
+}

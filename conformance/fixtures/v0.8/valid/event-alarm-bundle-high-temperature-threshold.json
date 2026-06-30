@@ -1,0 +1,87 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:furnace01-discharge-temperature-high",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:furnace-01",
+      "metric": "discharge_temperature",
+      "value": 212,
+      "unit": "degC",
+      "event_time": "2026-06-30T11:20:00Z",
+      "quality": {
+        "status": "good",
+        "validation_status": "valid",
+        "score": 0.96
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "obs-furnace01-temp-001",
+        "lineage_id": "lin-obs-furnace01-temp-001",
+        "ingest_time": "2026-06-30T11:20:01Z",
+        "processing_time": "2026-06-30T11:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T11:20:00Z",
+        "receive_time": "2026-06-30T11:20:01Z",
+        "processing_time": "2026-06-30T11:20:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:furnace01-high-temperature",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:furnace-01",
+      "alarm_type": "high_temperature_alarm",
+      "alarm_state": "active",
+      "raised_at": "2026-06-30T11:20:00Z",
+      "severity": "high",
+      "priority": "high",
+      "derivation_type": "observation_threshold_breach",
+      "observation_ref": "urn:ssom:record:furnace01-discharge-temperature-high",
+      "threshold": {
+        "threshold_type": "high",
+        "threshold_value": 200,
+        "unit": {
+          "unit_code": "DEG_C",
+          "vocabulary_id": "ucum-compatible",
+          "symbol": "degC",
+          "dimension": "temperature"
+        },
+        "source_reference": "alarmdb:furnace01:discharge_temperature:HI"
+      },
+      "lifecycle": {
+        "canonical_alarm_state": "active",
+        "original_source_alarm_state": "HI_ACTIVE",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "active",
+            "transition_type": "raised",
+            "event_time": "2026-06-30T11:20:00Z",
+            "confidence": 0.95,
+            "evidence_refs": ["urn:ssom:record:furnace01-discharge-temperature-high"]
+          }
+        ]
+      },
+      "provenance": {
+        "source_platform": "alarm-server",
+        "source_authority_id": "controls",
+        "source_reference": "alm-furnace01-hi-001",
+        "lineage_id": "lin-alm-furnace01-hi-001",
+        "ingest_time": "2026-06-30T11:20:01Z",
+        "processing_time": "2026-06-30T11:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T11:20:00Z",
+        "receive_time": "2026-06-30T11:20:01Z",
+        "processing_time": "2026-06-30T11:20:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

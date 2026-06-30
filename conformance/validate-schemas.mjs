@@ -1,0 +1,3647 @@
+import fs from "node:fs";
+import path from "node:path";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
+
+const rootDir = process.cwd();
+const schemaDir = path.join(rootDir, "schemas", "jsonschema");
+const fixtureDir = path.join(rootDir, "conformance", "fixtures", "v0.3");
+
+const ajv = new Ajv2020({ allErrors: true, strict: false });
+addFormats(ajv);
+
+for (const fileName of fs.readdirSync(schemaDir)) {
+  if (!fileName.endsWith(".json")) {
+    continue;
+  }
+
+  const filePath = path.join(schemaDir, fileName);
+  const schema = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  ajv.addSchema(schema, schema.$id || fileName);
+  ajv.addSchema(schema, fileName);
+}
+
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(rootDir, relativePath), "utf8"));
+}
+
+const relationshipRegistry = readJson("schemas/registry/core-relationship-vocabulary.json");
+const relationshipRegistryIndex = new Map();
+const relationshipAliasIndex = new Map();
+
+for (const entry of relationshipRegistry.entries || []) {
+  relationshipRegistryIndex.set(entry.canonical_code, entry);
+  for (const alias of entry.aliases || []) {
+    relationshipAliasIndex.set(alias, entry.canonical_code);
+  }
+}
+
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function validateFixture(testName, schemaFile, relativePath) {
+  const validate = ajv.getSchema(schemaFile);
+  const payload = readJson(relativePath);
+  const valid = validate(payload);
+
+  if (!valid) {
+    const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+    throw new Error(`${testName} failed for ${relativePath}\n${detail}`);
+  }
+
+  return payload;
+}
+
+function expectInvalid(testName, schemaFile, relativePath, expectedFragment) {
+  const validate = ajv.getSchema(schemaFile);
+  const payload = readJson(relativePath);
+  const valid = validate(payload);
+
+  if (valid) {
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  }
+
+  const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+  if (expectedFragment && !detail.includes(expectedFragment)) {
+    throw new Error(`${testName} failed with unexpected validation error\n${detail}`);
+  }
+}
+
+const unitCatalog = {
+  BAR: { dimension: "pressure" },
+  KPA: { dimension: "pressure" },
+  PA: { dimension: "pressure" },
+  PSI: { dimension: "pressure" },
+  DEG_F: { dimension: "temperature" },
+  DEG_C: { dimension: "temperature" },
+  GAL_US_PER_MIN: { dimension: "volumetric_flow_rate" },
+  L_PER_S: { dimension: "volumetric_flow_rate" },
+  STD_G: { dimension: "vibration_acceleration" },
+  M_PER_S2: { dimension: "vibration_acceleration" },
+  MM_PER_S: { dimension: "vibration_velocity" },
+  IN_PER_S: { dimension: "vibration_velocity" },
+  PERCENT: { dimension: "valve_position_fraction_open" },
+  MM: { dimension: "valve_travel_length" }
+};
+
+const quantityKindDimensions = {
+  pressure: "pressure",
+  temperature: "temperature",
+  volumetric_flow_rate: "volumetric_flow_rate",
+  vibration_velocity: "vibration_velocity",
+  vibration_acceleration: "vibration_acceleration",
+  valve_position_fraction_open: "valve_position_fraction_open",
+  valve_travel_length: "valve_travel_length"
+};
+
+function getUnitDimension(unitRef, label) {
+  assert(unitRef && unitRef.unit_code, `${label} must include a governed unit code.`);
+  const unitInfo = unitCatalog[unitRef.unit_code];
+  assert(unitInfo, `${label} uses unsupported or unknown unit code ${unitRef.unit_code}.`);
+  return unitInfo.dimension;
+}
+
+function validateMeasurementObservation(testName, relativePath) {
+  const observation = validateFixture(testName, "observation.json", relativePath);
+
+  if (observation.canonical_measurement) {
+    assert(observation.original_measurement, `${testName} must preserve original measurement semantics.`);
+    assert(observation.canonical_measurement, `${testName} must preserve canonical measurement semantics.`);
+    assert(observation.measurement_quality, `${testName} must include structured measurement quality.`);
+    assert(observation.signal_context, `${testName} must include signal semantics.`);
+    assert(observation.time_synchronization_context, `${testName} must include time synchronization context.`);
+
+    const sourceUnit = observation.original_measurement.source_unit;
+    const hasGovernedSourceUnit = Boolean(sourceUnit && unitCatalog[sourceUnit.unit_code]);
+    assert(
+      hasGovernedSourceUnit,
+      `${testName} must not receive canonical normalized measurement without a governed unit mapping.`
+    );
+
+    const quantityKind = observation.canonical_measurement.quantity_kind;
+    const expectedDimension = quantityKindDimensions[quantityKind];
+    assert(expectedDimension, `${testName} must use a governed quantity kind.`);
+
+    const sourceDimension = getUnitDimension(observation.original_measurement.source_unit, `${testName} source unit`);
+    const canonicalDimension = getUnitDimension(observation.canonical_measurement.canonical_unit, `${testName} canonical unit`);
+
+    assert(
+      sourceDimension === expectedDimension,
+      `${testName} has incompatible quantity kinds or source units for ${quantityKind}.`
+    );
+    assert(
+      canonicalDimension === expectedDimension,
+      `${testName} has incompatible units for canonical quantity kind ${quantityKind}.`
+    );
+
+    assert(
+      observation.conversion_lineage.source_unit.unit_code === observation.original_measurement.source_unit.unit_code,
+      `${testName} conversion lineage must retain the original source unit.`
+    );
+    assert(
+      observation.conversion_lineage.canonical_unit.unit_code === observation.canonical_measurement.canonical_unit.unit_code,
+      `${testName} conversion lineage must retain the canonical unit.`
+    );
+
+    for (const consumer of observation.extensions?.analytical_consumers || []) {
+      const consumerExpectedDimension = quantityKindDimensions[consumer.expected_quantity_kind];
+      assert(consumerExpectedDimension, `${testName} analytical consumer ${consumer.consumer_id} must declare a governed quantity kind.`);
+
+      const consumerUnitDimension = getUnitDimension(
+        { unit_code: consumer.expected_unit_code },
+        `${testName} analytical consumer ${consumer.consumer_id} expected unit`
+      );
+      assert(
+        consumerExpectedDimension === consumerUnitDimension,
+        `${testName} analytical consumer ${consumer.consumer_id} must expect a unit compatible with ${consumer.expected_quantity_kind}.`
+      );
+      assert(
+        observation.canonical_measurement.canonical_unit.unit_code === consumer.expected_unit_code,
+        `${testName} analytical consumer ${consumer.consumer_id} must receive canonical unit ${consumer.expected_unit_code}.`
+      );
+    }
+  }
+
+  if (observation.original_measurement && !observation.canonical_measurement) {
+    assert(observation.measurement_quality, `${testName} must include structured measurement quality.`);
+    assert(observation.signal_context, `${testName} must include signal semantics.`);
+    assert(observation.time_synchronization_context, `${testName} must include time synchronization context.`);
+
+    const sourceUnit = observation.original_measurement.source_unit;
+    const hasGovernedUnit = Boolean(sourceUnit && unitCatalog[sourceUnit.unit_code]);
+    if (!hasGovernedUnit) {
+      assert(
+        !observation.conversion_lineage,
+        `${testName} must not receive canonical normalized measurement without a governed unit mapping.`
+      );
+      assert(
+        observation.extensions?.measurement_comparability?.comparable === false,
+        `${testName} unknown-unit raw evidence must be marked non-comparable.`
+      );
+      assert(
+        observation.extensions?.measurement_comparability?.comparable_view_eligible === false,
+        `${testName} unknown-unit raw evidence must not be accepted into comparable analytical views.`
+      );
+    }
+  }
+
+  if (!observation.calibration_context && observation.extensions && observation.extensions.calibration_note) {
+    throw new Error(`${testName} must not use a free-form calibration note when structured calibration context is available.`);
+  }
+
+  return observation;
+}
+
+function validateCapabilityManifest(testName, relativePath) {
+  return validateFixture(testName, "capability-manifest.json", relativePath);
+}
+
+function ensureCapabilityManifestSemantics(manifest, testName) {
+  const seenProfiles = new Set();
+
+  for (const profile of manifest.supported_profiles || []) {
+    assert(!seenProfiles.has(profile.profile_id), `${testName} must not repeat supported profile ${profile.profile_id}.`);
+    seenProfiles.add(profile.profile_id);
+    assert((profile.evidence_refs || []).length > 0, `${testName} profile ${profile.profile_id} must include at least one evidence reference.`);
+    if (profile.support_level === "projected") {
+      assert(profile.projection_surface, `${testName} projected profile ${profile.profile_id} must declare a projection surface.`);
+    }
+  }
+
+  assert(
+    manifest.conformance_artifacts?.schema_validation?.result === "pass",
+    `${testName} must not claim schema validation support without a passing schema validation result.`
+  );
+  assert(
+    manifest.conformance_artifacts?.fixture_validation?.result === "pass",
+    `${testName} must not claim fixture validation support without a passing fixture validation result.`
+  );
+
+  for (const artifact of manifest.compatibility?.legacy_artifacts || []) {
+    if (artifact.path.endsWith(".xsd")) {
+      assert(
+        artifact.status === "deprecated_non_normative",
+        `${testName} placeholder legacy XSD artifacts must be declared deprecated and non-normative.`
+      );
+    }
+  }
+
+  for (const claim of manifest.standards_mapping_claims || []) {
+    if (claim.claim_scope === "published_crosswalk") {
+      assert(
+        claim.crosswalk_artifact_ref,
+        `${testName} published crosswalk claims must reference a crosswalk artifact.`
+      );
+    }
+  }
+}
+
+function expectInvalidCapabilityManifest(testName, relativePath, expectedFragment) {
+  try {
+    const manifest = validateCapabilityManifest(testName, relativePath);
+    ensureCapabilityManifestSemantics(manifest, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateStandardsMappingArtifact(testName, relativePath) {
+  return validateFixture(testName, "standards-mapping-artifact.json", relativePath);
+}
+
+function assertWorkspacePathExists(relativePath, testName, label) {
+  assert(fs.existsSync(path.join(rootDir, relativePath)), `${testName} references missing ${label} ${relativePath}.`);
+}
+
+function ensureEvidenceRefsExist(entries, testName, label) {
+  for (const entry of entries || []) {
+    assertWorkspacePathExists(entry.artifact_ref, testName, label);
+  }
+}
+
+function ensureStringRefsExist(entries, testName, label) {
+  for (const entry of entries || []) {
+    assertWorkspacePathExists(entry, testName, label);
+  }
+}
+
+function ensureMappingEntrySemantics(entry, testName) {
+  ensureEvidenceRefsExist(entry.repo_evidence, testName, "repo evidence");
+  ensureStringRefsExist(entry.test_fixture_refs, testName, "test fixture");
+  if (
+    entry.mapping_relationship === "requires_profile" ||
+    entry.transformation_requirement === "profile_constraint"
+  ) {
+    assert(entry.required_profile, `${testName} mapping ${entry.mapping_id} must identify its required profile.`);
+  }
+}
+
+function ensureStandardsMappingArtifactSemantics(artifact, testName) {
+  ensureEvidenceRefsExist(
+    (artifact.claims || []).flatMap((claim) =>
+      (claim.required_evidence_refs || []).map((artifactRef) => ({ artifact_ref: artifactRef }))
+    ),
+    testName,
+    "required evidence"
+  );
+
+  switch (artifact.artifact_type) {
+    case "crosswalk_matrix": {
+      const expectedAreas = new Set([
+        "mimosa-ccom-osa-eai",
+        "isa95-iec62264",
+        "opc-ua-core-and-companions",
+        "opas-principles",
+        "iso-14224",
+        "iso-55000",
+        "iec-81346",
+        "iec-62443",
+        "iec-61511",
+        "isa18-iec62682",
+        "isa88",
+        "b2mml",
+        "automationml"
+      ]);
+      const seenAreas = new Set();
+      const requiredMappings = new Set([
+        "opcua-nodeid-identifier-assignment",
+        "opcua-datavalue-observation",
+        "opcua-event-alarm",
+        "isa95-equipment-hierarchy-boundaries",
+        "mimosa-asset-lifecycle",
+        "iso14224-failure-work-outcome",
+        "iec81346-designation-identifiers",
+        "iec62443-zone-conduit-foundation",
+        "iec61511-safety-bypass-proof-context"
+      ]);
+      const seenMappings = new Set();
+
+      for (const area of artifact.standards_areas || []) {
+        seenAreas.add(area.standard_id);
+        for (const mapping of area.mappings || []) {
+          ensureMappingEntrySemantics(mapping, testName);
+          seenMappings.add(mapping.mapping_id);
+        }
+      }
+
+      assert(seenAreas.size === expectedAreas.size, `${testName} must cover exactly 13 standards areas.`);
+      for (const areaId of expectedAreas) {
+        assert(seenAreas.has(areaId), `${testName} is missing standards area ${areaId}.`);
+      }
+      for (const mappingId of requiredMappings) {
+        assert(seenMappings.has(mappingId), `${testName} is missing required mapping example ${mappingId}.`);
+      }
+      break;
+    }
+    case "source_system_mapping_guidance": {
+      const requiredSystems = new Set([
+        "opc-ua-server",
+        "historian",
+        "eam",
+        "servicenow-cmdb",
+        "scada",
+        "oem-cloud",
+        "multi-source-identity-convergence"
+      ]);
+      const seenSystems = new Set();
+      let hasServiceNowPattern = false;
+
+      for (const system of artifact.source_systems || []) {
+        seenSystems.add(system.system_id);
+        for (const pattern of system.guidance_patterns || []) {
+          ensureEvidenceRefsExist(pattern.repo_evidence, testName, "repo evidence");
+          ensureStringRefsExist(pattern.example_refs || [], testName, "example reference");
+          if (
+            pattern.mapping_relationship === "requires_profile" ||
+            pattern.transformation_requirement === "profile_constraint" ||
+            pattern.transformation_requirement === "projection_transform"
+          ) {
+            assert(pattern.required_profile, `${testName} pattern ${pattern.pattern_id} must identify its required profile.`);
+          }
+          if (pattern.pattern_id === "servicenow-ci-otdevice-serving-projection") {
+            hasServiceNowPattern = true;
+          }
+        }
+      }
+
+      for (const systemId of requiredSystems) {
+        assert(seenSystems.has(systemId), `${testName} is missing source-system guidance for ${systemId}.`);
+      }
+      assert(hasServiceNowPattern, `${testName} must include the ServiceNow serving-projection mapping pattern.`);
+      break;
+    }
+    case "transformation_loss_register": {
+      let hasHighRisk = false;
+      for (const transformation of artifact.transformations || []) {
+        ensureEvidenceRefsExist(transformation.repo_evidence, testName, "repo evidence");
+        ensureStringRefsExist(transformation.test_fixture_refs || [], testName, "test fixture");
+        if (transformation.required_profile) {
+          assert(transformation.required_profile.length > 0, `${testName} transformation ${transformation.transformation_id} must name its required profile.`);
+        }
+        if (transformation.information_loss_risk === "high") {
+          hasHighRisk = true;
+        }
+      }
+      assert(hasHighRisk, `${testName} must record at least one high-risk transformation-loss scenario.`);
+      break;
+    }
+    case "profile_applicability_matrix": {
+      const requiredProfiles = new Set([
+        "identity-lifecycle-profile",
+        "measurement-safety-profile",
+        "reliability-maintenance-profile",
+        "event-alarm-profile",
+        "relationship-governance-profile",
+        "serving-projection-profile",
+        "safety-context-profile",
+        "cyber-context-profile",
+        "batch-recipe-profile"
+      ]);
+      const seenProfiles = new Set();
+      for (const profile of artifact.profiles || []) {
+        seenProfiles.add(profile.profile_id);
+        for (const applicability of profile.standard_applicability || []) {
+          ensureEvidenceRefsExist(applicability.repo_evidence, testName, "repo evidence");
+          if (applicability.applicability === "profile_required") {
+            assert(
+              (applicability.required_for_claims || []).length > 0,
+              `${testName} profile ${profile.profile_id} must declare claim prerequisites for profile-required applicability.`
+            );
+          }
+        }
+      }
+      for (const profileId of requiredProfiles) {
+        assert(seenProfiles.has(profileId), `${testName} is missing profile applicability entry ${profileId}.`);
+      }
+      break;
+    }
+    case "standards_claims_matrix": {
+      const requiredCategories = new Set(["safe_now", "safe_with_profiles", "not_safe_yet", "never_safe"]);
+      const seenCategories = new Set();
+      for (const claim of artifact.claims || []) {
+        seenCategories.add(claim.claim_category);
+        ensureStringRefsExist(claim.required_evidence_refs || [], testName, "required evidence");
+        if (claim.claim_category === "safe_with_profiles") {
+          assert((claim.required_profiles || []).length > 0, `${testName} claim ${claim.claim_id} must name required profiles.`);
+        }
+      }
+      for (const category of requiredCategories) {
+        assert(seenCategories.has(category), `${testName} is missing standards-claims category ${category}.`);
+      }
+      break;
+    }
+    default:
+      throw new Error(`${testName} uses unknown standards-mapping artifact type ${artifact.artifact_type}.`);
+  }
+}
+
+function ensureReadmeClaimDiscipline(testName) {
+  const readme = fs.readFileSync(path.join(rootDir, "README.md"), "utf8").toLowerCase();
+  const requiredPhrase = "an ai-native semantic bridge designed to align with and preserve relevant semantics from established ot interoperability, lifecycle, and operations standards.";
+  const forbiddenPhrases = [
+    "compliant with",
+    "certified against",
+    "replacement for",
+    "fully implements",
+    "universal standard"
+  ];
+
+  assert(readme.includes(requiredPhrase), `${testName} README must include the qualified AI-native semantic bridge statement.`);
+  for (const phrase of forbiddenPhrases) {
+    assert(!readme.includes(phrase), `${testName} README must not contain unsupported standards claim phrase \"${phrase}\".`);
+  }
+}
+
+function readText(relativePath) {
+  return fs.readFileSync(path.join(rootDir, relativePath), "utf8");
+}
+
+function assertIncludesAll(content, requiredFragments, testName, label) {
+  const normalizedContent = content.toLowerCase();
+  for (const fragment of requiredFragments) {
+    assert(normalizedContent.includes(fragment.toLowerCase()), `${testName} ${label} must include ${fragment}.`);
+  }
+}
+
+function ensureBigQueryReferenceArchitectureSemantics(testName) {
+  const architectureDoc = readText("docs/bigquery-reference-architecture-v0.9.md");
+  const schemaSql = readText("reference-implementation/bigquery/schema.sql");
+  const exampleQueriesSql = readText("reference-implementation/bigquery/example-queries.sql");
+  const migrationDoc = readText("docs/migration-v0.9.md");
+  const boundaryDoc = readText("docs/IMPLEMENTATION-BOUNDARY-GUIDANCE.md");
+  const readme = readText("README.md");
+
+  assertIncludesAll(
+    architectureDoc,
+    [
+      "Raw Evidence Layer",
+      "Canonical SSOM Layer",
+      "Curated Operational Intelligence Layer",
+      "Serving Projection Layer",
+      "AI Feature and Evaluation Layer",
+      "Dataset and layer diagram",
+      "## Runtime validation status",
+      "## Runnable deployment checklist",
+      "Do not promise infinite scalability"
+    ],
+    testName,
+    "architecture document"
+  );
+
+  assertIncludesAll(
+    architectureDoc,
+    [
+      "event-time partitioning",
+      "late-arriving data",
+      "Corrected and superseded facts",
+      "Replay and projection rebuilds",
+      "Backfills",
+      "Cost governance",
+      "Multi-region and data residency",
+      "Auditability and lineage"
+    ],
+    testName,
+    "architecture guidance"
+  );
+
+  assertIncludesAll(
+    schemaSql,
+    [
+      "CREATE SCHEMA IF NOT EXISTS `ssom_raw_evidence`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_canonical`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_curated_oi`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_serving`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_ai`",
+      "CREATE TABLE IF NOT EXISTS `ssom_raw_evidence.telemetry_ingest_raw`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.asset_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.identifier_assignment_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.relationship_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.observation_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.event_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_serving.servicenow_ci_projection`",
+      "CREATE TABLE IF NOT EXISTS `ssom_ai.asset_feature_daily`",
+      "CREATE VIEW IF NOT EXISTS `ssom_curated_oi.asset_graph_edges_current`",
+      "CREATE VIEW IF NOT EXISTS `ssom_ai.retrieval_context_v`"
+    ],
+    testName,
+    "reference DDL"
+  );
+
+  assertIncludesAll(
+    schemaSql,
+    [
+      "PARTITION BY DATE(event_time)",
+      "CLUSTER BY tenant_id, site_id, canonical_asset_id, measurement_type",
+      "source_payload JSON NOT NULL",
+      "correction_of_fact_id STRING",
+      "supersedes_fact_id STRING",
+      "superseded_by_fact_id STRING",
+      "fact_version INT64 NOT NULL",
+      "tenant_id STRING NOT NULL",
+      "site_id STRING NOT NULL",
+      "region_code STRING NOT NULL"
+    ],
+    testName,
+    "typed BigQuery layout"
+  );
+
+  assert(
+    !schemaSql.includes("CREATE TABLE IF NOT EXISTS `ssom_serving.telemetry"),
+    `${testName} must not store high-frequency telemetry as a serving-layer transactional table.`
+  );
+
+  assertIncludesAll(
+    exampleQueriesSql,
+    [
+      "-- Condition trend by asset",
+      "-- Cross-site peer comparison",
+      "-- Action-to-outcome effectiveness",
+      "-- Late-arriving correction handling",
+      "-- ServiceNow serving projection",
+      "-- AI retrieval context",
+      "@tenant_id",
+      "@site_id"
+    ],
+    testName,
+    "example query set"
+  );
+
+  assertIncludesAll(
+    migrationDoc,
+    [
+      "BigQuery reference implementation migration note",
+      "illustrative `ssom_core.assets` style SQL examples are now superseded",
+      "ssom_raw_evidence",
+      "ssom_canonical",
+      "ssom_serving",
+      "ssom_ai"
+    ],
+    testName,
+    "migration guidance"
+  );
+
+  assertIncludesAll(
+    boundaryDoc,
+    [
+      "five distinct data domains",
+      "Raw evidence datasets",
+      "Canonical SSOM datasets",
+      "Serving datasets",
+      "AI datasets"
+    ],
+    testName,
+    "implementation-boundary guidance"
+  );
+
+  assertIncludesAll(
+    readme,
+    [
+      "BigQuery reference architecture",
+      "BigQuery reference DDL",
+      "BigQuery reference queries",
+      "provider-specific",
+      "production implementation responsibility"
+    ],
+    testName,
+    "README coverage"
+  );
+}
+
+function validateServicenowServingProjectionBundle(testName, relativePath) {
+  return validateFixture(testName, "servicenow-serving-projection-bundle.json", relativePath);
+}
+
+function ensureServicenowServingProjectionSemantics(bundle, testName) {
+  const requiredProhibitedClasses = new Set([
+    "raw_historian_samples",
+    "high_frequency_telemetry",
+    "raw_opcua_payloads",
+    "all_source_assertions",
+    "all_machine_learning_feature_records",
+    "all_raw_event_transitions",
+    "all_data_quality_records",
+    "all_analytical_cohort_data"
+  ]);
+  const seenProhibitedClasses = new Set(bundle.prohibited_primary_storage_classes || []);
+  for (const className of requiredProhibitedClasses) {
+    assert(seenProhibitedClasses.has(className), `${testName} must prohibit ${className} from workflow-primary storage.`);
+  }
+
+  const requiredScenarios = new Set(["pump-p101", "plc-17", "vfd-12", "chiller-7a", "robot-cell-01"]);
+  const seenScenarios = new Set();
+
+  for (const projection of bundle.projections || []) {
+    seenScenarios.add(projection.scenario_id);
+    assertWorkspacePathExists(projection.full_ssom_evidence_context_ref, testName, "full SSOM evidence context reference");
+    assert(
+      parseTimestamp(projection.relevant_event_alarm_summary.event_window_start, `${projection.projection_id} event_window_start`) <=
+        parseTimestamp(projection.relevant_event_alarm_summary.event_window_end, `${projection.projection_id} event_window_end`),
+      `${testName} projection ${projection.projection_id} must preserve an ordered event or alarm summary window.`
+    );
+    assert((projection.workflow_refs || []).length > 0, `${testName} projection ${projection.projection_id} must retain workflow-facing references.`);
+  }
+
+  for (const scenarioId of requiredScenarios) {
+    assert(seenScenarios.has(scenarioId), `${testName} is missing ServiceNow projection scenario ${scenarioId}.`);
+  }
+}
+
+function validateSafetyFoundationBundle(testName, relativePath) {
+  return validateFixture(testName, "safety-foundation-bundle.json", relativePath);
+}
+
+function ensureSafetyFoundationSemantics(bundle, testName) {
+  const assets = new Map((bundle.assets || []).map((entry) => [entry.canonical_asset_id, entry]));
+  const evidence = new Map((bundle.verification_evidence || []).map((entry) => [entry.evidence_id, entry]));
+  const workActions = new Map((bundle.work_actions || []).map((entry) => [entry.work_action_id, entry]));
+  const contexts = new Map((bundle.safety_contexts || []).map((entry) => [entry.context_id, entry]));
+  const roleSet = new Set((bundle.assets || []).map((entry) => entry.safety_asset_role));
+
+  for (const requiredRole of [
+    "sensor_element",
+    "logic_solver",
+    "final_element",
+    "controlled_process_asset",
+    "safety_related_asset"
+  ]) {
+    assert(roleSet.has(requiredRole), `${testName} must include safety asset role ${requiredRole}.`);
+  }
+
+  for (const context of bundle.safety_contexts || []) {
+    assert(assets.has(context.related_process_asset_id), `${testName} safety context ${context.context_id} must reference a known process asset.`);
+    assert(assets.has(context.sensor_asset_id), `${testName} safety context ${context.context_id} must reference a known sensor asset.`);
+    assert(assets.has(context.logic_solver_asset_id), `${testName} safety context ${context.context_id} must reference a known logic solver asset.`);
+    assert(assets.has(context.final_element_asset_id), `${testName} safety context ${context.context_id} must reference a known final element asset.`);
+    for (const evidenceRef of context.verification_evidence_refs || []) {
+      assert(evidence.has(evidenceRef), `${testName} safety context ${context.context_id} must reference known verification evidence.`);
+    }
+    for (const workRef of context.work_action_refs || []) {
+      assert(workActions.has(workRef), `${testName} safety context ${context.context_id} must reference known work actions.`);
+    }
+  }
+
+  const relationshipTriples = new Set((bundle.relationships || []).map((entry) => `${entry.from_asset_id}|${entry.relationship_type}|${entry.to_asset_id}`));
+  let chainFound = false;
+  for (const context of bundle.safety_contexts || []) {
+    const hasSensorLink = relationshipTriples.has(`${context.sensor_asset_id}|senses|${context.related_process_asset_id}`);
+    const hasLogicLink = relationshipTriples.has(`${context.logic_solver_asset_id}|controls|${context.final_element_asset_id}`) || relationshipTriples.has(`${context.logic_solver_asset_id}|evaluates|${context.sensor_asset_id}`);
+    const hasFinalLink = relationshipTriples.has(`${context.final_element_asset_id}|acts_on|${context.related_process_asset_id}`) || relationshipTriples.has(`${context.final_element_asset_id}|protects|${context.related_process_asset_id}`);
+    if (hasSensorLink && hasLogicLink && hasFinalLink) {
+      chainFound = true;
+    }
+
+    for (const workRef of context.work_action_refs || []) {
+      const workAction = workActions.get(workRef);
+      if (!workAction || (workAction.status !== "closed" && workAction.status !== "completed")) {
+        continue;
+      }
+      const closeTime = workAction.closed_at ? parseTimestamp(workAction.closed_at, `${workAction.work_action_id} closed_at`) : Number.NEGATIVE_INFINITY;
+      const bypassActiveUntil = context.bypass_active_until
+        ? parseTimestamp(context.bypass_active_until, `${context.context_id} bypass_active_until`)
+        : Number.POSITIVE_INFINITY;
+      assert(
+        context.bypass_state !== "active" || bypassActiveUntil <= closeTime,
+        `${testName} must not close work while a safety bypass remains active.`
+      );
+    }
+  }
+
+  assert(chainFound, `${testName} must preserve a sensor-to-logic-to-final-element safety relationship chain.`);
+
+  for (const event of bundle.safety_events || []) {
+    assert(contexts.has(event.related_context_id), `${testName} safety event ${event.event_id} must reference a known safety context.`);
+    assert(assets.has(event.related_asset_id), `${testName} safety event ${event.event_id} must reference a known asset.`);
+    if (event.related_work_action_id) {
+      assert(workActions.has(event.related_work_action_id), `${testName} safety event ${event.event_id} must reference known work context.`);
+    }
+  }
+}
+
+function expectInvalidSafetyFoundationBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateSafetyFoundationBundle(testName, relativePath);
+    ensureSafetyFoundationSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateCyberFoundationBundle(testName, relativePath) {
+  return validateFixture(testName, "cyber-foundation-bundle.json", relativePath);
+}
+
+function ensureCyberFoundationSemantics(bundle, testName) {
+  const zoneIds = new Set((bundle.zones || []).map((entry) => entry.zone_id));
+  const conduitIds = new Set((bundle.conduits || []).map((entry) => entry.conduit_id));
+  const vulnerabilityIds = new Set((bundle.vulnerabilities || []).map((entry) => entry.vulnerability_ref));
+  const postureIds = new Set((bundle.security_postures || []).map((entry) => entry.security_posture_ref));
+  const assetIds = new Set((bundle.asset_contexts || []).map((entry) => entry.canonical_asset_id));
+  const relationshipTypes = new Set((bundle.relationships || []).map((entry) => entry.relationship_type));
+  const seenScenarios = new Set();
+
+  for (const context of bundle.asset_contexts || []) {
+    seenScenarios.add(context.scenario_id);
+    assert(context.cyber_managed_asset === true, `${testName} asset context ${context.scenario_id} must represent a cyber-managed asset.`);
+    assert(zoneIds.has(context.zone_id), `${testName} asset context ${context.scenario_id} must reference a known zone.`);
+    for (const conduitId of context.conduit_ids || []) {
+      assert(conduitIds.has(conduitId), `${testName} asset context ${context.scenario_id} must reference a known conduit.`);
+    }
+    for (const vulnerabilityRef of context.vulnerability_refs || []) {
+      assert(vulnerabilityIds.has(vulnerabilityRef), `${testName} asset context ${context.scenario_id} must reference known vulnerabilities.`);
+    }
+    assert(postureIds.has(context.security_posture_ref), `${testName} asset context ${context.scenario_id} must reference a known security posture.`);
+  }
+
+  for (const conduit of bundle.conduits || []) {
+    assert(zoneIds.has(conduit.from_zone_id), `${testName} conduit ${conduit.conduit_id} must reference a known source zone.`);
+    assert(zoneIds.has(conduit.to_zone_id), `${testName} conduit ${conduit.conduit_id} must reference a known destination zone.`);
+  }
+
+  for (const action of bundle.mitigation_actions || []) {
+    assert(assetIds.has(action.target_asset_id), `${testName} mitigation action ${action.mitigation_action_id} must target a known cyber-managed asset.`);
+  }
+
+  for (const event of bundle.cyber_events || []) {
+    assert(assetIds.has(event.target_asset_id), `${testName} cyber event ${event.event_id} must reference a known asset.`);
+    assert(postureIds.has(event.security_posture_ref), `${testName} cyber event ${event.event_id} must reference a known security posture.`);
+    for (const vulnerabilityRef of event.vulnerability_refs || []) {
+      assert(vulnerabilityIds.has(vulnerabilityRef), `${testName} cyber event ${event.event_id} must reference known vulnerabilities.`);
+    }
+  }
+
+  for (const scenarioId of [
+    "networked-vfd-vulnerable-firmware",
+    "plc-zone-conduit-communication",
+    "safety-controller-cyber-managed-identity"
+  ]) {
+    assert(seenScenarios.has(scenarioId), `${testName} must include cyber scenario ${scenarioId}.`);
+  }
+
+  for (const relationshipType of ["contains", "communicates_with", "protects"]) {
+    assert(relationshipTypes.has(relationshipType), `${testName} must include cyber relationship type ${relationshipType}.`);
+  }
+}
+
+function expectInvalidCyberFoundationBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateCyberFoundationBundle(testName, relativePath);
+    ensureCyberFoundationSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateIndustryProfileBundle(testName, relativePath) {
+  return validateFixture(testName, "industry-profile-bundle.json", relativePath);
+}
+
+function ensureIndustryProfileSemantics(bundle, testName) {
+  assert(
+    bundle.required_roles.every((role) => !bundle.optional_roles.includes(role)),
+    `${testName} must not duplicate required roles in optional roles.`
+  );
+
+  for (const relativePath of bundle.profile_specific_conformance_fixtures || []) {
+    assertWorkspacePathExists(relativePath, testName, "profile-specific conformance fixture");
+  }
+
+  for (const relativePath of bundle.end_to_end_example?.related_repo_artifacts || []) {
+    assertWorkspacePathExists(relativePath, testName, "related repository artifact");
+  }
+
+  const stageTypes = new Set((bundle.end_to_end_example?.stages || []).map((stage) => stage.stage_type));
+  for (const requiredStageType of ["measurement_signal", "event_alarm", "reliability_work", "serving_projection", "outcome"]) {
+    assert(stageTypes.has(requiredStageType), `${testName} end-to-end example must include stage ${requiredStageType}.`);
+  }
+
+  assert(
+    (bundle.standards_mapping_applicability || []).length >= 2,
+    `${testName} must identify more than one standards-mapping applicability surface.`
+  );
+  assert(
+    (bundle.safety_cyber_applicability?.notes || []).length > 0,
+    `${testName} must include bounded safety or cyber applicability notes.`
+  );
+}
+
+function expectInvalidIndustryProfileBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIndustryProfileBundle(testName, relativePath);
+    ensureIndustryProfileSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateSmartPumpCyberProofBundle(testName, relativePath) {
+  return validateFixture(testName, "smart-pump-cyber-proof-bundle.json", relativePath);
+}
+
+function ensureSmartPumpCyberProofSemantics(bundle, testName) {
+  assert(bundle.lifecycle_roles.includes("cyber_managed_asset"), `${testName} must keep the smart pump in a cyber-managed lifecycle role.`);
+  assert(bundle.device_roles.includes("measurement_device"), `${testName} must preserve measurement-device context.`);
+  assert(bundle.control_context.relationship_type === "controls", `${testName} must preserve a governed control relationship.`);
+
+  for (const relativePath of [...(bundle.control_context.evidence_refs || []), ...(bundle.monitoring_context.evidence_refs || []), ...(bundle.supporting_artifacts || [])]) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "smart-pump proof artifact");
+    }
+  }
+
+  for (const relationshipType of bundle.cyber_context.supported_relationships || []) {
+    assert(relationshipRegistryIndex.has(relationshipType), `${testName} must use governed cyber relationship types.`);
+  }
+
+  for (const conclusion of bundle.cyber_context.canonical_risk_conclusions || []) {
+    assert((conclusion.evidence_refs || []).length > 0, `${testName} must not promote a canonical cyber risk without evidence.`);
+    assert(["reviewed", "approved"].includes(conclusion.approval_state), `${testName} must keep cyber risk approval in a governed review state.`);
+  }
+
+  const provenancePlatforms = new Set((bundle.source_provenance || []).map((entry) => entry.source_platform));
+  assert(provenancePlatforms.has("historian"), `${testName} must preserve historian provenance.`);
+  assert(provenancePlatforms.has("ot-cyber-monitor"), `${testName} must preserve OT cyber provenance.`);
+  assert(bundle.work_and_outcome_context.verification_ref === "urn:ssom:work-verification:p101-bearing-postwork", `${testName} must preserve post-work verification context.`);
+}
+
+function expectInvalidSmartPumpCyberProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateSmartPumpCyberProofBundle(testName, relativePath);
+    ensureSmartPumpCyberProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateChillerMultiSystemProofBundle(testName, relativePath) {
+  return validateFixture(testName, "chiller-multi-system-proof-bundle.json", relativePath);
+}
+
+function ensureChillerMultiSystemProofSemantics(bundle, testName) {
+  const expectedSystems = ["bms", "scada", "cmms", "eam", "oem_cloud", "historian", "servicenow"];
+  for (const system of expectedSystems) {
+    assert(bundle.source_systems.includes(system), `${testName} must preserve source system ${system}.`);
+  }
+
+  const sourceSystems = new Set(bundle.source_systems || []);
+  for (const identifier of bundle.time_bound_identifiers || []) {
+    assert(sourceSystems.has(identifier.source_system), `${testName} time-bound identifiers must reference declared source systems.`);
+  }
+
+  assert((bundle.source_conflicts || []).some((entry) => entry.preserved_as_distinct === true), `${testName} must preserve source conflicts as distinct rather than forced reconciliation.`);
+  assert(bundle.condition_alarm_context.preserves_source_disagreement === true, `${testName} must preserve condition or alarm disagreement.`);
+  assert(bundle.maintenance_context.task_closure_is_not_success === true, `${testName} must preserve the distinction between task closure and success.`);
+
+  const prohibitedProjectionClasses = new Set(["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]);
+  for (const payloadClass of bundle.servicenow_projection.projected_payload_classes || []) {
+    assert(!prohibitedProjectionClasses.has(payloadClass), `${testName} must not project prohibited raw telemetry payload classes into workflow-facing bundles.`);
+  }
+
+  for (const relativePath of [...(bundle.outcome_feedback.updated_context_refs || []), ...(bundle.supporting_artifacts || [])]) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "chiller proof artifact");
+    }
+  }
+}
+
+function expectInvalidChillerMultiSystemProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateChillerMultiSystemProofBundle(testName, relativePath);
+    ensureChillerMultiSystemProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateAiComparabilityProofBundle(testName, relativePath) {
+  return validateFixture(testName, "ai-comparability-proof-bundle.json", relativePath);
+}
+
+function ensureAiComparabilityProofSemantics(bundle, testName) {
+  const siteContexts = new Map((bundle.site_contexts || []).map((entry) => [entry.site_id, entry]));
+  const assessments = new Map((bundle.comparability_assessments || []).map((entry) => [entry.assessment_id, entry]));
+  const featureIds = new Set((bundle.feature_lineage_records || []).map((entry) => entry.feature_id));
+
+  for (const siteContext of bundle.site_contexts || []) {
+    for (const relativePath of siteContext.source_evidence_refs || []) {
+      if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+        assertWorkspacePathExists(relativePath, testName, "AI comparability source evidence");
+      }
+    }
+    if (!siteContext.comparable_view_eligible) {
+      assert(siteContext.canonical_unit_code === null || siteContext.calibration_state === "unknown", `${testName} ineligible site contexts must remain explicitly non-comparable.`);
+    }
+  }
+
+  for (const assessment of bundle.comparability_assessments || []) {
+    for (const siteId of assessment.compared_site_ids || []) {
+      assert(siteContexts.has(siteId), `${testName} comparability assessments must reference known site contexts.`);
+    }
+    if (assessment.eligible) {
+      assert((assessment.disqualifying_reasons || []).length === 0, `${testName} eligible assessments must not carry disqualifying reasons.`);
+      for (const siteId of assessment.compared_site_ids || []) {
+        assert(siteContexts.get(siteId).comparable_view_eligible === true, `${testName} eligible assessments must only include comparable site contexts.`);
+      }
+    } else {
+      assert((assessment.disqualifying_reasons || []).length > 0, `${testName} ineligible assessments must record disqualifying reasons.`);
+    }
+  }
+
+  for (const feature of bundle.feature_lineage_records || []) {
+    const assessment = assessments.get(feature.assessment_ref);
+    assert(assessment, `${testName} feature lineage must reference a known comparability assessment.`);
+    for (const siteId of feature.included_site_ids || []) {
+      assert(assessment.compared_site_ids.includes(siteId), `${testName} feature lineage must only include sites from its assessment.`);
+      assert(siteContexts.get(siteId)?.comparable_view_eligible === true, `${testName} feature lineage must not include non-comparable site evidence.`);
+    }
+    for (const relativePath of [...(feature.evidence_refs || []), ...(feature.excluded_evidence_refs || [])]) {
+      if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+        assertWorkspacePathExists(relativePath, testName, "AI comparability feature evidence");
+      }
+    }
+  }
+
+  for (const output of bundle.benchmark_outputs || []) {
+    const assessment = assessments.get(output.assessment_ref);
+    assert(assessment, `${testName} benchmark outputs must reference a known assessment.`);
+    for (const featureId of output.included_feature_ids || []) {
+      assert(featureIds.has(featureId), `${testName} benchmark outputs must reference known features.`);
+    }
+    if (!assessment.eligible) {
+      assert(!output.comparability_claim.includes("comparable"), `${testName} must not issue a comparability claim from an ineligible assessment.`);
+    }
+  }
+}
+
+function expectInvalidAiComparabilityProofBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateAiComparabilityProofBundle(testName, relativePath);
+    ensureAiComparabilityProofSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateServicenowOutcomeFeedbackBundle(testName, relativePath) {
+  return validateFixture(testName, "servicenow-outcome-feedback-bundle.json", relativePath);
+}
+
+function ensureServicenowOutcomeFeedbackSemantics(bundle, testName) {
+  assert(bundle.workflow_projection.projected_tenant_id === bundle.tenant_id, `${testName} must not cross tenant boundaries in workflow projections.`);
+  assert(bundle.workflow_execution_context.related_tenant_id === bundle.tenant_id, `${testName} workflow execution context must remain in the originating tenant.`);
+  assert(bundle.verification_context.verified === true, `${testName} outcome closure must preserve positive verification evidence.`);
+  assert(bundle.outcome_context.originating_recommendation_ref === bundle.originating_recommendation_ref, `${testName} outcome context must preserve the originating recommendation link.`);
+  if (bundle.outcome_context.success_disposition === "ineffective") {
+    assert(bundle.updated_context.updated_recommendation_ref, `${testName} ineffective outcomes must drive a follow-up recommendation.`);
+  }
+  for (const relativePath of bundle.supporting_artifacts || []) {
+    if (relativePath.endsWith(".json") || relativePath.endsWith(".md")) {
+      assertWorkspacePathExists(relativePath, testName, "ServiceNow outcome-feedback artifact");
+    }
+  }
+}
+
+function expectInvalidServicenowOutcomeFeedbackBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateServicenowOutcomeFeedbackBundle(testName, relativePath);
+    ensureServicenowOutcomeFeedbackSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateIndustryProfileInvalidMatrix(testName, relativePath) {
+  return validateFixture(testName, "industry-profile-invalid-matrix.json", relativePath);
+}
+
+function validateLastMilePlatformOperationsProfile(testName, relativePath) {
+  return validateFixture(testName, "last-mile-platform-operations-profile.json", relativePath);
+}
+
+function ensureLastMilePlatformOperationsProfileSemantics(bundle, testName) {
+  const tenantIds = new Set((bundle.tenant_control_planes || []).map((entry) => entry.tenant_id));
+  const prohibitedSharedClasses = new Set(["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]);
+
+  assert(bundle.boundary_statement.toLowerCase().includes("portable ssom core"), `${testName} must explicitly preserve the portable SSOM Core boundary.`);
+
+  for (const relativePath of bundle.portable_core_dependency_refs || []) {
+    assertWorkspacePathExists(relativePath, testName, "portable-core dependency reference");
+  }
+
+  assert(tenantIds.size === (bundle.tenant_control_planes || []).length, `${testName} must not duplicate tenant control-plane identifiers.`);
+
+  for (const tenantPlane of bundle.tenant_control_planes || []) {
+    assert(tenantPlane.raw_evidence_storage_allowed === false, `${testName} tenant control planes must reject raw evidence as shared or workflow-primary storage.`);
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(tenantPlane.prohibited_projection_classes.includes(prohibitedClass), `${testName} tenant control plane ${tenantPlane.tenant_id} must prohibit ${prohibitedClass}.`);
+    }
+    for (const projectionClass of tenantPlane.allowed_projection_classes || []) {
+      assert(!prohibitedSharedClasses.has(projectionClass), `${testName} tenant control plane ${tenantPlane.tenant_id} must not allow prohibited raw evidence classes.`);
+    }
+    for (const relativePath of tenantPlane.workflow_projection_refs || []) {
+      assertWorkspacePathExists(relativePath, testName, "tenant workflow projection reference");
+    }
+  }
+
+  for (const plane of bundle.rights_and_learning_planes || []) {
+    for (const tenantRef of plane.tenant_refs || []) {
+      assert(tenantIds.has(tenantRef), `${testName} rights or learning plane ${plane.plane_id} must reference known tenants.`);
+    }
+    for (const allowedInput of plane.allowed_training_inputs || []) {
+      assert(!prohibitedSharedClasses.has(allowedInput), `${testName} learning plane ${plane.plane_id} must not allow raw evidence training inputs.`);
+      assert(allowedInput !== "unapproved_cross_tenant_ground_truth", `${testName} learning plane ${plane.plane_id} must not allow unapproved cross-tenant ground truth.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(plane.prohibited_training_inputs.includes(prohibitedClass), `${testName} learning plane ${plane.plane_id} must prohibit ${prohibitedClass}.`);
+    }
+    if (plane.plane_kind === "master_learning" && (plane.tenant_refs || []).length > 1) {
+      assert((plane.approval_refs || []).length > 0, `${testName} cross-tenant master-learning planes must carry approval references.`);
+    }
+  }
+
+  for (const policy of bundle.workload_isolation_policies || []) {
+    for (const tenantRef of policy.tenant_refs || []) {
+      assert(tenantIds.has(tenantRef), `${testName} workload isolation policy ${policy.policy_id} must reference known tenants.`);
+    }
+    for (const sharedSurface of policy.allowed_shared_surfaces || []) {
+      assert(!prohibitedSharedClasses.has(sharedSurface), `${testName} workload isolation policy ${policy.policy_id} must not allow prohibited shared surface ${sharedSurface}.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(policy.prohibited_shared_surfaces.includes(prohibitedClass), `${testName} workload isolation policy ${policy.policy_id} must prohibit ${prohibitedClass}.`);
+    }
+  }
+
+  for (const surface of bundle.observability_agent_surfaces || []) {
+    if (surface.tenant_scope !== "multi_tenant_shared") {
+      assert(surface.tenant_scope === "platform" || tenantIds.has(surface.tenant_scope), `${testName} observability surface ${surface.surface_id} must reference a known tenant scope or platform scope.`);
+    }
+    for (const exposedClass of surface.exposed_data_classes || []) {
+      assert(!prohibitedSharedClasses.has(exposedClass), `${testName} observability surface ${surface.surface_id} must not expose prohibited raw evidence classes.`);
+    }
+    for (const prohibitedClass of prohibitedSharedClasses) {
+      assert(surface.prohibited_data_classes.includes(prohibitedClass), `${testName} observability surface ${surface.surface_id} must prohibit ${prohibitedClass}.`);
+    }
+    for (const relativePath of surface.evidence_refs || []) {
+      assertWorkspacePathExists(relativePath, testName, "observability evidence reference");
+    }
+  }
+
+  for (const binding of bundle.master_profile_bindings || []) {
+    assert(tenantIds.has(binding.tenant_id), `${testName} master-profile binding ${binding.binding_id} must reference a known tenant.`);
+    for (const relativePath of [...(binding.ssom_profile_refs || []), ...(binding.projection_refs || [])]) {
+      assertWorkspacePathExists(relativePath, testName, "master-profile binding reference");
+    }
+  }
+
+  assert((bundle.governance_controls?.data_boundary_notes || []).some((note) => note.toLowerCase().includes("portable ssom core")), `${testName} governance controls must restate the portable-core boundary.`);
+}
+
+function expectInvalidLastMilePlatformOperationsProfile(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateLastMilePlatformOperationsProfile(testName, relativePath);
+    ensureLastMilePlatformOperationsProfileSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function ensureReferenceValidationPackageSemantics(testName) {
+  const packageReadme = readText("reference-validation/README.md");
+  const nonprodPlan = readText("reference-validation/bigquery/nonproduction-validation-plan-v1.0.md");
+  const queries = readText("reference-validation/bigquery/nonprod-validation-queries.sql");
+  const reproducibilityChecklist = readText("reference-validation/bigquery/reproducibility-checklist-v1.0.md");
+  const runtimeTemplate = readText("reference-validation/bigquery/runtime-capture-template-v1.0.md");
+
+  assertIncludesAll(
+    packageReadme,
+    [
+      "non-production",
+      "reproducible",
+      "Do not invent performance",
+      "parameterized",
+      "BigQuery"
+    ],
+    testName,
+    "reference-validation package README"
+  );
+
+  assertIncludesAll(
+    nonprodPlan,
+    [
+      "non-production",
+      "query job IDs",
+      "projection-boundary checks",
+      "comparability checks",
+      "outcome-feedback checks",
+      "does not claim any benchmark, latency, throughput, or cost result"
+    ],
+    testName,
+    "non-production validation plan"
+  );
+
+  assertIncludesAll(
+    queries,
+    [
+      "DECLARE target_project STRING",
+      "serving_projection_current",
+      "canonical_fact_history",
+      "comparability_inputs",
+      "work_outcome_lineage",
+      "Runtime capture reminder"
+    ],
+    testName,
+    "non-production validation queries"
+  );
+
+  assertIncludesAll(
+    reproducibilityChecklist,
+    [
+      "target project is non-production",
+      "query job IDs",
+      "actual BigQuery job metadata"
+    ],
+    testName,
+    "reference-validation reproducibility checklist"
+  );
+
+  assertIncludesAll(
+    runtimeTemplate,
+    [
+      "Repository commit",
+      "Query job IDs",
+      "Actual bytes processed",
+      "No benchmark, latency, throughput, storage, or cost claim"
+    ],
+    testName,
+    "reference-validation runtime capture template"
+  );
+}
+
+function ensureV10ReleaseGateSemantics(testName) {
+  const readme = readText("README.md");
+  const rfc0001 = readText("RFC-0001-SSOM.md");
+  const rfc0002 = readText("RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md");
+  const checklistV1 = readText("conformance/checklist-v1.0.md");
+  const schemaReference = readText("docs/schema-reference-v1.0.md");
+  const changelog = readText("CHANGELOG.md");
+  const releaseAudit = readText("docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md");
+  const lastMileProfile = readText("docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md");
+
+  assertIncludesAll(
+    readme,
+    [
+      "## Current release version",
+      "SSOM Core v1.0.0",
+      "RFC-0002: Accepted / Standards Track for v1.0.0",
+      "Final v1.0 release acceptance audit",
+      "conformance/checklist-v1.0.md"
+    ],
+    testName,
+    "README current release surface"
+  );
+
+  assertIncludesAll(
+    rfc0001,
+    [
+      "the authoritative release checklist is `conformance/checklist-v1.0.md`"
+    ],
+    testName,
+    "RFC-0001 current conformance authority"
+  );
+
+  assertIncludesAll(
+    rfc0002,
+    [
+      "- **Status:** Accepted",
+      "- **Intended Version:** SSOM v1.0.0",
+      "SSOM v1.0.0 promotes the previously audited v0.9.0 draft surface as the first stable portable core release",
+      "SSOM v1.0.0 defines:",
+      "SSOM v1.0.0 adopts **JSON Schema** as the normative machine-readable schema",
+      "the JSON Schemas are normative for v1.0.0",
+      "An SSOM v1.0.0 implementation MUST:",
+      "Implementations moving from v0.8.0 or the audited v0.9.0 draft to v1.0.0 SHOULD:"
+    ],
+    testName,
+    "RFC-0002 release versioning"
+  );
+
+  assertIncludesAll(
+    checklistV1,
+    [
+      "# SSOM v1.0 Conformance Checklist",
+      "## Proprietary Last Mile Platform Profile Boundary",
+      "## v1.0 Release Gate",
+      "SSOM Core v1.0.0"
+    ],
+    testName,
+    "v1.0 conformance checklist"
+  );
+
+  assertIncludesAll(
+    schemaReference,
+    [
+      "SSOM Core `v1.0.0`",
+      "conformance/checklist-v1.0.md",
+      "docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md"
+    ],
+    testName,
+    "v1.0 schema discovery reference"
+  );
+
+  assertIncludesAll(
+    changelog,
+    [
+      "## v1.0.0 - 2026-06-30",
+      "Final Release Gate And Promotion Decision",
+      "SSOM Core v1.0.0",
+      "Last Mile Platform Operations and SSOM Master Profile v1.0.0"
+    ],
+    testName,
+    "changelog release marker"
+  );
+
+  assertIncludesAll(
+    releaseAudit,
+    [
+      "# SSOM v1.0 Release Acceptance Audit",
+      "APPROVED.",
+      "SSOM Core v1.0.0",
+      "Last Mile Platform Operations and SSOM Master Profile v1.0.0",
+      "`npm run validate` passes",
+      "`git diff --check` passes"
+    ],
+    testName,
+    "final v1.0 release acceptance audit"
+  );
+
+  assertIncludesAll(
+    lastMileProfile,
+    [
+      "designated as `Last Mile Platform Operations and SSOM Master Profile v1.0.0`",
+      "explicitly distinct from portable SSOM Core"
+    ],
+    testName,
+    "Last Mile proprietary profile release designation"
+  );
+}
+
+function ensureCandidateSpecificationPackageSemantics(testName) {
+  const packageDoc = readText("docs/candidate-specification-package-v0.9.md");
+  const releaseDoc = readText("docs/release-readiness-assessment-v0.9.md");
+  const industryIndex = readText("docs/industry-profile-index-v0.9.md");
+  const schemaRefV1 = readText("docs/schema-reference-v1.0.md");
+  const rfc0001 = readText("RFC-0001-SSOM.md");
+  const readme = readText("README.md");
+
+  assertIncludesAll(
+    packageDoc,
+    [
+      "## 1. Executive Overview",
+      "## 2. Core Normative Specification Index",
+      "## 3. Version And Compatibility Statement",
+      "## 4. Governance Model",
+      "## 5. Conformance Model",
+      "## 6. Capability-Manifest Model",
+      "## 7. Standards Crosswalk Summary",
+      "## 8. BigQuery Reference Architecture Summary",
+      "## 9. ServiceNow Coexistence Summary",
+      "## 10. Industry-Profile Index",
+      "## 11. Claims Matrix",
+      "## 12. Known Limitations And Roadmap",
+      "## 13. Contributor And External-Review Guidance",
+      "## 14. IP And Licensing Boundary Statement",
+      "SSOM is not positioned here as the definitive OT standard"
+    ],
+    testName,
+    "candidate-specification package"
+  );
+
+  assertIncludesAll(
+    releaseDoc,
+    [
+      "## External Claims Gate",
+      "Candidate OT semantic specification",
+      "Standards-aware interoperability model",
+      "AI-ready operational context model",
+      "Cloud-scale reference architecture",
+      "Reliability and work-outcome semantics",
+      "ServiceNow coexistence model",
+      "Cross-vendor industrial semantic layer",
+      "Recommended decision: publish numbered draft release",
+      "Verdict: ready for candidate-specification external review as a numbered draft release"
+    ],
+    testName,
+    "release-readiness assessment"
+  );
+
+  assertIncludesAll(
+    industryIndex,
+    [
+      "## Process manufacturing",
+      "## Discrete manufacturing",
+      "## Utilities and electric power",
+      "## Water and wastewater",
+      "## Facilities and data centers",
+      "## Profile boundary"
+    ],
+    testName,
+    "industry-profile index"
+  );
+
+  assertIncludesAll(
+    readme,
+    [
+      "candidate-specification package",
+      "release-readiness assessment",
+      "industry profile index",
+      "v1.0 promotion discovery surface",
+      "do not position SSOM as a definitive or certified OT standard"
+    ],
+    testName,
+    "README candidate-review coverage"
+  );
+
+  assertIncludesAll(
+    schemaRefV1,
+    [
+      "# SSOM v1.0 Discovery Surface Reference",
+      "RFC-0001-SSOM.md",
+      "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+      "schemas/jsonschema/capability-manifest.json",
+      "schemas/jsonschema/servicenow-serving-projection-bundle.json",
+      "schemas/jsonschema/safety-foundation-bundle.json",
+      "schemas/jsonschema/cyber-foundation-bundle.json",
+      "schemas/jsonschema/industry-profile-bundle.json",
+      "schemas/jsonschema/smart-pump-cyber-proof-bundle.json",
+      "schemas/jsonschema/chiller-multi-system-proof-bundle.json",
+      "schemas/jsonschema/ai-comparability-proof-bundle.json",
+      "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
+      "schemas/jsonschema/industry-profile-invalid-matrix.json",
+      "schemas/jsonschema/last-mile-platform-operations-profile.json",
+      "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json",
+      "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
+      "docs/standards-crosswalk-matrix-v0.9.json",
+      "docs/bigquery-reference-architecture-v0.9.md",
+      "conformance/validate-schemas.mjs",
+      "docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md",
+      "schemas/jsonschema/last-mile-platform-operations-profile.json",
+      "reference-validation/README.md",
+      "reference-validation/bigquery/nonproduction-validation-plan-v1.0.md"
+    ],
+    testName,
+    "v1.0 discovery surface"
+  );
+
+  for (const requiredPath of [
+    "docs/schema-reference-v1.0.md",
+    ".github/workflows/validate.yml",
+    ".github/ISSUE_TEMPLATE/semantic-change-proposal.md",
+    ".github/ISSUE_TEMPLATE/profile-proposal.md",
+    ".github/ISSUE_TEMPLATE/vocabulary-or-relationship-proposal.md",
+    ".github/ISSUE_TEMPLATE/standards-mapping-change.md",
+    ".github/ISSUE_TEMPLATE/defect-report.md",
+    ".github/ISSUE_TEMPLATE/release-readiness-issue.md",
+    "SECURITY.md"
+  ]) {
+    assertWorkspacePathExists(requiredPath, testName, "release-governance artifact");
+  }
+
+  assertIncludesAll(
+    rfc0001,
+    [
+      "the authoritative release checklist is `conformance/checklist-v1.0.md`"
+    ],
+    testName,
+    "RFC-0001 conformance authority"
+  );
+
+  assert(
+    !rfc0001.includes("Conformance requirements are defined in conformance/checklist.md."),
+    `${testName} RFC-0001 must not present the unversioned checklist as the sole conformance authority.`
+  );
+}
+
+function ensureReleaseDiscoveryIntegrity(testName) {
+  const readme = readText("README.md");
+  const candidatePackage = readText("docs/candidate-specification-package-v0.9.md");
+  const releaseAssessment = readText("docs/release-readiness-assessment-v0.9.md");
+  const schemaReference = readText("docs/schema-reference-v1.0.md");
+  const workflow = readText(".github/workflows/validate.yml");
+  const security = readText("SECURITY.md");
+
+  for (const referencedPath of [
+    "RFC-0001-SSOM.md",
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "governance.md",
+    "schemas/jsonschema/capability-manifest.json",
+    "schemas/jsonschema/servicenow-serving-projection-bundle.json",
+    "schemas/jsonschema/safety-foundation-bundle.json",
+    "schemas/jsonschema/cyber-foundation-bundle.json",
+    "schemas/jsonschema/industry-profile-bundle.json",
+    "schemas/jsonschema/smart-pump-cyber-proof-bundle.json",
+    "schemas/jsonschema/chiller-multi-system-proof-bundle.json",
+    "schemas/jsonschema/ai-comparability-proof-bundle.json",
+    "schemas/jsonschema/servicenow-outcome-feedback-bundle.json",
+    "schemas/jsonschema/industry-profile-invalid-matrix.json",
+    "schemas/jsonschema/last-mile-platform-operations-profile.json",
+    "docs/last-mile-platform-operations-and-ssom-master-profile-v1.0.md",
+    "docs/servicenow-serving-projection-profile-v0.9.md",
+    "docs/functional-safety-foundation-profile-v0.9.md",
+    "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+    "docs/industry-profile-index-v0.9.md",
+    "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json",
+    "conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json",
+    "conformance/fixtures/v1.0/invalid/smart-pump-cyber-proof-bundle-unauthorized-risk.json",
+    "conformance/fixtures/v1.0/invalid/chiller-multi-system-proof-bundle-prohibited-telemetry.json",
+    "conformance/fixtures/v1.0/invalid/ai-comparability-proof-bundle-ineligible-feature.json",
+    "conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json",
+    "conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json",
+    "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json",
+    "conformance/fixtures/v1.0/valid/last-mile-platform-profile-multi-tenant-control-plane.json",
+    "conformance/fixtures/v1.0/valid/last-mile-platform-profile-master-learning-observability.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-cross-tenant-shared-raw-evidence.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-master-learning-unapproved-inputs.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-agent-raw-evidence-mirror.json",
+    "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-binding-unknown-tenant.json",
+    "docs/standards-crosswalk-matrix-v0.9.json",
+    "docs/source-system-mapping-guidance-v0.9.json",
+    "docs/transformation-loss-register-v0.9.json",
+    "docs/profile-applicability-matrix-v0.9.json",
+    "docs/standards-claims-matrix-v0.9.json",
+    "docs/bigquery-reference-architecture-v0.9.md",
+    "reference-implementation/bigquery/schema.sql",
+    "reference-implementation/bigquery/example-queries.sql",
+    "conformance/validate-schemas.mjs",
+    "conformance/checklist-v1.0.md",
+    "conformance/checklist-v0.9.md",
+    "docs/candidate-specification-package-v0.9.md",
+    "docs/release-readiness-assessment-v0.9.md",
+    "docs/reviews/SSOM_Release_Candidate_Acceptance_Audit.md",
+    "docs/reviews/SSOM_v1_0_Release_Acceptance_Audit.md",
+    "reference-validation/README.md",
+    "reference-validation/bigquery/nonproduction-validation-plan-v1.0.md",
+    "reference-validation/bigquery/nonprod-validation-queries.sql",
+    "reference-validation/bigquery/reproducibility-checklist-v1.0.md",
+    "reference-validation/bigquery/runtime-capture-template-v1.0.md"
+  ]) {
+    assertWorkspacePathExists(referencedPath, testName, "discovery-surface artifact");
+  }
+
+  for (const disallowedPhrase of [
+    "conformance/checklist.md.",
+    "schemas/ssom-core.xsd as the normative",
+    "schemas/ssom-relationships.xsd as the normative",
+    "schemas/ssom-telemetry.xsd as the normative"
+  ]) {
+    assert(!candidatePackage.toLowerCase().includes(disallowedPhrase.toLowerCase()), `${testName} candidate package must not contain stale normative authority wording ${disallowedPhrase}.`);
+    assert(!releaseAssessment.toLowerCase().includes(disallowedPhrase.toLowerCase()), `${testName} release assessment must not contain stale normative authority wording ${disallowedPhrase}.`);
+  }
+
+  assertIncludesAll(
+    workflow,
+    [
+      "on:",
+      "push:",
+      "pull_request:",
+      "npm ci",
+      "npm run validate",
+      "git diff --check"
+    ],
+    testName,
+    "CI workflow"
+  );
+
+  assertIncludesAll(
+    security,
+    [
+      "private",
+      "do not disclose",
+      "maintainer",
+      "coordinated"
+    ],
+    testName,
+    "security disclosure guidance"
+  );
+}
+
+function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
+  try {
+    validateMeasurementObservation(testName, relativePath);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function parseTimestamp(value, label) {
+  const parsed = Date.parse(value);
+  assert(Number.isFinite(parsed), `${label} must be a valid date-time.`);
+  return parsed;
+}
+
+function intervalBounds(record, startField = "valid_from", endField = "valid_to") {
+  const start = record[startField] ? parseTimestamp(record[startField], `${startField} on ${record.assignment_id || record.asset_id || "record"}`) : Number.NEGATIVE_INFINITY;
+  const end = record[endField] ? parseTimestamp(record[endField], `${endField} on ${record.assignment_id || record.asset_id || "record"}`) : Number.POSITIVE_INFINITY;
+  assert(start <= end, `${record.assignment_id || record.asset_id || "record"} has an invalid validity period.`);
+  return { start, end };
+}
+
+function intervalsOverlap(left, right) {
+  return left.start <= right.end && right.start <= left.end;
+}
+
+function validateTruthStateLineageBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["source_assertions", "source-assertion.json", "source assertion"],
+    ["derived_assertions", "derived-assertion.json", "derived assertion"],
+    ["inferences", "inference.json", "inference"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["outcomes", "outcome.json", "outcome"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureTruthStateLineageSemantics(bundle, testName) {
+  const sourceAssertions = new Map((bundle.source_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const derivedAssertions = new Map((bundle.derived_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const inferences = new Map((bundle.inferences || []).map((entry) => [entry.inference_id, entry]));
+  const recommendations = new Map((bundle.recommendations || []).map((entry) => [entry.recommendation_id, entry]));
+  const outcomes = new Map((bundle.outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const observations = new Map((bundle.observations || []).map((entry) => [entry.record_id, entry]));
+
+  const originalSourceAssertion = sourceAssertions.get("urn:ssom:assertion:p301-operator-stable-claim-original");
+  const correctedSourceAssertion = sourceAssertions.get("urn:ssom:assertion:p301-operator-stable-claim-corrected");
+  assert(originalSourceAssertion && correctedSourceAssertion, `${testName} must preserve both original and corrected source assertions.`);
+  assert(correctedSourceAssertion.state_lineage?.correction_of_ref === originalSourceAssertion.assertion_id, `${testName} corrected source assertion must reference the original assertion.`);
+  assert(originalSourceAssertion.state_lineage?.superseded_by_ref === correctedSourceAssertion.assertion_id, `${testName} original source assertion must preserve superseded-by lineage.`);
+  assert(observations.has("urn:ssom:record:p301-vibration-late-20260629t091500z"), `${testName} late-arriving evidence must remain available.`);
+  assert(correctedSourceAssertion.evidence_refs.includes("urn:ssom:record:p301-vibration-late-20260629t091500z"), `${testName} corrected source assertion must preserve the new evidence.`);
+  assert(originalSourceAssertion.evidence_refs.includes("urn:ssom:record:p301-vibration-20260629t090000z"), `${testName} original source assertion evidence must remain intact.`);
+  assert(intervalBounds(originalSourceAssertion.state_lineage).end <= intervalBounds(correctedSourceAssertion.state_lineage).start, `${testName} corrected source assertion must preserve non-overlapping temporal lineage.`);
+
+  const initialDerivedAssertion = derivedAssertions.get("urn:ssom:assertion:p301-trend-initial");
+  const revisedDerivedAssertion = derivedAssertions.get("urn:ssom:assertion:p301-trend-revised");
+  assert(initialDerivedAssertion && revisedDerivedAssertion, `${testName} must preserve both initial and revised derived assertions.`);
+  assert(revisedDerivedAssertion.state_lineage?.supersedes_refs?.includes(initialDerivedAssertion.assertion_id), `${testName} revised derived assertion must preserve supersession lineage.`);
+  assert(initialDerivedAssertion.state_lineage?.superseded_by_ref === revisedDerivedAssertion.assertion_id, `${testName} original derived assertion must preserve superseded-by lineage.`);
+
+  const initialInference = inferences.get("urn:ssom:inference:p301-coupling-watch-initial");
+  const revisedInference = inferences.get("urn:ssom:inference:p301-bearing-watch-revised");
+  assert(initialInference && revisedInference, `${testName} must preserve both initial and revised inferences.`);
+  assert(revisedInference.state_lineage?.supersedes_refs?.includes(initialInference.inference_id), `${testName} revised inference must reference the superseded inference.`);
+  assert(revisedInference.evidence_refs.includes(revisedDerivedAssertion.assertion_id), `${testName} revised inference must identify the current derived interpretation.`);
+
+  const initialRecommendation = recommendations.get("urn:ssom:recommendation:p301-watch-next-shift");
+  const revisedRecommendation = recommendations.get("urn:ssom:recommendation:p301-inspect-now");
+  assert(initialRecommendation && revisedRecommendation, `${testName} must preserve both original and revised recommendations.`);
+  assert(revisedRecommendation.state_lineage?.supersedes_refs?.includes(initialRecommendation.recommendation_id), `${testName} revised recommendation must preserve supersession lineage.`);
+  assert(revisedRecommendation.evidence_refs.includes(revisedInference.inference_id), `${testName} revised recommendation must reference the revised inference.`);
+
+  const initialOutcome = outcomes.get("urn:ssom:outcome:p301-initial-assessment");
+  const reassessedOutcome = outcomes.get("urn:ssom:outcome:p301-reassessed-after-recurrence");
+  assert(initialOutcome && reassessedOutcome, `${testName} must preserve both original and reassessed outcomes.`);
+  assert(reassessedOutcome.state_lineage?.supersedes_refs?.includes(initialOutcome.outcome_id), `${testName} reassessed outcome must preserve supersession lineage.`);
+  assert(reassessedOutcome.evidence_refs.includes(initialOutcome.outcome_id), `${testName} reassessed outcome must preserve prior outcome evidence rather than rewriting history.`);
+  assert(reassessedOutcome.evidence_refs.includes("urn:ssom:record:p301-vibration-recurrence-20260630t060000z"), `${testName} reassessed outcome must preserve additional evidence.`);
+
+  for (const entry of [
+    ...sourceAssertions.values(),
+    ...derivedAssertions.values(),
+    ...inferences.values(),
+    ...recommendations.values(),
+    ...outcomes.values()
+  ]) {
+    assert(entry.provenance, `${testName} revised truth-state records must preserve provenance.`);
+    assert(entry.temporal_integrity, `${testName} revised truth-state records must preserve temporal context.`);
+  }
+}
+
+function validateIdentityBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const assets = payload.assets || [];
+  const functionalLocations = payload.functional_locations || [];
+  const relationships = payload.relationships || [];
+  const events = payload.identity_lifecycle_events || [];
+
+  for (const [index, asset] of assets.entries()) {
+    const validate = ajv.getSchema("asset.json");
+    const valid = validate(asset);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} asset ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, relationship] of relationships.entries()) {
+    const validate = ajv.getSchema("relationship.json");
+    const valid = validate(relationship);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} relationship ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, location] of functionalLocations.entries()) {
+    const validate = ajv.getSchema("functional-location.json");
+    const valid = validate(location);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} functional location ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  for (const [index, event] of events.entries()) {
+    const validate = ajv.getSchema("identity-lifecycle-event.json");
+    const valid = validate(event);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} identity lifecycle event ${index + 1} failed validation\n${detail}`);
+    }
+  }
+
+  return payload;
+}
+
+function ensureUniqueCanonicalIds(assets) {
+  const seen = new Set();
+  for (const asset of assets) {
+    assert(!seen.has(asset.asset_id), `Canonical SSOM asset identifier ${asset.asset_id} must not be reused.`);
+    seen.add(asset.asset_id);
+  }
+}
+
+function ensureAssignmentValidity(assets) {
+  for (const asset of assets) {
+    const assignments = asset.identity?.identifier_assignments || [];
+    for (const assignment of assignments) {
+      intervalBounds(assignment);
+      if (assignment.identifier_role === "functional_location_reference") {
+        assert(
+          assignment.semantic_usage === "contextual_reference",
+          `${assignment.assignment_id} must treat functional location as a contextual reference rather than asset identity.`
+        );
+      }
+      assert(
+        assignment.identifier_role !== "canonical_ssom_id",
+        `${assignment.assignment_id} must not restate the canonical SSOM ID as a reusable external identifier assignment.`
+      );
+    }
+  }
+}
+
+function ensureNoOverlappingAssignments(assets) {
+  const entries = [];
+  for (const asset of assets) {
+    const assignments = asset.identity?.identifier_assignments || [];
+    for (const assignment of assignments) {
+      entries.push({ asset_id: asset.asset_id, assignment, bounds: intervalBounds(assignment) });
+    }
+  }
+
+  for (let i = 0; i < entries.length; i += 1) {
+    for (let j = i + 1; j < entries.length; j += 1) {
+      const left = entries[i];
+      const right = entries[j];
+      if (left.asset_id === right.asset_id) {
+        continue;
+      }
+      if (left.assignment.identifier_value !== right.assignment.identifier_value) {
+        continue;
+      }
+      if (left.assignment.identifier_role !== right.assignment.identifier_role) {
+        continue;
+      }
+      if (left.assignment.identifier_scope.scope_type !== right.assignment.identifier_scope.scope_type) {
+        continue;
+      }
+      if (left.assignment.identifier_scope.scope_value !== right.assignment.identifier_scope.scope_value) {
+        continue;
+      }
+      if (left.assignment.identifier_authority.authority_id !== right.assignment.identifier_authority.authority_id) {
+        continue;
+      }
+      if (
+        left.assignment.semantic_usage === "contextual_reference" ||
+        right.assignment.semantic_usage === "contextual_reference"
+      ) {
+        continue;
+      }
+      assert(
+        !intervalsOverlap(left.bounds, right.bounds),
+        `Identifier ${left.assignment.identifier_value} overlaps across assets ${left.asset_id} and ${right.asset_id} within the same scope and authority.`
+      );
+    }
+  }
+}
+
+function ensureSuccessionRelationships(relationships) {
+  const successionTypes = new Set([
+    "replaces",
+    "replaced_by",
+    "succeeds",
+    "preceded_by",
+    "split_into",
+    "merged_from",
+    "decommissioned_as",
+    "recommissioned_as"
+  ]);
+
+  for (const relationship of relationships) {
+    if (!successionTypes.has(relationship.relationship_type)) {
+      continue;
+    }
+    assert(
+      relationship.from_ref !== relationship.to_ref,
+      `Succession relationship ${relationship.relationship_id} must not self-reference.`
+    );
+  }
+}
+
+function expectInvalidIdentityBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIdentityBundle(testName, relativePath);
+    ensureUniqueCanonicalIds(payload.assets || []);
+    ensureAssignmentValidity(payload.assets || []);
+    ensureNoOverlappingAssignments(payload.assets || []);
+    ensureSuccessionRelationships(payload.relationships || []);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateSchemaEntries(testName, schemaFile, entries, label) {
+  const validate = ajv.getSchema(schemaFile);
+  for (const [index, entry] of entries.entries()) {
+    const valid = validate(entry);
+    if (!valid) {
+      const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+      throw new Error(`${testName} ${label} ${index + 1} failed validation\n${detail}`);
+    }
+  }
+}
+
+function validateReliabilityBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["symptoms", "symptom.json", "symptom"],
+    ["failure_modes", "failure-mode.json", "failure mode"],
+    ["failure_mechanisms", "failure-mechanism.json", "failure mechanism"],
+    ["failure_causes", "failure-cause.json", "failure cause"],
+    ["failure_events", "failure-event.json", "failure event"],
+    ["diagnostics", "diagnostic.json", "diagnostic"],
+    ["prognostics", "prognostic.json", "prognostic"],
+    ["maintenance_strategies", "maintenance-strategy.json", "maintenance strategy"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["decisions", "decision.json", "decision"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"],
+    ["work_outcomes", "work-outcome.json", "work outcome"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureReliabilityReferences(bundle, testName) {
+  const knownIds = new Set();
+  const collect = (entries, idField) => {
+    for (const entry of entries || []) {
+      knownIds.add(entry[idField]);
+    }
+  };
+
+  collect(bundle.observations, "record_id");
+  collect(bundle.conditions, "condition_id");
+  collect(bundle.symptoms, "symptom_id");
+  collect(bundle.failure_modes, "failure_mode_id");
+  collect(bundle.failure_mechanisms, "failure_mechanism_id");
+  collect(bundle.failure_causes, "failure_cause_id");
+  collect(bundle.failure_events, "failure_event_id");
+  collect(bundle.diagnostics, "diagnostic_id");
+  collect(bundle.prognostics, "prognostic_id");
+  collect(bundle.maintenance_strategies, "strategy_id");
+  collect(bundle.recommendations, "recommendation_id");
+  collect(bundle.decisions, "decision_id");
+  collect(bundle.work_requests, "work_request_id");
+  collect(bundle.work_plans, "work_plan_id");
+  collect(bundle.work_executions, "action_id");
+  collect(bundle.work_verifications, "verification_id");
+  collect(bundle.work_outcomes, "outcome_id");
+
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+
+  for (const verification of bundle.work_verifications || []) {
+    assert(workExecutions.has(verification.work_execution_ref), `${testName} work verification must reference an existing work execution.`);
+  }
+
+  for (const outcome of bundle.work_outcomes || []) {
+    assert(workExecutions.has(outcome.work_execution_ref), `${testName} work outcome must reference an existing work execution.`);
+    assert(outcome.action_ref === outcome.work_execution_ref, `${testName} work outcome must reuse the action reference of the work execution.`);
+    for (const verificationRef of outcome.verification_refs || []) {
+      const verification = workVerifications.get(verificationRef);
+      assert(verification, `${testName} work outcome must reference work verification evidence.`);
+      assert(
+        verification.work_execution_ref === outcome.work_execution_ref,
+        `${testName} work outcome verification evidence must validate the same work execution.`
+      );
+    }
+    if (outcome.reliability_impact) {
+      for (const measurementRef of outcome.reliability_impact.measurement_evidence_refs) {
+        assert(knownIds.has(measurementRef), `${testName} reliability impact must reference known measurement or evidence records.`);
+      }
+      for (const workRef of outcome.reliability_impact.work_history_refs) {
+        assert(knownIds.has(workRef), `${testName} reliability impact must reference known work history.`);
+      }
+    }
+  }
+
+  for (const diagnostic of bundle.diagnostics || []) {
+    if (diagnostic.extensions && diagnostic.extensions.failure_summary_text) {
+      assert(
+        diagnostic.failure_mode_ref || diagnostic.failure_mechanism_ref || diagnostic.failure_cause_ref || diagnostic.symptom_refs,
+        `${testName} failure mode, mechanism, and cause cannot be collapsed into one uncontrolled text field.`
+      );
+    }
+  }
+}
+
+function expectInvalidReliabilityBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateReliabilityBundle(testName, relativePath);
+    ensureReliabilityReferences(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateEventAlarmBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["events", "event.json", "event"],
+    ["alarms", "alarm.json", "alarm"],
+    ["state_transitions", "state-transition.json", "state transition"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureKnownRefs(refs, knownIds, testName, message) {
+  for (const ref of refs || []) {
+    assert(knownIds.has(ref), `${testName} ${message}`);
+  }
+}
+
+function ensureEventAlarmSemantics(bundle, testName) {
+  const knownIds = new Set();
+  const collect = (entries, idField) => {
+    for (const entry of entries || []) {
+      knownIds.add(entry[idField]);
+    }
+  };
+
+  collect(bundle.observations, "record_id");
+  collect(bundle.conditions, "condition_id");
+  collect(bundle.events, "event_id");
+  collect(bundle.alarms, "alarm_id");
+  collect(bundle.state_transitions, "transition_id");
+  collect(bundle.recommendations, "recommendation_id");
+  collect(bundle.work_requests, "work_request_id");
+  collect(bundle.work_plans, "work_plan_id");
+  collect(bundle.work_executions, "action_id");
+  collect(bundle.work_verifications, "verification_id");
+
+  const eventIds = new Set((bundle.events || []).map((entry) => entry.event_id));
+  const observationIds = new Set((bundle.observations || []).map((entry) => entry.record_id));
+  const conditionIds = new Set((bundle.conditions || []).map((entry) => entry.condition_id));
+  const workIds = new Set([
+    ...(bundle.work_requests || []).map((entry) => entry.work_request_id),
+    ...(bundle.work_plans || []).map((entry) => entry.work_plan_id),
+    ...(bundle.work_executions || []).map((entry) => entry.action_id)
+  ]);
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const eventById = new Map((bundle.events || []).map((entry) => [entry.event_id, entry]));
+
+  for (const observation of bundle.observations || []) {
+    assert(
+      !observation.extensions?.uncontrolled_alarm_text,
+      `${testName} alarm semantics must not be represented solely as uncontrolled string content in Observation.`
+    );
+  }
+
+  for (const condition of bundle.conditions || []) {
+    assert(
+      !condition.extensions?.uncontrolled_alarm_text,
+      `${testName} alarm semantics must not be represented solely as uncontrolled string content in Condition.`
+    );
+  }
+
+  for (const event of bundle.events || []) {
+    if (event.related_refs) {
+      ensureKnownRefs(event.related_refs, knownIds, testName, `event ${event.event_id} must reference known prior evidence.`);
+    }
+    if (event.source_payload) {
+      assert(
+        event.source_payload.payload || event.source_payload.payload_reference,
+        `${testName} event ${event.event_id} must preserve source payload content or a durable payload reference.`
+      );
+    }
+    if (event.state_transition) {
+      assert(
+        event.state_transition.from_state !== event.state_transition.to_state,
+        `${testName} event ${event.event_id} state transition must change state.`
+      );
+      assert(
+        event.state_transition.event_time === event.event_time,
+        `${testName} event ${event.event_id} state transition must preserve the same event time as the event.`
+      );
+      if (event.state_transition.valid_from && event.state_transition.valid_to) {
+        intervalBounds(event.state_transition);
+      }
+      ensureKnownRefs(
+        event.state_transition.evidence_refs,
+        knownIds,
+        testName,
+        `event ${event.event_id} state transition must reference known evidence.`
+      );
+    }
+    if (event.temporal_integrity.delivery_classification === "late_arrival") {
+      const eventTime = parseTimestamp(event.temporal_integrity.event_time, `${event.event_id} event_time`);
+      const receiveTime = parseTimestamp(event.temporal_integrity.receive_time, `${event.event_id} receive_time`);
+      assert(receiveTime > eventTime, `${testName} late-arriving event ${event.event_id} must preserve later receive time than event time.`);
+    }
+  }
+
+  for (const transition of bundle.state_transitions || []) {
+    assert(transition.from_state !== transition.to_state, `${testName} state transition ${transition.transition_id} must change state.`);
+    if (transition.valid_from && transition.valid_to) {
+      intervalBounds(transition);
+    }
+    if (transition.source_ref) {
+      assert(knownIds.has(transition.source_ref), `${testName} state transition ${transition.transition_id} must reference a known source record.`);
+    }
+    ensureKnownRefs(
+      transition.evidence_refs,
+      knownIds,
+      testName,
+      `state transition ${transition.transition_id} must reference known evidence.`
+    );
+  }
+
+  for (const alarm of bundle.alarms || []) {
+    if (alarm.event_ref) {
+      assert(eventIds.has(alarm.event_ref), `${testName} alarm ${alarm.alarm_id} must reference a known event.`);
+    }
+    if (alarm.observation_ref) {
+      assert(observationIds.has(alarm.observation_ref), `${testName} alarm ${alarm.alarm_id} must reference a known observation.`);
+    }
+    if (alarm.condition_ref) {
+      assert(conditionIds.has(alarm.condition_ref), `${testName} alarm ${alarm.alarm_id} must reference a known condition.`);
+    }
+    if (alarm.source_payload) {
+      assert(
+        alarm.source_payload.payload || alarm.source_payload.payload_reference,
+        `${testName} alarm ${alarm.alarm_id} must preserve source payload content or a durable payload reference.`
+      );
+    }
+    if (alarm.lifecycle) {
+      assert(
+        alarm.lifecycle.canonical_alarm_state === alarm.alarm_state,
+        `${testName} alarm ${alarm.alarm_id} lifecycle state must match the canonical alarm state.`
+      );
+      let previousTransitionTime = Number.NEGATIVE_INFINITY;
+      const transitions = alarm.lifecycle.state_transitions || [];
+      for (const transition of transitions) {
+        assert(
+          transition.from_state !== transition.to_state,
+          `${testName} alarm ${alarm.alarm_id} transition history must change state.`
+        );
+        const transitionTime = parseTimestamp(transition.event_time, `${alarm.alarm_id} transition event_time`);
+        assert(
+          transitionTime >= previousTransitionTime,
+          `${testName} alarm ${alarm.alarm_id} transition history must remain time-ordered.`
+        );
+        previousTransitionTime = transitionTime;
+        if (transition.valid_from && transition.valid_to) {
+          intervalBounds(transition);
+        }
+        if (transition.source_event_ref) {
+          assert(
+            eventIds.has(transition.source_event_ref),
+            `${testName} alarm ${alarm.alarm_id} transition must reference a known source event.`
+          );
+        }
+        ensureKnownRefs(
+          transition.evidence_refs,
+          knownIds,
+          testName,
+          `alarm ${alarm.alarm_id} transition must reference known evidence.`
+        );
+      }
+      if (transitions.length > 0) {
+        assert(
+          transitions[transitions.length - 1].to_state === alarm.alarm_state,
+          `${testName} alarm ${alarm.alarm_id} final transition state must match the canonical alarm state.`
+        );
+      }
+    }
+    if (alarm.alarm_state === "suppressed" || alarm.alarm_state === "shelved") {
+      assert(alarm.suppression_context, `${testName} alarm ${alarm.alarm_id} must retain suppression or shelving context.`);
+      assert(alarm.suppression_context.valid_from, `${testName} alarm ${alarm.alarm_id} suppression or shelving must retain a valid-from timestamp.`);
+      assert(alarm.suppression_context.valid_to, `${testName} alarm ${alarm.alarm_id} suppression or shelving must retain a valid-to timestamp.`);
+      intervalBounds(alarm.suppression_context);
+      if (alarm.suppression_context.work_context_ref) {
+        assert(
+          workIds.has(alarm.suppression_context.work_context_ref),
+          `${testName} alarm ${alarm.alarm_id} suppression work context must reference known work context.`
+        );
+      }
+    }
+    if (alarm.cleared_at) {
+      assert(alarm.alarm_state === "cleared", `${testName} alarm ${alarm.alarm_id} cleared_at requires canonical cleared state.`);
+    }
+  }
+
+  for (const request of bundle.work_requests || []) {
+    ensureKnownRefs(request.basis_refs, knownIds, testName, `work request ${request.work_request_id} must reference known basis records.`);
+  }
+
+  const workPlans = new Map((bundle.work_plans || []).map((entry) => [entry.work_plan_id, entry]));
+  for (const execution of bundle.work_executions || []) {
+    assert(workIds.has(execution.work_request_ref), `${testName} work execution ${execution.action_id} must reference known work request context.`);
+    assert(workPlans.has(execution.work_plan_ref), `${testName} work execution ${execution.action_id} must reference known work plan context.`);
+    ensureKnownRefs(execution.basis_refs, knownIds, testName, `work execution ${execution.action_id} must reference known basis records.`);
+  }
+
+  for (const verification of bundle.work_verifications || []) {
+    assert(
+      workExecutions.has(verification.work_execution_ref),
+      `${testName} work verification ${verification.verification_id} must reference an existing work execution.`
+    );
+    ensureKnownRefs(
+      verification.evidence_refs,
+      knownIds,
+      testName,
+      `work verification ${verification.verification_id} must reference known evidence.`
+    );
+  }
+
+  for (const execution of bundle.work_executions || []) {
+    if (execution.action_status !== "completed") {
+      continue;
+    }
+
+    const executionTime = parseTimestamp(execution.executed_at, `${execution.action_id} executed_at`);
+    for (const transition of bundle.state_transitions || []) {
+      if (transition.to_state !== "enabled") {
+        continue;
+      }
+
+      const sourceEvent = transition.source_ref ? eventById.get(transition.source_ref) : null;
+      if (!sourceEvent || sourceEvent.event_type !== "safety_bypass_activated") {
+        continue;
+      }
+
+      const validTo = transition.valid_to
+        ? parseTimestamp(transition.valid_to, `${transition.transition_id} valid_to`)
+        : Number.POSITIVE_INFINITY;
+
+      assert(
+        validTo <= executionTime,
+        `${testName} completed work execution ${execution.action_id} must not close while a safety bypass remains active.`
+      );
+    }
+  }
+}
+
+function ensureMultiCycleRecurrenceSemantics(bundle, testName) {
+  ensureReliabilityReferences(bundle, testName);
+
+  const conditions = new Map((bundle.conditions || []).map((entry) => [entry.condition_id, entry]));
+  const diagnostics = new Map((bundle.diagnostics || []).map((entry) => [entry.diagnostic_id, entry]));
+  const strategies = new Map((bundle.maintenance_strategies || []).map((entry) => [entry.strategy_id, entry]));
+  const workRequests = new Map((bundle.work_requests || []).map((entry) => [entry.work_request_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+  const workOutcomes = new Map((bundle.work_outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const failureEvents = new Map((bundle.failure_events || []).map((entry) => [entry.failure_event_id, entry]));
+
+  const cycle1Condition = conditions.get("urn:ssom:condition:p501-bearing-cycle1");
+  const cycle2Condition = conditions.get("urn:ssom:condition:p501-bearing-cycle2-recurrence");
+  const cycle2Diagnostic = diagnostics.get("urn:ssom:diagnostic:p501-cycle2-diagnostic");
+  const cycle1Verification = workVerifications.get("urn:ssom:work-verification:p501-cycle1-verification");
+  const cycle1Outcome = workOutcomes.get("urn:ssom:outcome:p501-cycle1-outcome");
+  const cycle2Outcome = workOutcomes.get("urn:ssom:outcome:p501-cycle2-outcome");
+  const cycle1Request = workRequests.get("urn:ssom:work-request:p501-cycle1");
+  const cycle2Request = workRequests.get("urn:ssom:work-request:p501-cycle2");
+
+  assert(cycle1Condition && cycle2Condition, `${testName} must preserve both first-cycle and recurrence conditions.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Condition.condition_id), `${testName} recurrence condition must link to prior condition context.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Verification.verification_id), `${testName} recurrence condition must link to prior verification evidence.`);
+  assert(cycle2Condition.evidence_refs.includes(cycle1Outcome.outcome_id), `${testName} recurrence condition must link to prior outcome context.`);
+
+  assert(cycle2Diagnostic, `${testName} must preserve a second-cycle diagnostic.`);
+  assert(cycle2Diagnostic.evidence_refs.includes(cycle1Verification.verification_id), `${testName} second diagnostic must link to prior verification evidence.`);
+  assert(cycle2Diagnostic.evidence_refs.includes(cycle1Outcome.outcome_id), `${testName} second diagnostic must link to prior outcome evidence.`);
+
+  assert(cycle1Request && cycle2Request, `${testName} must preserve both work cycles.`);
+  assert(cycle1Request.maintenance_strategy_ref !== cycle2Request.maintenance_strategy_ref, `${testName} recurrence bundle must show a maintenance strategy change decision.`);
+  assert(strategies.has(cycle1Request.maintenance_strategy_ref), `${testName} first-cycle maintenance strategy must exist.`);
+  assert(strategies.has(cycle2Request.maintenance_strategy_ref), `${testName} second-cycle maintenance strategy must exist.`);
+
+  assert(cycle1Outcome && cycle2Outcome, `${testName} must preserve both work outcomes.`);
+  assert(cycle2Outcome.extensions?.comparison_to_prior_outcome_ref === cycle1Outcome.outcome_id, `${testName} second-cycle outcome must compare against the prior outcome.`);
+  assert(cycle2Outcome.extensions?.prior_verification_ref === cycle1Verification.verification_id, `${testName} second-cycle outcome must preserve prior verification linkage.`);
+  assert(cycle2Outcome.extensions?.prior_condition_ref === cycle1Condition.condition_id, `${testName} second-cycle outcome must preserve prior condition linkage.`);
+  assert(cycle2Outcome.recurrence_context?.prior_work_refs.includes("urn:ssom:action:p501-cycle1-work"), `${testName} recurrence must not be represented as isolated text; it must link to prior work.`);
+  assert(cycle2Outcome.recurrence_context?.prior_failure_event_refs.includes("urn:ssom:failure-event:p501-cycle1"), `${testName} recurrence must link to prior failure context.`);
+  assert(cycle2Outcome.reliability_impact?.work_history_refs.includes("urn:ssom:action:p501-cycle1-work"), `${testName} recurrence bundle must preserve prior work history in reliability impact evidence.`);
+  assert(cycle2Outcome.availability_impact, `${testName} recurrence bundle must preserve availability impact evidence.`);
+  assert(failureEvents.has("urn:ssom:failure-event:p501-cycle1") && failureEvents.has("urn:ssom:failure-event:p501-cycle2"), `${testName} recurrence bundle must preserve multi-cycle failure events.`);
+}
+
+function expectInvalidEventAlarmBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateEventAlarmBundle(testName, relativePath);
+    ensureEventAlarmSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateRegistryFile(testName, schemaFile, relativePath) {
+  const validate = ajv.getSchema(schemaFile);
+  const payload = readJson(relativePath);
+  const valid = validate(payload);
+
+  if (!valid) {
+    const detail = ajv.errorsText(validate.errors, { separator: "\n" });
+    throw new Error(`${testName} failed for ${relativePath}\n${detail}`);
+  }
+
+  return payload;
+}
+
+function normalizeRelationshipType(relationshipType) {
+  if (relationshipRegistryIndex.has(relationshipType)) {
+    return relationshipType;
+  }
+  return relationshipAliasIndex.get(relationshipType) || relationshipType;
+}
+
+function getAssetEntityKinds(asset) {
+  const kinds = new Set(["asset_instance"]);
+
+  if (Array.isArray(asset.equipment_roles) && asset.equipment_roles.length > 0) {
+    kinds.add("equipment_asset");
+  }
+  if (Array.isArray(asset.device_roles) && asset.device_roles.length > 0) {
+    kinds.add("device_asset");
+  }
+
+  switch (asset.asset_form) {
+    case "component":
+      kinds.add("component_asset");
+      break;
+    case "assembly":
+      kinds.add("assembly_asset");
+      break;
+    case "instrument":
+      kinds.add("instrument_asset");
+      break;
+    case "controller":
+      kinds.add("controller_asset");
+      break;
+    case "logical_asset":
+      kinds.add("logical_asset_instance");
+      break;
+    case "system":
+      kinds.add("system");
+      break;
+    default:
+      break;
+  }
+
+  return kinds;
+}
+
+function addEntityKinds(catalog, ref, kinds) {
+  if (!catalog.has(ref)) {
+    catalog.set(ref, new Set());
+  }
+  const existing = catalog.get(ref);
+  for (const kind of kinds) {
+    existing.add(kind);
+  }
+}
+
+function validateRelationshipBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["asset_classes", "asset-class.json", "asset class"],
+    ["equipment_models", "equipment-model.json", "equipment model"],
+    ["operational_boundaries", "operational-boundary.json", "operational boundary"],
+    ["functional_locations", "functional-location.json", "functional location"],
+    ["assets", "asset.json", "asset"],
+    ["conditions", "condition.json", "condition"],
+    ["failure_modes", "failure-mode.json", "failure mode"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["relationships", "relationship.json", "relationship"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function validateRelationshipRegistrySemantics(testName, registry) {
+  const seen = new Set();
+  for (const entry of registry.entries || []) {
+    assert(!seen.has(entry.canonical_code), `${testName} duplicate canonical relationship code ${entry.canonical_code} is not allowed.`);
+    seen.add(entry.canonical_code);
+    const inverse = registry.entries.find((candidate) => candidate.canonical_code === entry.inverse_code);
+    assert(inverse, `${testName} inverse relationship ${entry.inverse_code} must exist in the registry.`);
+    for (const alias of entry.aliases || []) {
+      assert(alias !== entry.canonical_code, `${testName} alias ${alias} must not duplicate the canonical relationship code.`);
+    }
+  }
+}
+
+function buildRelationshipEntityCatalog(bundle, testName) {
+  const catalog = new Map();
+  const assetClassIds = new Set((bundle.asset_classes || []).map((entry) => entry.class_id));
+  const equipmentModelIds = new Set((bundle.equipment_models || []).map((entry) => entry.model_id));
+  const boundaryIds = new Set((bundle.operational_boundaries || []).map((entry) => entry.boundary_id));
+  const locationIds = new Set((bundle.functional_locations || []).map((entry) => entry.location_id));
+  const assetIds = new Set((bundle.assets || []).map((entry) => entry.asset_id));
+
+  for (const assetClass of bundle.asset_classes || []) {
+    addEntityKinds(catalog, assetClass.class_id, ["asset_class"]);
+    if (assetClass.parent_class_ref) {
+      assert(assetClassIds.has(assetClass.parent_class_ref), `${testName} asset class ${assetClass.class_id} must reference a known parent asset class.`);
+    }
+  }
+
+  for (const equipmentModel of bundle.equipment_models || []) {
+    addEntityKinds(catalog, equipmentModel.model_id, ["equipment_model"]);
+    if (equipmentModel.asset_class_ref) {
+      assert(assetClassIds.has(equipmentModel.asset_class_ref), `${testName} equipment model ${equipmentModel.model_id} must reference a known asset class.`);
+    }
+  }
+
+  for (const boundary of bundle.operational_boundaries || []) {
+    addEntityKinds(catalog, boundary.boundary_id, [boundary.boundary_type]);
+    if (boundary.parent_boundary_ref) {
+      assert(boundaryIds.has(boundary.parent_boundary_ref), `${testName} boundary ${boundary.boundary_id} must reference a known parent boundary.`);
+    }
+    if (boundary.managed_as_asset_ref) {
+      assert(assetIds.has(boundary.managed_as_asset_ref), `${testName} boundary ${boundary.boundary_id} managed asset reference must point to a known asset.`);
+    }
+  }
+
+  for (const location of bundle.functional_locations || []) {
+    addEntityKinds(catalog, location.location_id, ["functional_location"]);
+    if (location.parent_location_ref) {
+      assert(locationIds.has(location.parent_location_ref), `${testName} functional location ${location.location_id} must reference a known parent functional location.`);
+    }
+  }
+
+  for (const asset of bundle.assets || []) {
+    addEntityKinds(catalog, asset.asset_id, getAssetEntityKinds(asset));
+    if (asset.asset_class_ref) {
+      assert(assetClassIds.has(asset.asset_class_ref), `${testName} asset ${asset.asset_id} must reference a known asset class.`);
+    }
+    if (asset.equipment_model_ref) {
+      assert(equipmentModelIds.has(asset.equipment_model_ref), `${testName} asset ${asset.asset_id} must reference a known equipment model.`);
+    }
+  }
+
+  for (const condition of bundle.conditions || []) {
+    addEntityKinds(catalog, condition.condition_id, ["condition"]);
+  }
+
+  for (const failureMode of bundle.failure_modes || []) {
+    addEntityKinds(catalog, failureMode.failure_mode_id, ["failure_mode"]);
+  }
+
+  for (const workExecution of bundle.work_executions || []) {
+    addEntityKinds(catalog, workExecution.action_id, ["work_execution"]);
+  }
+
+  return catalog;
+}
+
+function relationshipKindsMatch(kinds, permittedKinds) {
+  for (const kind of kinds) {
+    if (permittedKinds.includes(kind)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function ensureRelationshipSemantics(bundle, testName) {
+  const entityCatalog = buildRelationshipEntityCatalog(bundle, testName);
+  const relationships = bundle.relationships || [];
+
+  for (const relationship of relationships) {
+    if (relationship.valid_from && relationship.valid_to) {
+      intervalBounds(relationship);
+    }
+
+    const normalizedType = normalizeRelationshipType(relationship.relationship_type);
+    const registryEntry = relationshipRegistryIndex.get(normalizedType);
+    const fromKinds = entityCatalog.get(relationship.from_ref);
+    const toKinds = entityCatalog.get(relationship.to_ref);
+
+    assert(fromKinds, `${testName} relationship ${relationship.relationship_id} must reference a known subject.`);
+    assert(toKinds, `${testName} relationship ${relationship.relationship_id} must reference a known object.`);
+
+    if (registryEntry) {
+      assert(
+        relationshipKindsMatch(fromKinds, registryEntry.permitted_subject_types),
+        `${testName} relationship ${relationship.relationship_id} uses unsupported subject/object domain for ${normalizedType}.`
+      );
+      assert(
+        relationshipKindsMatch(toKinds, registryEntry.permitted_object_types),
+        `${testName} relationship ${relationship.relationship_id} uses unsupported subject/object domain for ${normalizedType}.`
+      );
+      assert(
+        registryEntry.allow_self_reference || relationship.from_ref !== relationship.to_ref,
+        `${testName} relationship ${relationship.relationship_id} must not self-reference for ${normalizedType}.`
+      );
+      if (relationship.direction) {
+        assert(
+          relationship.direction === registryEntry.direction,
+          `${testName} relationship ${relationship.relationship_id} must align with the governed relationship direction for ${normalizedType}.`
+        );
+      }
+      if (relationship.relationship_mapping?.normalized_relationship_type) {
+        const mapped = normalizeRelationshipType(relationship.relationship_mapping.normalized_relationship_type);
+        assert(
+          mapped === normalizedType,
+          `${testName} relationship ${relationship.relationship_id} mapping must normalize to the governed relationship code in use.`
+        );
+      }
+    } else {
+      assert(
+        relationship.relationship_mapping,
+        `${testName} extension relationship ${relationship.relationship_id} must include mapping metadata.`
+      );
+      assert(
+        relationship.relationship_type.includes(":"),
+        `${testName} extension relationship ${relationship.relationship_id} must be namespaced.`
+      );
+      assert(
+        relationship.relationship_mapping.extension_namespace,
+        `${testName} extension relationship ${relationship.relationship_id} must declare an extension namespace.`
+      );
+    }
+  }
+
+  for (let i = 0; i < relationships.length; i += 1) {
+    for (let j = i + 1; j < relationships.length; j += 1) {
+      const left = relationships[i];
+      const right = relationships[j];
+      if (left.from_ref !== right.to_ref || left.to_ref !== right.from_ref) {
+        continue;
+      }
+      const leftType = normalizeRelationshipType(left.relationship_type);
+      const rightType = normalizeRelationshipType(right.relationship_type);
+      const leftEntry = relationshipRegistryIndex.get(leftType);
+      const rightEntry = relationshipRegistryIndex.get(rightType);
+      if (!leftEntry || !rightEntry) {
+        continue;
+      }
+      if (leftEntry.direction === "undirected" && rightEntry.direction === "undirected") {
+        continue;
+      }
+      assert(
+        leftEntry.inverse_code === rightType && rightEntry.inverse_code === leftType,
+        `${testName} reverse relationship usage between ${left.relationship_id} and ${right.relationship_id} must use a known inverse pair.`
+      );
+    }
+  }
+}
+
+function expectInvalidRelationshipBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateRelationshipBundle(testName, relativePath);
+    ensureRelationshipSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateIntegratedLifecycleBundle(testName, relativePath) {
+  const payload = readJson(relativePath);
+  const sections = [
+    ["asset_classes", "asset-class.json", "asset class"],
+    ["equipment_models", "equipment-model.json", "equipment model"],
+    ["operational_boundaries", "operational-boundary.json", "operational boundary"],
+    ["functional_locations", "functional-location.json", "functional location"],
+    ["assets", "asset.json", "asset"],
+    ["relationships", "relationship.json", "relationship"],
+    ["observations", "observation.json", "observation"],
+    ["conditions", "condition.json", "condition"],
+    ["source_assertions", "source-assertion.json", "source assertion"],
+    ["derived_assertions", "derived-assertion.json", "derived assertion"],
+    ["inferences", "inference.json", "inference"],
+    ["predictions", "prediction.json", "prediction"],
+    ["recommendations", "recommendation.json", "recommendation"],
+    ["decisions", "decision.json", "decision"],
+    ["work_requests", "work-request.json", "work request"],
+    ["work_plans", "work-plan.json", "work plan"],
+    ["work_executions", "work-execution.json", "work execution"],
+    ["work_verifications", "work-verification.json", "work verification"],
+    ["work_outcomes", "work-outcome.json", "work outcome"],
+    ["failure_events", "failure-event.json", "failure event"],
+    ["identity_lifecycle_events", "identity-lifecycle-event.json", "identity lifecycle event"]
+  ];
+
+  for (const [key, schemaFile, label] of sections) {
+    validateSchemaEntries(testName, schemaFile, payload[key] || [], label);
+  }
+
+  return payload;
+}
+
+function ensureIntegratedLifecycleSemantics(bundle, testName) {
+  ensureRelationshipSemantics(bundle, testName);
+  ensureUniqueCanonicalIds(bundle.assets || []);
+  ensureAssignmentValidity(bundle.assets || []);
+  ensureNoOverlappingAssignments(bundle.assets || []);
+  ensureSuccessionRelationships(bundle.relationships || []);
+
+  for (const observation of bundle.observations || []) {
+    if (!observation.original_measurement && !observation.canonical_measurement) {
+      continue;
+    }
+    assert(observation.original_measurement, `${testName} must preserve original source measurement.`);
+    assert(observation.canonical_measurement, `${testName} must preserve canonical normalized measurement.`);
+    const quantityKind = observation.canonical_measurement.quantity_kind;
+    const expectedDimension = quantityKindDimensions[quantityKind];
+    assert(expectedDimension, `${testName} must declare a governed quantity kind.`);
+    const sourceDimension = getUnitDimension(observation.original_measurement.source_unit, `${testName} source unit`);
+    const canonicalDimension = getUnitDimension(observation.canonical_measurement.canonical_unit, `${testName} canonical unit`);
+    assert(sourceDimension === expectedDimension, `${testName} must not use incompatible source units.`);
+    assert(canonicalDimension === expectedDimension, `${testName} must not use incompatible canonical units.`);
+  }
+
+  const observations = new Map((bundle.observations || []).map((entry) => [entry.record_id, entry]));
+  const sourceAssertions = new Map((bundle.source_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const derivedAssertions = new Map((bundle.derived_assertions || []).map((entry) => [entry.assertion_id, entry]));
+  const inferences = new Map((bundle.inferences || []).map((entry) => [entry.inference_id, entry]));
+  const predictions = new Map((bundle.predictions || []).map((entry) => [entry.prediction_id, entry]));
+  const recommendations = new Map((bundle.recommendations || []).map((entry) => [entry.recommendation_id, entry]));
+  const decisions = new Map((bundle.decisions || []).map((entry) => [entry.decision_id, entry]));
+  const workExecutions = new Map((bundle.work_executions || []).map((entry) => [entry.action_id, entry]));
+  const workVerifications = new Map((bundle.work_verifications || []).map((entry) => [entry.verification_id, entry]));
+  const workOutcomes = new Map((bundle.work_outcomes || []).map((entry) => [entry.outcome_id, entry]));
+  const failureEvents = new Map((bundle.failure_events || []).map((entry) => [entry.failure_event_id, entry]));
+
+  const originalPump = (bundle.assets || []).find((asset) => asset.asset_id === "urn:ssom:asset:pump-p101-v1");
+  const replacementPump = (bundle.assets || []).find((asset) => asset.asset_id === "urn:ssom:asset:pump-p101-v2");
+  assert(originalPump && replacementPump, `${testName} must include original and replacement Pump P-101 assets.`);
+  assert(originalPump.asset_id !== replacementPump.asset_id, `${testName} original and replacement pumps must have different canonical SSOM asset IDs.`);
+
+  const originalTag = (originalPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "engineering_tag");
+  const replacementTag = (replacementPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "engineering_tag");
+  assert(originalTag && replacementTag, `${testName} must preserve engineering tag assignments for both pump assets.`);
+  assert(originalTag.identifier_value === "P-101" && replacementTag.identifier_value === "P-101", `${testName} engineering tag P-101 must be preserved across replacement.`);
+  assert(!intervalsOverlap(intervalBounds(originalTag), intervalBounds(replacementTag)), `${testName} engineering tag P-101 overlaps across assets.`);
+
+  const originalFloc = (originalPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "functional_location_reference");
+  const replacementFloc = (replacementPump.identity?.identifier_assignments || []).find((entry) => entry.identifier_role === "functional_location_reference");
+  assert(originalFloc && replacementFloc, `${testName} must preserve functional location references across replacement.`);
+  assert(originalFloc.identifier_value === replacementFloc.identifier_value, `${testName} functional location continuity must be preserved.`);
+
+  const contradictoryAssertions = (bundle.source_assertions || []).filter((entry) => entry.contradiction_group === "p101-health-20260629");
+  assert(contradictoryAssertions.length >= 2, `${testName} must preserve contradictory source assertions.`);
+  assert(
+    contradictoryAssertions.some((entry) => entry.asserted_value === "running_normal") &&
+      contradictoryAssertions.some((entry) => entry.asserted_value === "bearing_degradation_suspected"),
+    `${testName} contradictory evidence must coexist without forced reconciliation.`
+  );
+
+  assert(derivedAssertions.has("urn:ssom:assertion:p101-vibration-trend-velocity"), `${testName} must preserve a derived vibration trend assertion.`);
+  assert(inferences.has("urn:ssom:inference:p101-bearing-degradation"), `${testName} must preserve a diagnostic inference.`);
+  assert(predictions.has("urn:ssom:prediction:p101-bearing-failure-risk-14d"), `${testName} must preserve a forward-looking prediction.`);
+  assert(recommendations.has("urn:ssom:recommendation:p101-bearing-intervention"), `${testName} must preserve a recommendation.`);
+  assert(decisions.has("urn:ssom:decision:p101-approve-bearing-work"), `${testName} must preserve a decision distinct from the recommendation.`);
+
+  const workExecution = workExecutions.get("urn:ssom:action:p101-bearing-work-completed");
+  const workVerification = workVerifications.get("urn:ssom:work-verification:p101-bearing-postwork");
+  const workOutcome = workOutcomes.get("urn:ssom:outcome:p101-bearing-work-outcome");
+  assert(workExecution && workVerification && workOutcome, `${testName} must preserve execution, verification, and outcome states.`);
+  assert(workVerification.work_execution_ref === workExecution.action_id, `${testName} work verification must reference the work execution.`);
+  assert(workOutcome.work_execution_ref === workExecution.action_id, `${testName} work outcome must reference the work execution.`);
+  assert(workOutcome.verification_refs.includes(workVerification.verification_id), `${testName} work outcome must reference verification evidence.`);
+
+  const postWorkObservation = observations.get("urn:ssom:record:p101-vibration-mmps-postwork-20260629t154500z");
+  const recurrenceObservation = observations.get("urn:ssom:record:p101-vibration-mmps-recurrence-20260703t070000z");
+  assert(postWorkObservation && recurrenceObservation, `${testName} must preserve post-work and recurrence observations.`);
+  assert(postWorkObservation.canonical_measurement.canonical_value < recurrenceObservation.canonical_measurement.canonical_value, `${testName} post-work reduction must remain distinct from later recurrence.`);
+  assert(workOutcome.outcome_disposition === "ineffective", `${testName} short-term improvement must not be treated as sustained success.`);
+  assert(workOutcome.reliability_impact?.direction === "unchanged", `${testName} later evidence must preserve non-sustained reliability improvement.`);
+  assert(workOutcome.recurrence_context?.prior_work_refs.includes(workExecution.action_id), `${testName} recurrence must link to earlier work.`);
+  assert(workOutcome.recurrence_context?.prior_failure_event_refs.some((ref) => failureEvents.has(ref)), `${testName} recurrence must link to failure context.`);
+
+  const replacementRelationship = (bundle.relationships || []).find((entry) => entry.relationship_id === "urn:ssom:relationship:p101-v2-replaces-p101-v1");
+  assert(replacementRelationship, `${testName} must preserve replacement lineage.`);
+  assert(replacementRelationship.from_ref === replacementPump.asset_id && replacementRelationship.to_ref === originalPump.asset_id, `${testName} replacement lineage must point from replacement to original.`);
+
+  const identityEvent = (bundle.identity_lifecycle_events || []).find((entry) => entry.event_id === "urn:ssom:identity-event:p101-replacement-20260704");
+  assert(identityEvent, `${testName} must preserve the replacement identity lifecycle event.`);
+  assert(identityEvent.subject_refs.includes(originalPump.asset_id), `${testName} identity event must reference the original asset.`);
+  assert(identityEvent.resulting_asset_refs.includes(replacementPump.asset_id), `${testName} identity event must reference the replacement asset.`);
+
+  for (const entry of [
+    ...(bundle.observations || []),
+    ...(bundle.source_assertions || []),
+    ...(bundle.derived_assertions || []),
+    ...(bundle.inferences || []),
+    ...(bundle.predictions || []),
+    ...(bundle.recommendations || []),
+    ...(bundle.decisions || []),
+    ...(bundle.work_requests || []),
+    ...(bundle.work_plans || []),
+    ...(bundle.work_executions || []),
+    ...(bundle.work_verifications || []),
+    ...(bundle.work_outcomes || []),
+    ...(bundle.failure_events || []),
+    ...(bundle.identity_lifecycle_events || [])
+  ]) {
+    assert(entry.provenance, `${testName} all integrated records must preserve provenance.`);
+    assert(entry.temporal_integrity, `${testName} all integrated records must preserve temporal context.`);
+  }
+}
+
+function expectInvalidIntegratedLifecycleBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateIntegratedLifecycleBundle(testName, relativePath);
+    ensureIntegratedLifecycleSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+const results = [];
+
+const registryPayload = validateRegistryFile(
+  "core relationship registry",
+  "relationship-registry.json",
+  "schemas/registry/core-relationship-vocabulary.json"
+);
+validateRelationshipRegistrySemantics("core relationship registry", registryPayload);
+results.push("core relationship registry remains machine-readable, reciprocal, and alias-governed");
+
+const pump = validateFixture(
+  "equipment-only asset",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-pump-p101.json"
+);
+assert(Array.isArray(pump.equipment_roles) && pump.equipment_roles.length > 0, "Pump fixture must retain equipment roles.");
+assert(!pump.device_roles || pump.device_roles.length === 0, "Pump fixture must remain equipment-only.");
+results.push("asset may carry equipment roles only");
+
+const plc = validateFixture(
+  "device-only asset",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-plc-17.json"
+);
+assert(Array.isArray(plc.device_roles) && plc.device_roles.length > 0, "PLC fixture must retain device roles.");
+assert(!plc.equipment_roles || plc.equipment_roles.length === 0, "PLC fixture must remain device-only.");
+results.push("asset may carry device roles only");
+
+const vfd = validateFixture(
+  "equipment-and-device asset",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-vfd-12.json"
+);
+assert(Array.isArray(vfd.equipment_roles) && vfd.equipment_roles.length > 0, "VFD fixture must retain equipment roles.");
+assert(Array.isArray(vfd.device_roles) && vfd.device_roles.length > 0, "VFD fixture must retain device roles.");
+results.push("asset may carry both equipment and device roles");
+
+const unknown = validateFixture(
+  "unclassified asset",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-unclassified-logical.json"
+);
+assert(!unknown.equipment_roles, "Unclassified fixture must validate without equipment roles.");
+assert(!unknown.device_roles, "Unclassified fixture must validate without device roles.");
+results.push("asset may carry neither equipment nor device roles");
+
+expectInvalid(
+  "invalid role value",
+  "asset.json",
+  "conformance/fixtures/v0.3/invalid/asset-invalid-role.json",
+  "must be equal to one of the allowed values"
+);
+results.push("invalid role values fail validation");
+
+validateFixture(
+  "legacy asset compatibility",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-legacy-minimal.json"
+);
+results.push("legacy asset examples remain valid");
+
+const smartPump = validateFixture(
+  "classification provenance",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-smart-pump-p201.json"
+);
+assert(Array.isArray(smartPump.classification_assertions) && smartPump.classification_assertions.length >= 4, "Smart pump fixture must preserve classification assertions.");
+assert(smartPump.classification_assertions.some((entry) => entry.provenance), "Classification assertions must preserve provenance.");
+results.push("classification provenance is retained");
+
+assert(Array.isArray(vfd.lifecycle_roles) && vfd.lifecycle_roles.includes("cyber_managed_asset"), "Lifecycle roles must coexist with operational roles.");
+results.push("lifecycle roles coexist with equipment and device roles");
+
+validateFixture(
+  "controls relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-controls-plc17-vfd12.json"
+);
+validateFixture(
+  "measures relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-measures-pt101-pump-p101.json"
+);
+validateFixture(
+  "actuates relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-actuates-vfd12-motor-m101.json"
+);
+validateFixture(
+  "protects relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-protects-mpr101-motor-m101.json"
+);
+validateFixture(
+  "drives relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-drives-motor-m101-pump-p101.json"
+);
+validateFixture(
+  "communicates_with relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-communicates-with-gw01-plc17.json"
+);
+validateFixture(
+  "is_part_of relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-is-part-of-pump-p101-cw01.json"
+);
+validateFixture(
+  "is_installed_on relationship",
+  "relationship.json",
+  "conformance/fixtures/v0.3/valid/relationship-is-installed-on-pump-p101-unit14.json"
+);
+results.push("equipment and device interaction relationships validate correctly");
+
+validateFixture(
+  "observation reference",
+  "observation.json",
+  "conformance/fixtures/v0.3/valid/observation-pump-p101-discharge-pressure.json"
+);
+validateFixture(
+  "condition reference",
+  "condition.json",
+  "conformance/fixtures/v0.3/valid/condition-pump-p101-cavitation-risk.json"
+);
+results.push("observation and condition references remain valid under v0.3 fixtures");
+
+validateFixture(
+  "robot cell composite asset",
+  "asset.json",
+  "conformance/fixtures/v0.3/valid/asset-robot-cell-rc01.json"
+);
+results.push("composite robot-cell asset examples validate under the overlapping role model");
+
+const vibrationObservation = validateFixture(
+  "truth-state observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/observation-pump-p201-vibration-rms.json"
+);
+assert(vibrationObservation.metric === "vibration_rms", "Truth-state observation fixture must preserve the vibration metric.");
+
+const postActionObservation = validateFixture(
+  "post-action observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/observation-pump-p201-vibration-post-inspection.json"
+);
+assert(postActionObservation.value < vibrationObservation.value, "Post-action observation must show reduced vibration.");
+
+const sourceAssertion = validateFixture(
+  "source assertion",
+  "source-assertion.json",
+  "conformance/fixtures/v0.4/valid/source-assertion-pump-p201-oem-vibration-advisory.json"
+);
+assert(sourceAssertion.evidence_refs.includes(vibrationObservation.record_id), "Source assertions must remain traceable to source evidence when provided.");
+
+const contradictoryAssertion = validateFixture(
+  "contradictory source assertion",
+  "source-assertion.json",
+  "conformance/fixtures/v0.4/valid/source-assertion-pump-p201-operator-normal-claim.json"
+);
+assert(
+  contradictoryAssertion.subject_ref === sourceAssertion.subject_ref &&
+    contradictoryAssertion.asserted_property === sourceAssertion.asserted_property &&
+    contradictoryAssertion.asserted_value !== sourceAssertion.asserted_value,
+  "Contradictory source assertions must be preservable for the same subject without forced reconciliation."
+);
+
+const derivedAssertion = validateFixture(
+  "derived assertion",
+  "derived-assertion.json",
+  "conformance/fixtures/v0.4/valid/derived-assertion-pump-p201-vibration-trend.json"
+);
+assert(derivedAssertion.evidence_refs.includes(sourceAssertion.assertion_id), "Derived assertions must retain evidence references.");
+
+const inference = validateFixture(
+  "inference",
+  "inference.json",
+  "conformance/fixtures/v0.4/valid/inference-pump-p201-bearing-degradation.json"
+);
+assert(inference.evidence_refs.includes(derivedAssertion.assertion_id), "Inference must retain derived evidence references.");
+
+const prediction = validateFixture(
+  "prediction",
+  "prediction.json",
+  "conformance/fixtures/v0.4/valid/prediction-pump-p201-failure-risk-14d.json"
+);
+assert(prediction.evidence_refs.includes(inference.inference_id), "Prediction must retain evidence references.");
+
+const recommendation = validateFixture(
+  "recommendation",
+  "recommendation.json",
+  "conformance/fixtures/v0.4/valid/recommendation-pump-p201-inspection.json"
+);
+assert(recommendation.evidence_refs.includes(inference.inference_id), "Recommendation must remain traceable to inference evidence.");
+
+const decision = validateFixture(
+  "decision",
+  "decision.json",
+  "conformance/fixtures/v0.4/valid/decision-pump-p201-approve-inspection.json"
+);
+assert(decision.context_refs.includes(recommendation.recommendation_id), "Decision context must reference the recommendation chain.");
+
+const action = validateFixture(
+  "action",
+  "action.json",
+  "conformance/fixtures/v0.4/valid/action-pump-p201-inspection-completed.json"
+);
+assert(action.basis_refs.includes(decision.decision_id), "Action must retain decision context.");
+
+const outcome = validateFixture(
+  "outcome",
+  "outcome.json",
+  "conformance/fixtures/v0.4/valid/outcome-pump-p201-vibration-reduced.json"
+);
+assert(outcome.action_ref === action.action_id, "Outcome must reference the action context.");
+assert(outcome.decision_ref === decision.decision_id, "Outcome must reference the decision context when available.");
+assert(outcome.evidence_refs.includes(postActionObservation.record_id), "Outcome must retain evidence used for assessment.");
+results.push("semantic truth-state fixtures validate from observation through outcome");
+
+expectInvalid(
+  "recommendation cannot masquerade as observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/recommendation-pump-p201-inspection.json",
+  "must have required property"
+);
+results.push("recommendation cannot masquerade as an observation");
+
+expectInvalid(
+  "decision requires actor or authority",
+  "decision.json",
+  "conformance/fixtures/v0.4/invalid/decision-missing-actor-or-authority.json",
+  "must match a schema in anyOf"
+);
+results.push("decision requires status and actor or governed authority");
+
+expectInvalid(
+  "outcome requires action or decision context",
+  "outcome.json",
+  "conformance/fixtures/v0.4/invalid/outcome-missing-context.json",
+  "must match a schema in anyOf"
+);
+results.push("outcome must reference action or decision context");
+
+expectInvalid(
+  "derived assertion requires evidence references",
+  "derived-assertion.json",
+  "conformance/fixtures/v0.4/invalid/derived-assertion-missing-evidence.json",
+  "must have required property 'evidence_refs'"
+);
+results.push("derived statements must retain evidence references");
+
+const truthStateLineageBundle = validateTruthStateLineageBundle(
+  "truth-state correction and supersession lineage",
+  "conformance/fixtures/v0.4/valid/truth-state-lineage-corrections-and-supersession.json"
+);
+ensureTruthStateLineageSemantics(truthStateLineageBundle, "truth-state correction and supersession lineage");
+results.push("truth-state correction and supersession lineage preserves original evidence, temporal context, provenance, and current interpretation state");
+
+const replacementBundle = validateIdentityBundle(
+  "pump replacement identity lifecycle",
+  "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json"
+);
+ensureUniqueCanonicalIds(replacementBundle.assets);
+ensureAssignmentValidity(replacementBundle.assets);
+ensureNoOverlappingAssignments(replacementBundle.assets);
+ensureSuccessionRelationships(replacementBundle.relationships);
+results.push("replacement assets may retain the same engineering tag over time without reusing canonical identity");
+
+const chillerBundle = validateIdentityBundle(
+  "multi-source chiller identity convergence",
+  "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+);
+ensureUniqueCanonicalIds(chillerBundle.assets);
+ensureAssignmentValidity(chillerBundle.assets);
+ensureNoOverlappingAssignments(chillerBundle.assets);
+results.push("an asset may hold multiple external identifiers across enterprise systems at the same time");
+
+const plcBundle = validateIdentityBundle(
+  "plc opc ua identity migration",
+  "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json"
+);
+ensureUniqueCanonicalIds(plcBundle.assets);
+ensureAssignmentValidity(plcBundle.assets);
+ensureNoOverlappingAssignments(plcBundle.assets);
+results.push("OPC UA node identities may change over time without implying a new asset identity");
+
+const acquisitionBundle = validateIdentityBundle(
+  "duplicate engineering tags across different scopes",
+  "conformance/fixtures/v0.5/valid/identity-bundle-acquired-plants-duplicate-tags.json"
+);
+ensureUniqueCanonicalIds(acquisitionBundle.assets);
+ensureAssignmentValidity(acquisitionBundle.assets);
+ensureNoOverlappingAssignments(acquisitionBundle.assets);
+results.push("duplicate engineering tags may coexist across different scope rules");
+
+const recommissionBundle = validateIdentityBundle(
+  "asset decommission and recommission",
+  "conformance/fixtures/v0.5/valid/identity-bundle-decommission-recommission.json"
+);
+ensureUniqueCanonicalIds(recommissionBundle.assets);
+ensureAssignmentValidity(recommissionBundle.assets);
+ensureNoOverlappingAssignments(recommissionBundle.assets);
+ensureSuccessionRelationships(recommissionBundle.relationships);
+results.push("an asset may be decommissioned and later recommissioned while preserving canonical identity");
+
+const splitBundle = validateIdentityBundle(
+  "asset split into successors",
+  "conformance/fixtures/v0.5/valid/identity-bundle-asset-split.json"
+);
+ensureUniqueCanonicalIds(splitBundle.assets);
+ensureAssignmentValidity(splitBundle.assets);
+ensureNoOverlappingAssignments(splitBundle.assets);
+ensureSuccessionRelationships(splitBundle.relationships);
+results.push("asset split scenarios preserve predecessor and successor identity semantics");
+
+const mergeBundle = validateIdentityBundle(
+  "asset merge into managed operational asset",
+  "conformance/fixtures/v0.5/valid/identity-bundle-asset-merge.json"
+);
+ensureUniqueCanonicalIds(mergeBundle.assets);
+ensureAssignmentValidity(mergeBundle.assets);
+ensureNoOverlappingAssignments(mergeBundle.assets);
+ensureSuccessionRelationships(mergeBundle.relationships);
+results.push("asset merge scenarios preserve managed-asset succession semantics");
+
+expectInvalidIdentityBundle(
+  "canonical ssom identifier reuse",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-duplicate-canonical-id.json",
+  "must not be reused"
+);
+results.push("canonical SSOM asset identifiers cannot be reused");
+
+expectInvalidIdentityBundle(
+  "overlapping identifier assignments",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-overlapping-identifier-assignment.json",
+  "overlaps across assets"
+);
+results.push("overlapping identifier assignments in the same scope and authority are rejected");
+
+expectInvalidIdentityBundle(
+  "self-referencing successor relationship",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-self-successor.json",
+  "must not self-reference"
+);
+results.push("successor relationships cannot self-reference");
+
+expectInvalidIdentityBundle(
+  "malformed identifier validity period",
+  "conformance/fixtures/v0.5/invalid/identity-bundle-invalid-identifier-validity.json",
+  "invalid validity period"
+);
+results.push("identifier validity periods must be well formed and non-inverted");
+
+const pressureObservation = validateMeasurementObservation(
+  "pressure normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json"
+);
+assert(pressureObservation.canonical_measurement.canonical_unit.unit_code === "KPA", "Pressure canonical unit must be explicit.");
+
+const temperatureObservation = validateMeasurementObservation(
+  "temperature normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+);
+assert(temperatureObservation.canonical_measurement.quantity_kind === "temperature", "Temperature observation must declare quantity kind.");
+
+const pressureConsumerObservation = validateMeasurementObservation(
+  "pressure normalization for psi analytical consumer",
+  "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json"
+);
+assert(pressureConsumerObservation.canonical_measurement.canonical_unit.unit_code === "PSI", "Pressure analytical consumer scenario must normalize to PSI.");
+
+const vibrationObservationAccel = validateMeasurementObservation(
+  "vibration acceleration normalization",
+  "conformance/fixtures/v0.6/valid/observation-vibration-g-normalized.json"
+);
+assert(vibrationObservationAccel.canonical_measurement.quantity_kind === "vibration_acceleration", "Vibration acceleration must remain explicit.");
+
+const flowObservation = validateMeasurementObservation(
+  "flow normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-flow-gpm-normalized.json"
+);
+assert(flowObservation.canonical_measurement.canonical_unit.unit_code === "L_PER_S", "Flow canonical unit must be explicit.");
+
+const valvePercentObservation = validateMeasurementObservation(
+  "valve percent open signal",
+  "conformance/fixtures/v0.6/valid/observation-valve-position-percent-open.json"
+);
+const valveTravelObservation = validateMeasurementObservation(
+  "valve travel signal",
+  "conformance/fixtures/v0.6/valid/observation-valve-travel-millimeters.json"
+);
+assert(
+  valvePercentObservation.canonical_measurement.quantity_kind !== valveTravelObservation.canonical_measurement.quantity_kind,
+  "Percent open and millimeters of travel must remain different quantity kinds unless explicitly mapped."
+);
+
+const stalePressureObservation = validateMeasurementObservation(
+  "stale degraded pressure measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-stale-degraded.json"
+);
+assert(stalePressureObservation.measurement_quality.stale_data_state === "stale", "Stale measurement must preserve stale-data status.");
+assert(stalePressureObservation.measurement_quality.communication_quality === "degraded", "Stale measurement must preserve degraded communication quality.");
+
+const overdueCalibrationObservation = validateMeasurementObservation(
+  "overdue calibration measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-overdue-calibration.json"
+);
+assert(overdueCalibrationObservation.calibration_context.next_due_status === "overdue", "Calibration context must preserve overdue status.");
+
+const lateArrivalObservation = validateMeasurementObservation(
+  "late arriving historian measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-late-arrival.json"
+);
+assert(lateArrivalObservation.time_synchronization_context.ordering_state === "late_arrival", "Late-arriving data must preserve ordering state.");
+assert(lateArrivalObservation.temporal_integrity.delivery_classification === "late_arrival", "Late-arriving data must preserve temporal delivery classification.");
+const lateArrivalCondition = validateFixture(
+  "late-arrival condition reinterpretation",
+  "condition.json",
+  "conformance/fixtures/v0.6/valid/condition-p101-cavitation-risk-revised-late-data.json"
+);
+assert(lateArrivalCondition.evidence_refs.includes(lateArrivalObservation.record_id), "Late-arriving condition reinterpretation must retain late-data evidence refs.");
+results.push("structured measurement semantics preserve source, canonical, quality, calibration, signal, and timing context");
+
+validateMeasurementObservation(
+  "unknown-unit raw evidence",
+  "conformance/fixtures/v0.6/valid/observation-vibration-unknown-unit-raw-evidence.json"
+);
+results.push("unknown-unit raw evidence may be preserved without unsafe comparability or unsupported canonical normalization");
+
+expectInvalidMeasurementObservation(
+  "incompatible quantity kind conversion",
+  "conformance/fixtures/v0.6/invalid/observation-incompatible-quantity-kind.json",
+  "incompatible quantity kinds"
+);
+results.push("incompatible quantity kinds cannot be silently converted");
+
+expectInvalidMeasurementObservation(
+  "incompatible canonical units",
+  "conformance/fixtures/v0.6/invalid/observation-incompatible-unit-conversion.json",
+  "incompatible units"
+);
+results.push("incompatible units are rejected or flagged");
+
+expectInvalid(
+  "canonical measurement requires quantity kind",
+  "observation.json",
+  "conformance/fixtures/v0.6/invalid/observation-missing-canonical-quantity-kind.json",
+  "must have required property 'quantity_kind'"
+);
+results.push("canonical measurement cannot omit quantity kind");
+
+expectInvalid(
+  "conversion lineage requires source unit",
+  "observation.json",
+  "conformance/fixtures/v0.6/invalid/observation-missing-conversion-source-unit.json",
+  "must have required property 'source_unit'"
+);
+results.push("canonical conversion cannot omit source-unit lineage");
+
+expectInvalidMeasurementObservation(
+  "free-form calibration note without structure",
+  "conformance/fixtures/v0.6/invalid/observation-freeform-calibration-note.json",
+  "free-form calibration note"
+);
+results.push("calibration status cannot be represented only as a free-form note");
+
+expectInvalidMeasurementObservation(
+  "unknown-unit false comparability",
+  "conformance/fixtures/v0.6/invalid/observation-vibration-unknown-unit-false-comparable.json",
+  "must not receive canonical normalized measurement without a governed unit mapping"
+);
+results.push("unknown-unit evidence cannot be falsely normalized or marked safely comparable without a governed mapping");
+
+const motorBundle = validateReliabilityBundle(
+  "motor bearing degradation work chain",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-motor-bearing-degradation.json"
+);
+ensureReliabilityReferences(motorBundle, "motor bearing degradation work chain");
+assert(motorBundle.work_outcomes[0].outcome_disposition === "positive", "Motor bearing outcome must be positive.");
+assert(motorBundle.work_outcomes[0].reliability_impact.direction === "improved", "Motor bearing outcome must preserve reliability improvement.");
+results.push("motor-bearing degradation can be traced from observation through diagnostic, work verification, and positive outcome");
+
+const pumpSealBundle = validateReliabilityBundle(
+  "pump seal ineffective repair",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json"
+);
+ensureReliabilityReferences(pumpSealBundle, "pump seal ineffective repair");
+assert(pumpSealBundle.work_outcomes[0].outcome_disposition === "ineffective", "Pump seal scenario must record an ineffective outcome.");
+assert(pumpSealBundle.work_outcomes[0].recurrence_context.recurrence_status === "open", "Pump seal recurrence must remain open.");
+results.push("completed work may still produce ineffective or unresolved reliability outcomes");
+
+const vfdBundle = validateReliabilityBundle(
+  "vfd replacement restoration",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-vfd-replacement-restoration.json"
+);
+ensureReliabilityReferences(vfdBundle, "vfd replacement restoration");
+assert(vfdBundle.work_outcomes[0].operational_impact.direction === "improved", "VFD replacement must preserve production or operational improvement.");
+results.push("replacement work can preserve mechanism, configuration restoration, verification, and production impact reduction");
+
+const safetyBundle = validateReliabilityBundle(
+  "safety proof test evidence",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-safety-proof-test.json"
+);
+ensureReliabilityReferences(safetyBundle, "safety proof test evidence");
+assert(safetyBundle.work_outcomes[0].outcome_disposition === "inconclusive", "Safety proof-test bundle must avoid overclaiming compliance as a positive outcome.");
+assert(!safetyBundle.work_outcomes[0].extensions?.functional_safety_compliance_claim, "Safety proof-test bundle must not make a false compliance claim.");
+results.push("safety-related maintenance may preserve verification evidence without claiming functional-safety compliance");
+
+const noActionBundle = validateReliabilityBundle(
+  "recommendation and decision without action",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-recommendation-decision-no-action.json"
+);
+ensureReliabilityReferences(noActionBundle, "recommendation and decision without action");
+assert((noActionBundle.work_executions || []).length === 0, "Recommendation to decision flow must not require action.");
+results.push("a recommendation can lead to a decision without necessarily leading to action");
+
+const neutralBundle = validateReliabilityBundle(
+  "neutral completed action outcome",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-neutral-outcome.json"
+);
+ensureReliabilityReferences(neutralBundle, "neutral completed action outcome");
+assert(neutralBundle.work_outcomes[0].outcome_disposition === "neutral", "Neutral outcome bundle must preserve a neutral disposition.");
+const outcomeClasses = [
+  motorBundle.work_outcomes[0].outcome_disposition,
+  pumpSealBundle.work_outcomes[0].outcome_disposition,
+  safetyBundle.work_outcomes[0].outcome_disposition,
+  neutralBundle.work_outcomes[0].outcome_disposition
+];
+assert(outcomeClasses.includes("positive"), "Positive outcome disposition must be supported.");
+assert(outcomeClasses.includes("neutral"), "Neutral outcome disposition must be supported.");
+assert(outcomeClasses.includes("inconclusive"), "Inconclusive outcome disposition must be supported.");
+assert(outcomeClasses.some((entry) => entry === "negative" || entry === "ineffective"), "Negative or ineffective outcome disposition must be supported.");
+results.push("completed action may have neutral, negative or ineffective, inconclusive, or positive outcome dispositions");
+
+const multicycleRecurrenceBundle = validateReliabilityBundle(
+  "multi-cycle recurrence and work history bundle",
+  "conformance/fixtures/v0.7/valid/reliability-bundle-pump-multicycle-recurrence.json"
+);
+ensureMultiCycleRecurrenceSemantics(multicycleRecurrenceBundle, "multi-cycle recurrence and work history bundle");
+results.push("multi-cycle recurrence links prior condition, failure, work, verification, outcome, and maintenance strategy change context explicitly");
+
+expectInvalidReliabilityBundle(
+  "verified outcome without verification evidence",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-missing-verification-link.json",
+  "must reference work verification evidence"
+);
+results.push("work execution cannot be represented as verified outcome without verification evidence");
+
+expectInvalidReliabilityBundle(
+  "work outcome missing observed outcome",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-work-outcome-missing-observed.json",
+  "must have required property 'observed_outcome'"
+);
+results.push("work outcome must distinguish intended outcome from observed outcome");
+
+expectInvalidReliabilityBundle(
+  "collapsed failure semantics into free text",
+  "conformance/fixtures/v0.7/invalid/reliability-bundle-diagnostic-freeform-collapse.json",
+  "must match a schema in anyOf"
+);
+results.push("failure mode, mechanism, and cause cannot be collapsed into one uncontrolled text field when structured references are available");
+
+const vfdEventAlarmBundle = validateEventAlarmBundle(
+  "vfd fault event and alarm recommendation chain",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json"
+);
+ensureEventAlarmSemantics(vfdEventAlarmBundle, "vfd fault event and alarm recommendation chain");
+assert(vfdEventAlarmBundle.alarms[0].event_ref === vfdEventAlarmBundle.events[0].event_id, "VFD alarm must be linked to the VFD fault event.");
+assert(vfdEventAlarmBundle.recommendations[0].evidence_refs.includes(vfdEventAlarmBundle.alarms[0].alarm_id), "VFD recommendation must preserve alarm evidence.");
+results.push("fault events may lead to governed alarms and downstream recommendations without collapsing those semantics");
+
+const commsLossBundle = validateEventAlarmBundle(
+  "pt communication loss event without alarm",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-pt-communication-loss.json"
+);
+ensureEventAlarmSemantics(commsLossBundle, "pt communication loss event without alarm");
+assert((commsLossBundle.alarms || []).length === 0, "Communication-loss event scenario must remain event-only when no governed alarm exists.");
+results.push("communication-loss events can be represented without implicitly creating an alarm");
+
+const highTempBundle = validateEventAlarmBundle(
+  "high temperature threshold alarm",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-high-temperature-threshold.json"
+);
+ensureEventAlarmSemantics(highTempBundle, "high temperature threshold alarm");
+assert(highTempBundle.alarms[0].derivation_type === "observation_threshold_breach", "High-temperature alarm must preserve threshold-breach derivation.");
+results.push("threshold-breach alarms preserve the triggering observation, threshold, and canonical alarm state");
+
+const maintenanceSuppressionBundle = validateEventAlarmBundle(
+  "alarm suppression during maintenance",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json"
+);
+ensureEventAlarmSemantics(maintenanceSuppressionBundle, "alarm suppression during maintenance");
+assert(maintenanceSuppressionBundle.alarms[0].alarm_state === "suppressed", "Maintenance suppression scenario must end in suppressed state.");
+results.push("alarm suppression during maintenance retains provenance, valid period, and explicit work context");
+
+const safetyBypassBundle = validateEventAlarmBundle(
+  "safety bypass activation with work context",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json"
+);
+ensureEventAlarmSemantics(safetyBypassBundle, "safety bypass activation with work context");
+assert(safetyBypassBundle.events[0].event_category === "safety", "Safety bypass scenario must remain a safety event.");
+results.push("safety bypass activation events preserve state transition evidence and linked work context");
+
+const lateArrivalBundle = validateEventAlarmBundle(
+  "late arriving historian event with prior evidence",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json"
+);
+ensureEventAlarmSemantics(lateArrivalBundle, "late arriving historian event with prior evidence");
+assert(lateArrivalBundle.events[0].temporal_integrity.delivery_classification === "late_arrival", "Late historian scenario must preserve late-arrival classification.");
+results.push("late-arriving historian events preserve event time, receive time, and prior evidence references");
+
+const falseAlarmBundle = validateEventAlarmBundle(
+  "false alarm linked to instrument drift and verification",
+  "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json"
+);
+ensureEventAlarmSemantics(falseAlarmBundle, "false alarm linked to instrument drift and verification");
+assert(falseAlarmBundle.alarms[0].alarm_state === "cleared", "False alarm scenario must end with a cleared alarm state.");
+assert(falseAlarmBundle.work_verifications[0].verification_status === "verified", "False alarm scenario must preserve later verification evidence.");
+results.push("false alarms can be linked to instrument drift and later verification without erasing the original alarm evidence");
+
+const capabilityManifest = validateCapabilityManifest(
+  "core capability manifest",
+  "conformance/fixtures/v0.9/valid/capability-manifest-core-profiles.json"
+);
+ensureCapabilityManifestSemantics(capabilityManifest, "core capability manifest");
+results.push("capability manifests can declare supported profiles, qualified standards claims, executable evidence, and legacy-artifact posture without overclaiming conformance");
+
+for (const [label, relativePath] of [
+  ["standards crosswalk matrix", "docs/standards-crosswalk-matrix-v0.9.json"],
+  ["source-system mapping guidance", "docs/source-system-mapping-guidance-v0.9.json"],
+  ["transformation-loss register", "docs/transformation-loss-register-v0.9.json"],
+  ["profile applicability matrix", "docs/profile-applicability-matrix-v0.9.json"],
+  ["standards claims matrix", "docs/standards-claims-matrix-v0.9.json"]
+]) {
+  const artifact = validateStandardsMappingArtifact(label, relativePath);
+  ensureStandardsMappingArtifactSemantics(artifact, label);
+}
+ensureReadmeClaimDiscipline("standards claim discipline");
+results.push("standards crosswalk artifacts validate structurally, require maturity and limitation fields, and identify profile-dependent mappings explicitly");
+results.push("README standards language remains qualified and avoids unsupported compliance-style claims");
+
+ensureBigQueryReferenceArchitectureSemantics("BigQuery reference architecture");
+results.push("BigQuery reference architecture stays layered, typed, lineage-aware, and explicitly non-normative while covering serving and AI projections");
+
+ensureReferenceValidationPackageSemantics("reference-validation package");
+results.push("reference-validation materials remain non-production, parameterized, reproducible, and free of invented performance claims");
+
+const servicenowServingProjectionBundle = validateServicenowServingProjectionBundle(
+  "ServiceNow serving projection profile",
+  "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+);
+ensureServicenowServingProjectionSemantics(servicenowServingProjectionBundle, "ServiceNow serving projection profile");
+results.push("ServiceNow serving projections stay curated and workflow-oriented without becoming the primary storage surface for raw evidence or analytical history");
+
+const safetyFoundationBundle = validateSafetyFoundationBundle(
+  "functional safety foundation profile",
+  "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json"
+);
+ensureSafetyFoundationSemantics(safetyFoundationBundle, "functional safety foundation profile");
+results.push("functional safety foundation profiles preserve safety context, proof-test evidence, bypass visibility, and sensor-to-logic-to-final-element traceability without claiming full lifecycle compliance");
+
+const cyberFoundationBundle = validateCyberFoundationBundle(
+  "OT cybersecurity foundation profile",
+  "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
+);
+ensureCyberFoundationSemantics(cyberFoundationBundle, "OT cybersecurity foundation profile");
+results.push("OT cybersecurity foundation profiles preserve cyber-managed identity, firmware or software context, zones, conduits, posture, vulnerability, and mitigation references without claiming full control-framework coverage");
+
+const smartPumpCyberProofBundle = validateSmartPumpCyberProofBundle(
+  "smart pump cyber-aware end-to-end proof bundle",
+  "conformance/fixtures/v1.0/valid/smart-pump-cyber-proof-bundle.json"
+);
+ensureSmartPumpCyberProofSemantics(smartPumpCyberProofBundle, "smart pump cyber-aware end-to-end proof bundle");
+results.push("smart-pump end-to-end proofs preserve equipment, device, lifecycle, control, monitoring, cyber-risk, and work-outcome semantics without collapsing governed evidence into a single risk label");
+
+const chillerMultiSystemProofBundle = validateChillerMultiSystemProofBundle(
+  "integrated data-center chiller multi-system proof bundle",
+  "conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json"
+);
+ensureChillerMultiSystemProofSemantics(chillerMultiSystemProofBundle, "integrated data-center chiller multi-system proof bundle");
+results.push("multi-system chiller proofs preserve seven-system identity convergence, source disagreement, workflow curation, and outcome feedback without treating task closure as operational success");
+
+const aiComparabilityProofBundle = validateAiComparabilityProofBundle(
+  "cross-site AI normalization and comparability proof bundle",
+  "conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json"
+);
+ensureAiComparabilityProofSemantics(aiComparabilityProofBundle, "cross-site AI normalization and comparability proof bundle");
+results.push("cross-site AI comparability proofs separate eligible and ineligible evidence so normalized benchmark claims remain policy-bound and lineage-backed");
+
+const servicenowOutcomeFeedbackBundle = validateServicenowOutcomeFeedbackBundle(
+  "ServiceNow outcome-feedback closure bundle",
+  "conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json"
+);
+ensureServicenowOutcomeFeedbackSemantics(servicenowOutcomeFeedbackBundle, "ServiceNow outcome-feedback closure bundle");
+results.push("ServiceNow outcome-feedback proofs close the loop from recommendation to workflow execution to verification to updated condition or follow-up recommendation without crossing tenant boundaries");
+
+for (const [label, relativePath] of [
+  ["Last Mile multi-tenant control-plane profile", "conformance/fixtures/v1.0/valid/last-mile-platform-profile-multi-tenant-control-plane.json"],
+  ["Last Mile master-learning and observability profile", "conformance/fixtures/v1.0/valid/last-mile-platform-profile-master-learning-observability.json"]
+]) {
+  const platformProfile = validateLastMilePlatformOperationsProfile(label, relativePath);
+  ensureLastMilePlatformOperationsProfileSemantics(platformProfile, label);
+}
+results.push("the proprietary Last Mile platform-operations profile remains tenant-isolated, approval-gated, and explicitly outside portable SSOM Core semantics");
+
+for (const [label, relativePath] of [
+  ["process manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"],
+  ["discrete manufacturing industry profile", "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"],
+  ["utilities and electric power industry profile", "conformance/fixtures/v0.9/valid/industry-profile-utilities-electric-power.json"],
+  ["water and wastewater industry profile", "conformance/fixtures/v0.9/valid/industry-profile-water-wastewater.json"],
+  ["facilities and data centers industry profile", "conformance/fixtures/v0.9/valid/industry-profile-facilities-data-centers.json"]
+]) {
+  const profileBundle = validateIndustryProfileBundle(label, relativePath);
+  ensureIndustryProfileSemantics(profileBundle, label);
+}
+results.push("initial industry profiles stay bounded, fixture-backed, and tied to end-to-end examples without pushing vertical-specific vocabulary into SSOM core");
+
+const industryInvalidMatrix = validateIndustryProfileInvalidMatrix(
+  "industry profile invalid coverage matrix",
+  "conformance/fixtures/v1.0/invalid/industry-profile-invalid-matrix.json"
+);
+for (const failure of industryInvalidMatrix.profile_failures || []) {
+  expectInvalidIndustryProfileBundle(
+    `${failure.profile_id} invalid duplicate-role coverage`,
+    failure.fixture_path,
+    failure.expected_failure_fragment
+  );
+}
+results.push("industry-profile conformance now includes explicit invalid coverage proving required roles cannot be duplicated inside optional-role lists");
+
+ensureCandidateSpecificationPackageSemantics("candidate-specification package");
+results.push("candidate-specification and release-readiness artifacts cover qualified external positioning, publication posture, and review boundaries");
+
+ensureReleaseDiscoveryIntegrity("release discovery integrity");
+results.push("release discovery surfaces, CI wiring, and governance submission paths remain current and validation-backed");
+
+ensureV10ReleaseGateSemantics("v1.0 release gate");
+results.push("the v1.0 release gate remains version-coherent, evidence-led, and explicitly separated from the proprietary Last Mile profile decision");
+
+expectInvalidCapabilityManifest(
+  "capability manifest overclaim",
+  "conformance/fixtures/v0.9/invalid/capability-manifest-overclaim-standards-and-legacy.json",
+  "must not repeat supported profile relationship-governance-profile"
+);
+results.push("capability manifests reject duplicate profile claims, unsupported standards crosswalk claims, and non-deprecated placeholder XSD posture");
+
+expectInvalidEventAlarmBundle(
+  "alarm semantics collapsed into condition free text",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-condition-freeform-alarm.json",
+  "must not be represented solely as uncontrolled string content in Condition"
+);
+results.push("alarm semantics cannot be represented solely as uncontrolled string content in Condition");
+
+expectInvalidEventAlarmBundle(
+  "alarm semantics collapsed into observation free text",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-observation-freeform-alarm.json",
+  "must not be represented solely as uncontrolled string content in Observation"
+);
+results.push("alarm semantics cannot be represented solely as uncontrolled string content in Observation");
+
+expectInvalidSmartPumpCyberProofBundle(
+  "smart pump cyber proof unauthorized risk promotion",
+  "conformance/fixtures/v1.0/invalid/smart-pump-cyber-proof-bundle-unauthorized-risk.json",
+  "must use governed cyber relationship types"
+);
+results.push("smart-pump cyber proofs reject unsupported relationship types and unsupported auto-promoted risk conclusions");
+
+expectInvalidChillerMultiSystemProofBundle(
+  "chiller proof prohibited raw telemetry projection",
+  "conformance/fixtures/v1.0/invalid/chiller-multi-system-proof-bundle-prohibited-telemetry.json",
+  "must not project prohibited raw telemetry payload classes into workflow-facing bundles"
+);
+results.push("multi-system workflow proofs reject raw telemetry classes in workflow-facing projections");
+
+expectInvalidAiComparabilityProofBundle(
+  "AI comparability proof with ineligible feature inclusion",
+  "conformance/fixtures/v1.0/invalid/ai-comparability-proof-bundle-ineligible-feature.json",
+  "feature lineage must not include non-comparable site evidence"
+);
+results.push("AI comparability proofs reject feature lineage that includes non-comparable site evidence");
+
+expectInvalidServicenowOutcomeFeedbackBundle(
+  "ServiceNow outcome-feedback cross-tenant closure",
+  "conformance/fixtures/v1.0/invalid/servicenow-outcome-feedback-bundle-cross-tenant.json",
+  "must not cross tenant boundaries in workflow projections"
+);
+results.push("ServiceNow outcome-feedback proofs reject cross-tenant workflow closure projections");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile cross-tenant raw-evidence sharing",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-cross-tenant-shared-raw-evidence.json",
+  "must not allow prohibited shared surface raw_historian_samples"
+);
+results.push("the proprietary Last Mile platform profile rejects raw evidence as a cross-tenant shared surface");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile unapproved master-learning inputs",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-master-learning-unapproved-inputs.json",
+  "must not allow unapproved cross-tenant ground truth"
+);
+results.push("the proprietary Last Mile platform profile rejects unapproved cross-tenant master-learning inputs");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile agent raw-evidence mirror",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-agent-raw-evidence-mirror.json",
+  "must not expose prohibited raw evidence classes"
+);
+results.push("the proprietary Last Mile platform profile rejects raw-evidence mirroring into observability or agent surfaces");
+
+expectInvalidLastMilePlatformOperationsProfile(
+  "Last Mile platform profile unknown tenant binding",
+  "conformance/fixtures/v1.0/invalid/last-mile-platform-profile-binding-unknown-tenant.json",
+  "must reference a known tenant"
+);
+results.push("the proprietary Last Mile platform profile rejects bindings to unknown tenants");
+
+expectInvalidCyberFoundationBundle(
+  "cyber managed asset requirement for cyber foundation bundle",
+  "conformance/fixtures/v1.0/invalid/cyber-foundation-bundle-non-managed-asset.json",
+  "must represent a cyber-managed asset"
+);
+results.push("cyber foundation coverage rejects asset contexts that are not explicitly cyber-managed");
+
+expectInvalidEventAlarmBundle(
+  "invalid alarm lifecycle transition chain",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-invalid-transition.json",
+  "final transition state must match the canonical alarm state"
+);
+results.push("alarm lifecycle transition chains must remain state-consistent and time-ordered");
+
+expectInvalidEventAlarmBundle(
+  "suppression without valid interval",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-suppression-missing-validity.json",
+  "must retain a valid-from timestamp"
+);
+results.push("suppression and shelving require provenance and an explicit valid interval");
+
+expectInvalidSafetyFoundationBundle(
+  "safety bypass left active after work close",
+  "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json",
+  "must not close work while a safety bypass remains active"
+);
+results.push("functional safety foundation profiles reject work closure when safety bypass state remains active");
+
+expectInvalidEventAlarmBundle(
+  "completed work while safety bypass remains active",
+  "conformance/fixtures/v0.8/invalid/event-alarm-bundle-safety-bypass-work-closed-while-active.json",
+  "must not close while a safety bypass remains active"
+);
+results.push("completed work cannot be represented as closed if the governing safety bypass remains active beyond work completion");
+
+const coolingWaterBundle = validateRelationshipBundle(
+  "cooling water system relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
+);
+ensureRelationshipSemantics(coolingWaterBundle, "cooling water system relationship bundle");
+results.push("cooling-water systems can distinguish operational boundaries, functional locations, asset classes, equipment models, and constituent assets");
+
+const driveTrainBundle = validateRelationshipBundle(
+  "motor pump drive train relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-motor-pump-drive-train.json"
+);
+ensureRelationshipSemantics(driveTrainBundle, "motor pump drive train relationship bundle");
+results.push("drive, power, control, and monitoring relationships remain directionally governed across mixed asset and control entities");
+
+const robotCellBundle = validateRelationshipBundle(
+  "robot cell relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json"
+);
+ensureRelationshipSemantics(robotCellBundle, "robot cell relationship bundle");
+results.push("robot cells can be modeled as composite operational boundaries with constituent controllers, sensors, HMI, and line context");
+
+const utilitySubstationBundle = validateRelationshipBundle(
+  "utility substation topology bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json"
+);
+ensureRelationshipSemantics(utilitySubstationBundle, "utility substation topology bundle");
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "power_transformer"),
+  "Utility substation topology must include a transformer asset."
+);
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "protective_relay"),
+  "Utility substation topology must include a protective relay asset."
+);
+assert(
+  utilitySubstationBundle.assets.some((asset) => asset.asset_type === "conduit_run"),
+  "Utility substation topology must include a conduit asset."
+);
+results.push("utility substations can be modeled with relays, breakers, transformers, control cabinets, zones, and conduits in one governed topology bundle");
+
+const productionLineBundle = validateRelationshipBundle(
+  "production line vfd cyber-risk bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+);
+ensureRelationshipSemantics(productionLineBundle, "production line vfd cyber-risk bundle");
+const productionLineVfd = productionLineBundle.assets.find((asset) => asset.asset_id === "urn:ssom:asset:vfd-line7-01");
+assert(
+  productionLineVfd?.extensions?.cyber_posture?.vulnerability_state === "known_vulnerable",
+  "Production-line cyber-risk scenario must preserve vulnerable VFD firmware posture."
+);
+results.push("production lines can bundle conveyor, motor, VFD, PLC, sensor, functional location, and vulnerable firmware posture in one governed system model");
+
+const processSegmentBundle = validateRelationshipBundle(
+  "process segment upstream downstream bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-process-segment-upstream-downstream.json"
+);
+ensureRelationshipSemantics(processSegmentBundle, "process segment upstream downstream bundle");
+results.push("process segments remain distinct from asset instances while supporting upstream and downstream relationship semantics");
+
+const extensionBundle = validateRelationshipBundle(
+  "source extension relationship bundle",
+  "conformance/fixtures/v0.9/valid/relationship-bundle-source-extension-mapping.json"
+);
+ensureRelationshipSemantics(extensionBundle, "source extension relationship bundle");
+results.push("source-specific relationships can be preserved as namespaced mappings without collapsing into unrestricted core free text");
+
+expectInvalidRelationshipBundle(
+  "unsupported subject object relationship domain",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-unsupported-domain.json",
+  "uses unsupported subject/object domain"
+);
+results.push("core relationships reject unsupported subject and object domain combinations");
+
+expectInvalidRelationshipBundle(
+  "contradictory inverse relationship usage",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-contradictory-inverse.json",
+  "must use a known inverse pair"
+);
+results.push("reverse relationships must use governed inverse pairs rather than contradictory duplicate directionality");
+
+expectInvalidRelationshipBundle(
+  "unrestricted free text relationship type",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-free-text-core-use.json",
+  "must match a schema in anyOf"
+);
+results.push("core relationship types cannot degrade into unrestricted free text");
+
+expectInvalidRelationshipBundle(
+  "extension relationship missing namespace stewardship",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-extension-missing-namespace.json",
+  "must declare an extension namespace"
+);
+results.push("extension relationships must retain namespace and mapping stewardship metadata");
+
+expectInvalidRelationshipBundle(
+  "invalid relationship temporal validity",
+  "conformance/fixtures/v0.9/invalid/relationship-bundle-invalid-temporal-validity.json",
+  "has an invalid validity period"
+);
+results.push("time-bounded relationships must preserve valid temporal intervals");
+
+const integratedLifecycleBundle = validateIntegratedLifecycleBundle(
+  "integrated pump p101 lifecycle bundle",
+  "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+);
+ensureIntegratedLifecycleSemantics(integratedLifecycleBundle, "integrated pump p101 lifecycle bundle");
+results.push("integrated Pump P-101 lifecycle preserves measurement safety, contradictory evidence, work verification, recurrence, and replacement continuity together");
+
+expectInvalidIntegratedLifecycleBundle(
+  "integrated pump p101 overlapping engineering tag reuse",
+  "conformance/fixtures/v0.9/invalid/integrated-bundle-pump-p101-overlapping-tag-reuse.json",
+  "overlaps across assets"
+);
+results.push("integrated lifecycle rejects overlapping engineering-tag reuse across original and replacement assets");
+
+console.log("SSOM schema validation passed:");
+for (const result of results) {
+  console.log(`- ${result}`);
+}

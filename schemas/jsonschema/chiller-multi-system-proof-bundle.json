@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/chiller-multi-system-proof-bundle.json",
+  "title": "Data-Center Chiller Multi-System Proof Bundle",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "proof_version",
+    "canonical_asset_id",
+    "source_systems",
+    "time_bound_identifiers",
+    "source_conflicts",
+    "measurement_contexts",
+    "condition_alarm_context",
+    "maintenance_context",
+    "servicenow_projection",
+    "outcome_feedback",
+    "supporting_artifacts"
+  ],
+  "properties": {
+    "bundle_id": { "type": "string" },
+    "proof_version": { "type": "string" },
+    "canonical_asset_id": { "type": "string" },
+    "source_systems": { "type": "array", "minItems": 7, "items": { "type": "string" } },
+    "time_bound_identifiers": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "required": ["source_system", "identifier_value", "scope", "valid_from", "valid_to"],
+        "properties": {
+          "source_system": { "type": "string" },
+          "identifier_value": { "type": "string" },
+          "scope": { "type": "string" },
+          "valid_from": { "type": "string", "format": "date-time" },
+          "valid_to": { "type": ["string", "null"], "format": "date-time" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_conflicts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["conflict_id", "sources_in_conflict", "preserved_as_distinct"],
+        "properties": {
+          "conflict_id": { "type": "string" },
+          "sources_in_conflict": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+          "preserved_as_distinct": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "measurement_contexts": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["source_system", "measurement_type", "evidence_ref"],
+        "properties": {
+          "source_system": { "type": "string" },
+          "measurement_type": { "type": "string" },
+          "evidence_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "condition_alarm_context": {
+      "type": "object",
+      "required": ["condition_summary", "alarm_summary", "preserves_source_disagreement"],
+      "properties": {
+        "condition_summary": { "type": "string" },
+        "alarm_summary": { "type": "string" },
+        "preserves_source_disagreement": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "maintenance_context": {
+      "type": "object",
+      "required": ["work_execution_ref", "verification_ref", "task_closure_is_not_success"],
+      "properties": {
+        "work_execution_ref": { "type": "string" },
+        "verification_ref": { "type": "string" },
+        "task_closure_is_not_success": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "servicenow_projection": {
+      "type": "object",
+      "required": ["projection_ref", "projected_payload_classes", "workflow_refs"],
+      "properties": {
+        "projection_ref": { "type": "string" },
+        "projected_payload_classes": { "type": "array", "items": { "type": "string" } },
+        "workflow_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "outcome_feedback": {
+      "type": "object",
+      "required": ["outcome_ref", "updated_context_refs"],
+      "properties": {
+        "outcome_ref": { "type": "string" },
+        "updated_context_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "supporting_artifacts": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

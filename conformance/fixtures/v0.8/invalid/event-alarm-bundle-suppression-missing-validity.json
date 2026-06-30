@@ -1,0 +1,81 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:tank01-cleanout",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tank-01",
+      "event_type": "cleanout_window",
+      "event_category": "work_lifecycle",
+      "event_time": "2026-06-30T16:30:00Z",
+      "event_description": "Tank cleanout work started.",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "evt-tank01-cleanout-001",
+        "lineage_id": "lin-evt-tank01-cleanout-001",
+        "ingest_time": "2026-06-30T16:30:01Z",
+        "processing_time": "2026-06-30T16:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T16:30:00Z",
+        "receive_time": "2026-06-30T16:30:01Z",
+        "processing_time": "2026-06-30T16:30:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:tank01-level",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tank-01",
+      "alarm_type": "level_alarm",
+      "alarm_state": "suppressed",
+      "raised_at": "2026-06-30T16:30:00Z",
+      "severity": "medium",
+      "priority": "medium",
+      "derivation_type": "event_driven",
+      "event_ref": "urn:ssom:event:tank01-cleanout",
+      "lifecycle": {
+        "canonical_alarm_state": "suppressed",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "suppressed",
+            "transition_type": "suppressed",
+            "event_time": "2026-06-30T16:30:00Z",
+            "confidence": 0.8,
+            "evidence_refs": ["urn:ssom:event:tank01-cleanout"]
+          }
+        ]
+      },
+      "suppression_context": {
+        "suppression_reason": "Cleanout work in progress.",
+        "provenance": {
+          "source_platform": "alarm-management",
+          "source_authority_id": "supervisor",
+          "source_reference": "supp-tank01-001",
+          "lineage_id": "lin-supp-tank01-001",
+          "ingest_time": "2026-06-30T16:30:01Z",
+          "processing_time": "2026-06-30T16:30:02Z"
+        }
+      },
+      "provenance": {
+        "source_platform": "alarm-management",
+        "source_authority_id": "supervisor",
+        "source_reference": "alm-tank01-level-001",
+        "lineage_id": "lin-alm-tank01-level-001",
+        "ingest_time": "2026-06-30T16:30:01Z",
+        "processing_time": "2026-06-30T16:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T16:30:00Z",
+        "receive_time": "2026-06-30T16:30:01Z",
+        "processing_time": "2026-06-30T16:30:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

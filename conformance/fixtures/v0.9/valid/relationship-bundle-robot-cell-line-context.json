@@ -1,0 +1,50 @@
+{
+  "operational_boundaries": [
+    {
+      "boundary_id": "urn:ssom:operational-boundary:line-3",
+      "boundary_type": "production_unit",
+      "display_name": "Production Line 3",
+      "ssom_version": "0.9.0",
+      "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "line:3", "lineage_id": "lin-line3", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:robot-cell-rc01",
+      "boundary_type": "functional_system",
+      "display_name": "Robot Cell RC-01",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:line-3",
+      "ssom_version": "0.9.0",
+      "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "cell:RC-01", "lineage_id": "lin-rc01", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:robot-cell-rc01-welding",
+      "boundary_type": "process_segment",
+      "display_name": "RC-01 Welding Segment",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:robot-cell-rc01",
+      "ssom_version": "0.9.0",
+      "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "segment:RC-01-WELD", "lineage_id": "lin-rc01-segment", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:robot-cell-rc01-control",
+      "boundary_type": "control_entity",
+      "display_name": "RC-01 Control Zone",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:robot-cell-rc01",
+      "ssom_version": "0.9.0",
+      "provenance": { "source_platform": "controls-design", "source_authority_id": "controls", "source_reference": "ctrl:RC01", "lineage_id": "lin-rc01-ctrl", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }
+    }
+  ],
+  "assets": [
+    { "asset_id": "urn:ssom:asset:robot-controller-rc01", "asset_type": "robot_controller", "display_name": "Robot Controller RC-01", "lifecycle_state": "in_service", "asset_form": "controller", "device_roles": ["control_device", "compute_device"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:RC01-CTRL" }], "confidence": 0.96 } },
+    { "asset_id": "urn:ssom:asset:safety-controller-rc01", "asset_type": "safety_controller", "display_name": "Safety Controller RC-01", "lifecycle_state": "in_service", "asset_form": "controller", "device_roles": ["control_device", "protection_device"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:RC01-SAFETY" }], "confidence": 0.96 } },
+    { "asset_id": "urn:ssom:asset:camera-rc01", "asset_type": "inspection_camera", "display_name": "Vision Camera RC-01", "lifecycle_state": "in_service", "asset_form": "instrument", "device_roles": ["sensing_device", "measurement_device"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:RC01-CAM" }], "confidence": 0.93 } },
+    { "asset_id": "urn:ssom:asset:hmi-04", "asset_type": "hmi", "display_name": "HMI-04", "lifecycle_state": "in_service", "asset_form": "controller", "device_roles": ["communication_device", "compute_device"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "ot_cmdb", "source_reference": "ci:HMI-04" }], "confidence": 0.91 } },
+    { "asset_id": "urn:ssom:asset:conveyor-rc01", "asset_type": "conveyor", "display_name": "Conveyor RC-01", "lifecycle_state": "in_service", "asset_form": "machine", "equipment_roles": ["material_handling_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:CONV-RC01" }], "confidence": 0.95 } }
+  ],
+  "relationships": [
+    { "relationship_id": "urn:ssom:relationship:rc01-contains-conveyor", "relationship_type": "contains", "from_ref": "urn:ssom:operational-boundary:robot-cell-rc01", "to_ref": "urn:ssom:asset:conveyor-rc01", "confidence": 0.95, "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "RC01>CONV", "lineage_id": "lin-rc01-conv", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:line3-contains-rc01", "relationship_type": "contains", "from_ref": "urn:ssom:operational-boundary:line-3", "to_ref": "urn:ssom:operational-boundary:robot-cell-rc01", "confidence": 0.94, "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "LINE3>RC01", "lineage_id": "lin-line3-rc01", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:robot-controller-controls-segment", "relationship_type": "controls", "from_ref": "urn:ssom:asset:robot-controller-rc01", "to_ref": "urn:ssom:operational-boundary:robot-cell-rc01-welding", "confidence": 0.97, "provenance": { "source_platform": "controls-design", "source_authority_id": "controls", "source_reference": "CTRL>SEGMENT", "lineage_id": "lin-ctrl-segment", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:safety-controller-protects-segment", "relationship_type": "protects", "from_ref": "urn:ssom:asset:safety-controller-rc01", "to_ref": "urn:ssom:operational-boundary:robot-cell-rc01-welding", "confidence": 0.96, "provenance": { "source_platform": "controls-design", "source_authority_id": "controls", "source_reference": "SAFE>SEGMENT", "lineage_id": "lin-safe-segment", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:camera-monitors-segment", "relationship_type": "monitors", "from_ref": "urn:ssom:asset:camera-rc01", "to_ref": "urn:ssom:operational-boundary:robot-cell-rc01-welding", "confidence": 0.92, "provenance": { "source_platform": "vision-system", "source_authority_id": "controls", "source_reference": "CAM>SEGMENT", "lineage_id": "lin-cam-segment", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:hmi-communicates-with-robot-controller", "relationship_type": "communicates_with", "from_ref": "urn:ssom:asset:hmi-04", "to_ref": "urn:ssom:asset:robot-controller-rc01", "confidence": 0.9, "provenance": { "source_platform": "ot_cmdb", "source_authority_id": "ot_cmdb", "source_reference": "HMI04<->RC01CTRL", "lineage_id": "lin-hmi-ctrl", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "undirected" }
+  ]
+}

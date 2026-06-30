@@ -1,0 +1,710 @@
+{
+  "artifact_id": "urn:ssom:standards-mapping:crosswalk-matrix:v0.9",
+  "artifact_type": "crosswalk_matrix",
+  "artifact_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "primary_source_refs": [
+    {
+      "source_id": "opc-ua-overview",
+      "organization": "OPC Foundation",
+      "title": "Unified Architecture - Landingpage",
+      "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+    },
+    {
+      "source_id": "isa95-committee",
+      "organization": "ISA",
+      "title": "ISA95, Enterprise-Control System Integration",
+      "url": "https://www.isa.org/isa95"
+    },
+    {
+      "source_id": "isa18-committee",
+      "organization": "ISA",
+      "title": "ISA18, Instrument Signals and Alarms",
+      "url": "https://www.isa.org/isa18"
+    },
+    {
+      "source_id": "isa88-committee",
+      "organization": "ISA",
+      "title": "ISA88: Batch Control",
+      "url": "https://www.isa.org/isa88"
+    },
+    {
+      "source_id": "mimosa-overview",
+      "organization": "MIMOSA",
+      "title": "What is MIMOSA?",
+      "url": "https://www.mimosa.org/what-is-mimosa/"
+    },
+    {
+      "source_id": "mimosa-oiie",
+      "organization": "MIMOSA",
+      "title": "Open Industrial Interoperability Ecosystem (OIIE)",
+      "url": "https://www.mimosa.org/open-industrial-interoperability-ecosystem-oiie/"
+    },
+    {
+      "source_id": "iso-55000-2024",
+      "organization": "ISO",
+      "title": "ISO 55000:2024 Asset management - Vocabulary, overview and principles",
+      "url": "https://www.iso.org/standard/83053.html"
+    },
+    {
+      "source_id": "iso-14224-obp",
+      "organization": "ISO",
+      "title": "ISO Online Browsing Platform entry for ISO 14224",
+      "url": "https://www.iso.org/obp/ui/en/#iso:std:iso:14224:ed-3:v1:en",
+      "note": "Public abstract access is limited; repository mappings are qualified accordingly."
+    },
+    {
+      "source_id": "iec-62443-search",
+      "organization": "IEC",
+      "title": "IEC webstore search for IEC 62443",
+      "url": "https://webstore.iec.ch/searchform&q=62443"
+    },
+    {
+      "source_id": "iec-61511-search",
+      "organization": "IEC",
+      "title": "IEC webstore search for IEC 61511",
+      "url": "https://webstore.iec.ch/searchform&q=61511"
+    },
+    {
+      "source_id": "iec-81346-search",
+      "organization": "IEC",
+      "title": "IEC webstore search for IEC 81346",
+      "url": "https://webstore.iec.ch/searchform&q=81346"
+    },
+    {
+      "source_id": "opas-forum",
+      "organization": "The Open Group",
+      "title": "Open Process Automation Forum",
+      "url": "https://www.opengroup.org/open-process-automation-forum-opaf"
+    },
+    {
+      "source_id": "automationml-home",
+      "organization": "AutomationML",
+      "title": "AutomationML official site",
+      "url": "https://www.automationml.org/"
+    },
+    {
+      "source_id": "b2mml-home",
+      "organization": "MESA International",
+      "title": "B2MML",
+      "url": "https://www.mesa.org/en/B2MML.asp"
+    }
+  ],
+  "standards_areas": [
+    {
+      "standard_id": "mimosa-ccom-osa-eai",
+      "standard_label": "MIMOSA / CCOM / OSA-EAI",
+      "scope_summary": "MIMOSA positions its standards as open, supplier-neutral interoperability standards for physical asset lifecycle management and OIIE-oriented digital ecosystems.",
+      "primary_source_refs": [
+        {
+          "source_id": "mimosa-overview",
+          "organization": "MIMOSA",
+          "title": "What is MIMOSA?",
+          "url": "https://www.mimosa.org/what-is-mimosa/"
+        },
+        {
+          "source_id": "mimosa-oiie",
+          "organization": "MIMOSA",
+          "title": "Open Industrial Interoperability Ecosystem (OIIE)",
+          "url": "https://www.mimosa.org/open-industrial-interoperability-ecosystem-oiie/"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "mimosa-asset-lifecycle",
+          "ssom_object_or_field": "Asset, identity.identifier_assignments, identity_lifecycle_events, relationships",
+          "external_standard_concept": "CCOM and OSA-EAI asset registry, interoperability register, and lifecycle continuity concepts",
+          "mapping_relationship": "supports_interoperability_with",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "identity-lifecycle-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/validate-schemas.mjs",
+              "evidence_type": "validator"
+            }
+          ],
+          "known_limitation": "SSOM preserves supplier-neutral identity and relationship semantics, but does not publish a CCOM or OSA-EAI wire-format exchange profile in this repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+          ]
+        },
+        {
+          "mapping_id": "mimosa-reliability-work",
+          "ssom_object_or_field": "failure_mode, failure_mechanism, failure_cause, maintenance_strategy, work_request, work_execution, work_outcome",
+          "external_standard_concept": "MIMOSA-style condition, maintenance, and asset lifecycle work-history semantics",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "medium",
+          "required_profile": "reliability-maintenance-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/reliability-maintenance-profile-v0.7.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Round-trip interchange with MIMOSA-specific message structures requires explicit transformation outside the current repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "isa95-iec62264",
+      "standard_label": "ISA-95 / IEC 62264",
+      "scope_summary": "ISA-95 defines abstract enterprise and manufacturing control models, common terminology, and electronic information exchange between manufacturing control and enterprise functions.",
+      "primary_source_refs": [
+        {
+          "source_id": "isa95-committee",
+          "organization": "ISA",
+          "title": "ISA95, Enterprise-Control System Integration",
+          "url": "https://www.isa.org/isa95"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "isa95-equipment-hierarchy-boundaries",
+          "ssom_object_or_field": "operational_boundaries, functional_locations, asset_classes, equipment_models, assets",
+          "external_standard_concept": "equipment hierarchy, enterprise-control boundary, and production context distinctions",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "isa95-hierarchy-profile",
+          "maturity": "partial",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "The core SSOM boundary model preserves hierarchy-relevant semantics, but detailed ISA-95 role vocabularies and full information-exchange payloads remain profile work.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+            "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "opc-ua-core-and-companions",
+      "standard_label": "OPC UA Core, Data Access, Historical Access, Alarms and Conditions, Device Integration",
+      "scope_summary": "OPC UA describes a platform-independent, secure, extensible service-oriented architecture with hierarchical address space, information modeling, current and historical data access, and event or alarm notification.",
+      "primary_source_refs": [
+        {
+          "source_id": "opc-ua-overview",
+          "organization": "OPC Foundation",
+          "title": "Unified Architecture - Landingpage",
+          "url": "https://opcfoundation.org/about/opc-technologies/opc-ua/"
+        },
+        {
+          "source_id": "opc-reference",
+          "organization": "OPC Foundation",
+          "title": "OPC UA Online Reference",
+          "url": "https://reference.opcfoundation.org/"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "opcua-nodeid-identifier-assignment",
+          "ssom_object_or_field": "identity.identifier_assignments with identifier_role opcua_node_id or namespace-aware external identity",
+          "external_standard_concept": "NodeId and NamespaceUri identity continuity",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "normalization",
+          "information_loss_risk": "low",
+          "required_profile": "identity-lifecycle-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "docs/examples-v0.5-identity-lifecycle.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "Namespace metadata and browse-path context are not carried in a dedicated companion-specific SSOM profile yet.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json"
+          ]
+        },
+        {
+          "mapping_id": "opcua-datavalue-observation",
+          "ssom_object_or_field": "Observation, original_measurement, canonical_measurement, measurement_quality, signal_context, time_synchronization_context",
+          "external_standard_concept": "Variable value, DataValue, quality, engineering unit, and historical sample semantics",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "normalization",
+          "information_loss_risk": "low",
+          "required_profile": "measurement-safety-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "OPC UA-specific status code granularity and full Variant typing require a dedicated UA ingestion profile if lossless exchange is needed.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+            "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+          ]
+        },
+        {
+          "mapping_id": "opcua-event-alarm",
+          "ssom_object_or_field": "Event, Alarm, State Transition, provenance.source_payload",
+          "external_standard_concept": "event notifications, alarms and conditions, and historical event context",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "event-alarm-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "Full companion-specific condition-class modeling and UA event field catalogs are not published in this repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-vfd-fault-recommendation.json",
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-late-arriving-historian-event.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "opas-principles",
+      "standard_label": "The Open Group O-PAS principles",
+      "scope_summary": "O-PAS is treated here as a supplier-neutral open automation interoperability reference surface, not as a control-system product claim.",
+      "primary_source_refs": [
+        {
+          "source_id": "opas-forum",
+          "organization": "The Open Group",
+          "title": "Open Process Automation Forum",
+          "url": "https://www.opengroup.org/open-process-automation-forum-opaf",
+          "note": "Primary-source landing page reference; detailed textual extraction is limited in the current tooling path."
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "opas-open-automation-context",
+          "ssom_object_or_field": "Asset, operational_boundaries, relationships, provenance, extension namespaces",
+          "external_standard_concept": "supplier-neutral, interoperable automation architecture principles",
+          "mapping_relationship": "supports_interoperability_with",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "opas-interoperability-profile",
+          "maturity": "documented_mapping",
+          "repo_evidence": [
+            {
+              "artifact_ref": "governance.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/checklist-v0.9.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "SSOM does not publish an O-PAS-specific runtime, transport, or control-node profile in this repository.",
+          "test_fixture_refs": []
+        }
+      ]
+    },
+    {
+      "standard_id": "iso-14224",
+      "standard_label": "ISO 14224 concepts",
+      "scope_summary": "ISO 14224 terminology is treated here as a reliability and maintenance concept reference, with access to official text governed by ISO publication channels.",
+      "primary_source_refs": [
+        {
+          "source_id": "iso-14224-obp",
+          "organization": "ISO",
+          "title": "ISO Online Browsing Platform entry for ISO 14224",
+          "url": "https://www.iso.org/obp/ui/en/#iso:std:iso:14224:ed-3:v1:en"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "iso14224-failure-work-outcome",
+          "ssom_object_or_field": "failure_mode, failure_mechanism, failure_cause, failure_event, work_execution, work_verification, work_outcome",
+          "external_standard_concept": "failure terminology, maintenance activity, and outcome tracking",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "reliability-maintenance-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "docs/reliability-maintenance-profile-v0.7.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "SSOM does not ship an ISO 14224 field-code cross-reference table or reporting profile in the current repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "iso-55000",
+      "standard_label": "ISO 55000 concepts",
+      "scope_summary": "ISO 55000 describes asset management vocabulary, overview, and principles across asset life cycles and value realization.",
+      "primary_source_refs": [
+        {
+          "source_id": "iso-55000-2024",
+          "organization": "ISO",
+          "title": "ISO 55000:2024 Asset management - Vocabulary, overview and principles",
+          "url": "https://www.iso.org/standard/83053.html"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "iso55000-lifecycle-value-risk",
+          "ssom_object_or_field": "Asset, operational_boundaries, conditions, policy_evidence, work_outcome.reliability_impact",
+          "external_standard_concept": "lifecycle value, risk, and asset-management context",
+          "mapping_relationship": "supports_interoperability_with",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "asset-management-context-profile",
+          "maturity": "documented_mapping",
+          "repo_evidence": [
+            {
+              "artifact_ref": "README.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "SSOM preserves lifecycle and consequence semantics, but does not publish an ISO 55000 management-system control mapping in this repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "iec-81346",
+      "standard_label": "IEC 81346 concepts",
+      "scope_summary": "IEC 81346 is treated here as an engineering designation and structural reference surface requiring profile or extension support for richer decomposition rules.",
+      "primary_source_refs": [
+        {
+          "source_id": "iec-81346-search",
+          "organization": "IEC",
+          "title": "IEC webstore search for IEC 81346",
+          "url": "https://webstore.iec.ch/searchform&q=81346"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "iec81346-designation-identifiers",
+          "ssom_object_or_field": "identity.identifier_assignments, functional_locations, relationships, extension namespace",
+          "external_standard_concept": "reference designation and structure-based engineering identifiers",
+          "mapping_relationship": "requires_profile",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "iec81346-designation-profile",
+          "maturity": "partial",
+          "repo_evidence": [
+            {
+              "artifact_ref": "schemas/jsonschema/functional-location.json",
+              "evidence_type": "schema"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "The core model can preserve engineering reference identifiers, but does not yet constrain IEC 81346 structure rules or aspect designations.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "iec-62443",
+      "standard_label": "IEC 62443 foundational asset and cyber context",
+      "scope_summary": "IEC 62443 is treated here as the foundational cyber zone, conduit, and security-context reference surface for OT assets and communications.",
+      "primary_source_refs": [
+        {
+          "source_id": "iec-62443-search",
+          "organization": "IEC",
+          "title": "IEC webstore search for IEC 62443",
+          "url": "https://webstore.iec.ch/searchform&q=62443"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "iec62443-zone-conduit-foundation",
+          "ssom_object_or_field": "operational_boundaries.control_entity, relationships contains or is_connected_to, lifecycle_roles cyber_managed_asset, extensions.cyber_posture",
+          "external_standard_concept": "zones, conduits, and cyber-managed asset context",
+          "mapping_relationship": "requires_profile",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "cyber-context-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "SSOM preserves cyber-relevant asset and topology context, but does not encode IEC 62443 control requirements, security levels, or policy catalogs in the core repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "iec-61511",
+      "standard_label": "IEC 61511 foundational safety context",
+      "scope_summary": "IEC 61511 is treated here as a functional-safety context surface for safety instrumented assets, bypasses, proof testing, and work verification boundaries.",
+      "primary_source_refs": [
+        {
+          "source_id": "iec-61511-search",
+          "organization": "IEC",
+          "title": "IEC webstore search for IEC 61511",
+          "url": "https://webstore.iec.ch/searchform&q=61511"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "iec61511-safety-bypass-proof-context",
+          "ssom_object_or_field": "Event, Alarm, State Transition, work_execution, work_verification",
+          "external_standard_concept": "safety bypass, proof-test, and safety-function work evidence context",
+          "mapping_relationship": "preserves_semantics_from",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "medium",
+          "required_profile": "safety-context-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/functional-safety-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "SSOM preserves safety-relevant evidence and state context, but does not claim lifecycle, SIL, or verification-program completeness.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+            "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "isa18-iec62682",
+      "standard_label": "ISA-18 / IEC 62682 alarm context",
+      "scope_summary": "ISA18 defines alarm-system terminology and practices for design, operation, maintenance, and modification of alarm systems over time.",
+      "primary_source_refs": [
+        {
+          "source_id": "isa18-committee",
+          "organization": "ISA",
+          "title": "ISA18, Instrument Signals and Alarms",
+          "url": "https://www.isa.org/isa18"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "isa18-alarm-lifecycle-context",
+          "ssom_object_or_field": "Alarm, State Transition, suppression_context, provenance, temporal_integrity",
+          "external_standard_concept": "alarm state, suppression, shelving, clearance, and lifecycle work processes",
+          "mapping_relationship": "maps_to",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "structural_transform",
+          "information_loss_risk": "low",
+          "required_profile": "event-alarm-profile",
+          "maturity": "fixture_backed",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "The repository preserves alarm semantics, but does not publish alarm philosophy, rationalization, or KPI governance artifacts.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-maintenance-suppression.json",
+            "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "isa88",
+      "standard_label": "ISA-88 batch and recipe scope",
+      "scope_summary": "ISA88 defines terminology, data structures, and physical and functional models for batch control systems.",
+      "primary_source_refs": [
+        {
+          "source_id": "isa88-committee",
+          "organization": "ISA",
+          "title": "ISA88: Batch Control",
+          "url": "https://www.isa.org/isa88"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "isa88-batch-recipe-profile-scope",
+          "ssom_object_or_field": "operational_boundaries, functional_locations, future recipe and batch execution extensions",
+          "external_standard_concept": "physical model, functional model, and recipe-management scope",
+          "mapping_relationship": "requires_profile",
+          "mapping_direction": "bidirectional_semantic",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "high",
+          "required_profile": "batch-recipe-profile",
+          "maturity": "profile_required",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "docs/migration-v0.9.md",
+              "evidence_type": "documentation"
+            }
+          ],
+          "known_limitation": "SSOM core boundaries can preserve batch-relevant structure, but recipe objects, procedure elements, and phase execution semantics are deferred.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "b2mml",
+      "standard_label": "B2MML transformation scope",
+      "scope_summary": "B2MML is an XML implementation of ISA-95 data models using W3C XML Schema and is intended for enterprise and manufacturing integration projects.",
+      "primary_source_refs": [
+        {
+          "source_id": "b2mml-home",
+          "organization": "MESA International",
+          "title": "B2MML",
+          "url": "https://www.mesa.org/en/B2MML.asp"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "b2mml-isa95-transform-profile",
+          "ssom_object_or_field": "operational_boundaries, assets, work_request, work_plan, source-system exchange envelope",
+          "external_standard_concept": "B2MML XML schema realization of ISA-95 exchanges",
+          "mapping_relationship": "requires_transformation",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "lossy_transform",
+          "information_loss_risk": "high",
+          "required_profile": "b2mml-interchange-profile",
+          "maturity": "profile_required",
+          "repo_evidence": [
+            {
+              "artifact_ref": "schemas/jsonschema/operational-boundary.json",
+              "evidence_type": "schema"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "No XML binding, schema-to-schema translation, or round-trip B2MML profile is published in this repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+          ]
+        }
+      ]
+    },
+    {
+      "standard_id": "automationml",
+      "standard_label": "AutomationML engineering-exchange scope",
+      "scope_summary": "AutomationML is treated here as an engineering-exchange surface for structured equipment, topology, and configuration handoff, requiring transformation into SSOM runtime semantics.",
+      "primary_source_refs": [
+        {
+          "source_id": "automationml-home",
+          "organization": "AutomationML",
+          "title": "AutomationML official site",
+          "url": "https://www.automationml.org/"
+        }
+      ],
+      "mappings": [
+        {
+          "mapping_id": "automationml-engineering-exchange-profile",
+          "ssom_object_or_field": "asset_classes, equipment_models, operational_boundaries, relationships, functional_locations",
+          "external_standard_concept": "engineering-exchange topology and equipment description",
+          "mapping_relationship": "requires_transformation",
+          "mapping_direction": "external_to_ssom",
+          "transformation_requirement": "profile_constraint",
+          "information_loss_risk": "high",
+          "required_profile": "automationml-engineering-exchange-profile",
+          "maturity": "profile_required",
+          "repo_evidence": [
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+              "evidence_type": "fixture"
+            },
+            {
+              "artifact_ref": "schemas/jsonschema/asset-class.json",
+              "evidence_type": "schema"
+            }
+          ],
+          "known_limitation": "CAEX hierarchy, geometry, and vendor-specific engineering payloads are not preserved losslessly in the core repository.",
+          "test_fixture_refs": [
+            "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json"
+          ]
+        }
+      ]
+    }
+  ]
+}

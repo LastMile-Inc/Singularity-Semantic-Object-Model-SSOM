@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/ai-comparability-proof-bundle.json",
+  "title": "Cross-Site AI Comparability Proof Bundle",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "proof_version",
+    "site_contexts",
+    "comparability_assessments",
+    "feature_lineage_records",
+    "benchmark_outputs"
+  ],
+  "properties": {
+    "bundle_id": { "type": "string" },
+    "proof_version": { "type": "string" },
+    "site_contexts": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "site_id",
+          "canonical_asset_id",
+          "asset_class_ref",
+          "source_unit_code",
+          "canonical_unit_code",
+          "engineering_range_summary",
+          "calibration_state",
+          "maintenance_practice_ref",
+          "operating_regime",
+          "source_evidence_refs",
+          "comparable_view_eligible"
+        ],
+        "properties": {
+          "site_id": { "type": "string" },
+          "canonical_asset_id": { "type": "string" },
+          "asset_class_ref": { "type": "string" },
+          "source_unit_code": { "type": "string" },
+          "canonical_unit_code": { "type": ["string", "null"] },
+          "engineering_range_summary": { "type": "string" },
+          "calibration_state": { "type": "string" },
+          "maintenance_practice_ref": { "type": "string" },
+          "operating_regime": { "type": "string" },
+          "source_evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "comparable_view_eligible": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "comparability_assessments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["assessment_id", "compared_site_ids", "eligible", "disqualifying_reasons", "policy_ref"],
+        "properties": {
+          "assessment_id": { "type": "string" },
+          "compared_site_ids": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+          "eligible": { "type": "boolean" },
+          "disqualifying_reasons": { "type": "array", "items": { "type": "string" } },
+          "policy_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "feature_lineage_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["feature_id", "assessment_ref", "included_site_ids", "evidence_refs", "excluded_evidence_refs", "model_input_ref"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "assessment_ref": { "type": "string" },
+          "included_site_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "excluded_evidence_refs": { "type": "array", "items": { "type": "string" } },
+          "model_input_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "benchmark_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["output_id", "assessment_ref", "comparability_claim", "included_feature_ids"],
+        "properties": {
+          "output_id": { "type": "string" },
+          "assessment_ref": { "type": "string" },
+          "comparability_claim": { "type": "string" },
+          "included_feature_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

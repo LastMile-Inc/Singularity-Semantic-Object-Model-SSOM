@@ -1,0 +1,89 @@
+{
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:bad-work-execution-2",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p101",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:bad-2"],
+      "executed_at": "2026-06-29T12:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:bad-2",
+      "work_plan_ref": "urn:ssom:work-plan:bad-2",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "tech",
+        "source_reference": "bad-we-2",
+        "lineage_id": "lin-bad-we-2",
+        "ingest_time": "2026-06-29T12:00:01Z",
+        "processing_time": "2026-06-29T12:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:00:00Z",
+        "receive_time": "2026-06-29T12:00:01Z",
+        "processing_time": "2026-06-29T12:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:bad-2",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "work_execution_ref": "urn:ssom:action:bad-work-execution-2",
+      "verification_status": "verified",
+      "verification_method": "check",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:action:bad-work-execution-2"],
+      "verified_at": "2026-06-29T12:30:00Z",
+      "provenance": {
+        "source_platform": "ops",
+        "source_authority_id": "tech",
+        "source_reference": "bad-wv-2",
+        "lineage_id": "lin-bad-wv-2",
+        "ingest_time": "2026-06-29T12:30:01Z",
+        "processing_time": "2026-06-29T12:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:30:00Z",
+        "receive_time": "2026-06-29T12:30:01Z",
+        "processing_time": "2026-06-29T12:30:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:bad-work-outcome-2",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "action_ref": "urn:ssom:action:bad-work-execution-2",
+      "work_execution_ref": "urn:ssom:action:bad-work-execution-2",
+      "verification_refs": ["urn:ssom:work-verification:bad-2"],
+      "outcome_disposition": "positive",
+      "intended_outcome": { "description": "Restore function." },
+      "assessed_at": "2026-06-29T12:31:00Z",
+      "evidence_refs": ["urn:ssom:work-verification:bad-2"],
+      "confidence": 0.8,
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "tech",
+        "source_reference": "bad-wo-2",
+        "lineage_id": "lin-bad-wo-2",
+        "ingest_time": "2026-06-29T12:31:01Z",
+        "processing_time": "2026-06-29T12:31:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T12:31:00Z",
+        "receive_time": "2026-06-29T12:31:01Z",
+        "processing_time": "2026-06-29T12:31:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

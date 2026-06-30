@@ -1,0 +1,97 @@
+{
+  "record_id": "urn:ssom:record:pt301-pressure-overdue-calibration",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:feed-pump-p301",
+  "metric": "suction_pressure",
+  "value": 2.1,
+  "unit": "bar",
+  "event_time": "2026-06-29T10:30:00Z",
+  "quality": {
+    "status": "uncertain",
+    "validation_status": "partial",
+    "score": 0.68
+  },
+  "original_measurement": {
+    "source_value": 2.1,
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar",
+      "dimension": "pressure"
+    },
+    "source_timestamp": "2026-06-29T10:30:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "pressure",
+    "canonical_value": 210,
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa",
+      "dimension": "pressure"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa"
+    },
+    "formula_reference": "1 bar = 100 kPa",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:30:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "degraded",
+    "communication_quality": "good",
+    "validity_status": "suspect",
+    "uncertainty": 0.15,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_reference": "cal-pt301-2025q4",
+    "calibration_status": "overdue",
+    "last_known_calibration_date": "2025-11-15T00:00:00Z",
+    "next_due_status": "overdue",
+    "sensor_ref": "urn:ssom:asset:pt-301"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:feed-pump-p301",
+    "source_device_ref": "urn:ssom:asset:pt-301",
+    "source_signal_ref": "tag:PT-301.PV",
+    "sampling_interval": "PT1S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "normal_operation"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:30:00Z",
+    "ingestion_timestamp": "2026-06-29T10:30:01Z",
+    "clock_source_context": "source_plc_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:PT-301.PV",
+    "lineage_id": "ln-obs-p301-pressure-cal-v06",
+    "ingest_time": "2026-06-29T10:30:01Z",
+    "processing_time": "2026-06-29T10:30:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:30:00Z",
+    "source_time": "2026-06-29T10:30:00Z",
+    "receive_time": "2026-06-29T10:30:01Z",
+    "processing_time": "2026-06-29T10:30:02Z",
+    "delivery_classification": "live"
+  }
+}

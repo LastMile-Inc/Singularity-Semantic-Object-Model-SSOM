@@ -1,0 +1,63 @@
+{
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:bad-work-execution",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p101",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:bad"],
+      "executed_at": "2026-06-29T10:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:bad",
+      "work_plan_ref": "urn:ssom:work-plan:bad",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "tech",
+        "source_reference": "bad-we",
+        "lineage_id": "lin-bad-we",
+        "ingest_time": "2026-06-29T10:00:01Z",
+        "processing_time": "2026-06-29T10:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T10:00:00Z",
+        "receive_time": "2026-06-29T10:00:01Z",
+        "processing_time": "2026-06-29T10:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:bad-work-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "action_ref": "urn:ssom:action:bad-work-execution",
+      "work_execution_ref": "urn:ssom:action:bad-work-execution",
+      "verification_refs": ["urn:ssom:work-verification:missing"],
+      "outcome_disposition": "positive",
+      "intended_outcome": { "description": "Restore function." },
+      "observed_outcome": { "description": "Claimed restored.", "result_class": "successful" },
+      "assessed_at": "2026-06-29T11:00:00Z",
+      "evidence_refs": ["urn:ssom:action:bad-work-execution"],
+      "confidence": 0.8,
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "tech",
+        "source_reference": "bad-wo",
+        "lineage_id": "lin-bad-wo",
+        "ingest_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T11:00:00Z",
+        "receive_time": "2026-06-29T11:00:01Z",
+        "processing_time": "2026-06-29T11:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

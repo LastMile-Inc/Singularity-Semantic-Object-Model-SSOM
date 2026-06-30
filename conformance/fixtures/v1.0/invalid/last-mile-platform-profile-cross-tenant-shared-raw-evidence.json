@@ -1,0 +1,75 @@
+{
+  "profile_id": "last-mile-platform-operations-master-profile",
+  "profile_version": "1.0.0-draft",
+  "profile_label": "Invalid Cross-Tenant Raw Evidence Sharing",
+  "boundary_statement": "This invalid fixture preserves the portable SSOM Core boundary while intentionally attempting to share raw evidence across tenants.",
+  "portable_core_dependency_refs": [
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "docs/servicenow-serving-projection-profile-v0.9.md"
+  ],
+  "tenant_control_planes": [
+    {
+      "tenant_id": "tenant-alpha",
+      "region": "us-central1",
+      "isolation_domain_id": "iso-us-central1-alpha",
+      "allowed_projection_classes": ["current_condition_summary"],
+      "prohibited_projection_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "workflow_projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"],
+      "raw_evidence_storage_allowed": false
+    },
+    {
+      "tenant_id": "tenant-beta",
+      "region": "us-east4",
+      "isolation_domain_id": "iso-us-east4-beta",
+      "allowed_projection_classes": ["current_condition_summary"],
+      "prohibited_projection_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "workflow_projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"],
+      "raw_evidence_storage_allowed": false
+    }
+  ],
+  "rights_and_learning_planes": [
+    {
+      "plane_id": "master-learning-invalid",
+      "plane_kind": "master_learning",
+      "scope": "cross_tenant_benchmarking",
+      "tenant_refs": ["tenant-alpha", "tenant-beta"],
+      "allowed_training_inputs": ["policy_cleared_comparable_benchmark_features"],
+      "prohibited_training_inputs": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads", "unapproved_cross_tenant_ground_truth"],
+      "approval_refs": ["approval:master-learning:invalid"],
+      "model_promotion_policy": "requires approval"
+    }
+  ],
+  "workload_isolation_policies": [
+    {
+      "policy_id": "invalid-shared-raw-evidence",
+      "isolation_level": "shared_benchmark_only",
+      "tenant_refs": ["tenant-alpha", "tenant-beta"],
+      "allowed_shared_surfaces": ["raw_historian_samples"],
+      "prohibited_shared_surfaces": ["tenant_workflow_payloads"]
+    }
+  ],
+  "observability_agent_surfaces": [
+    {
+      "surface_id": "platform-invalid",
+      "agent_type": "benchmark_observer",
+      "tenant_scope": "multi_tenant_shared",
+      "exposed_data_classes": ["aggregate_benchmark_scores"],
+      "prohibited_data_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "evidence_refs": ["conformance/fixtures/v1.0/valid/ai-comparability-proof-bundle.json"]
+    }
+  ],
+  "master_profile_bindings": [
+    {
+      "binding_id": "binding-alpha",
+      "tenant_id": "tenant-alpha",
+      "platform_profile_role": "consumer",
+      "ssom_profile_refs": ["docs/servicenow-serving-projection-profile-v0.9.md"],
+      "projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"]
+    }
+  ],
+  "governance_controls": {
+    "change_control_ref": "chg:invalid",
+    "security_review_ref": "sec:invalid",
+    "data_boundary_notes": ["Invalid fixture for raw evidence sharing.", "Portable SSOM Core must stay distinct."]
+  }
+}

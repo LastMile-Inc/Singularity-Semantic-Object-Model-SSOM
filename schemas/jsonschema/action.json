@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/action.json",
+  "title": "SSOM Action",
+  "description": "An executed operational intervention that may later be specialized by work, control, inspection, notification, or other action profiles.",
+  "type": "object",
+  "required": [
+    "action_id",
+    "action_type",
+    "target_ref",
+    "action_status",
+    "basis_refs",
+    "executed_at",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:action:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "action"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "action_type": {
+      "type": "string"
+    },
+    "target_ref": {
+      "type": "string"
+    },
+    "action_status": {
+      "$ref": "common.json#/$defs/actionStatus"
+    },
+    "basis_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "performed_by": {
+      "type": "string"
+    },
+    "execution_notes": {
+      "type": "string"
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

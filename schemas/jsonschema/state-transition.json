@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/state-transition.json",
+  "title": "SSOM State Transition",
+  "description": "A change from one declared state to another with source, event time, valid time, confidence, and evidence.",
+  "type": "object",
+  "required": [
+    "transition_id",
+    "subject_ref",
+    "state_subject_type",
+    "from_state",
+    "to_state",
+    "transition_type",
+    "event_time",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "transition_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:state-transition:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "state_subject_type": {
+      "type": "string",
+      "enum": [
+        "asset",
+        "device",
+        "condition",
+        "alarm",
+        "event",
+        "work_execution",
+        "custom"
+      ]
+    },
+    "from_state": {
+      "type": "string"
+    },
+    "to_state": {
+      "type": "string"
+    },
+    "transition_type": {
+      "$ref": "common.json#/$defs/alarmStateTransitionType"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_to": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "source_ref": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

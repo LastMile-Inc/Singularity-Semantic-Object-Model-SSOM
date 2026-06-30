@@ -22,8 +22,31 @@
     "record_type": {
       "enum": [
         "observation",
+        "source_assertion",
+        "derived_assertion",
+        "inference",
+        "prediction",
+        "recommendation",
+        "decision",
+        "action",
+        "outcome",
+        "symptom",
+        "failure_mode",
+        "failure_mechanism",
+        "failure_cause",
+        "failure_event",
+        "diagnostic",
+        "prognostic",
+        "maintenance_strategy",
+        "work_request",
+        "work_plan",
+        "work_execution",
+        "work_verification",
+        "work_outcome",
+        "identity_lifecycle_event",
         "event",
         "alarm",
+        "state_transition",
         "condition",
         "relationship"
       ]
@@ -47,7 +70,8 @@
       ]
     },
     "payload": {
-      "type": "object"
+      "type": "object",
+      "description": "Payload MUST conform to the schema that matches record_type when a dedicated SSOM schema exists for that record type."
     },
     "provenance": {
       "$ref": "common.json#/$defs/provenance"

@@ -1,0 +1,66 @@
+{
+  "profile_id": "last-mile-platform-operations-master-profile",
+  "profile_version": "1.0.0-draft",
+  "profile_label": "Invalid Unknown Tenant Binding",
+  "boundary_statement": "This invalid fixture preserves the portable SSOM Core boundary while intentionally binding a profile role to an unknown tenant.",
+  "portable_core_dependency_refs": [
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "docs/servicenow-serving-projection-profile-v0.9.md"
+  ],
+  "tenant_control_planes": [
+    {
+      "tenant_id": "tenant-alpha",
+      "region": "us-central1",
+      "isolation_domain_id": "iso-us-central1-alpha",
+      "allowed_projection_classes": ["current_condition_summary"],
+      "prohibited_projection_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "workflow_projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"],
+      "raw_evidence_storage_allowed": false
+    }
+  ],
+  "rights_and_learning_planes": [
+    {
+      "plane_id": "rights-plane",
+      "plane_kind": "rights_management",
+      "scope": "tenant_admin",
+      "tenant_refs": ["tenant-alpha"],
+      "allowed_training_inputs": [],
+      "prohibited_training_inputs": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "approval_refs": ["approval:rights:alpha"],
+      "model_promotion_policy": "not_applicable"
+    }
+  ],
+  "workload_isolation_policies": [
+    {
+      "policy_id": "tenant-strict",
+      "isolation_level": "tenant_strict",
+      "tenant_refs": ["tenant-alpha"],
+      "allowed_shared_surfaces": ["none"],
+      "prohibited_shared_surfaces": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]
+    }
+  ],
+  "observability_agent_surfaces": [
+    {
+      "surface_id": "tenant-alpha-observer",
+      "agent_type": "tenant_observer",
+      "tenant_scope": "tenant-alpha",
+      "exposed_data_classes": ["job_health"],
+      "prohibited_data_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "evidence_refs": ["conformance/fixtures/v1.0/valid/servicenow-outcome-feedback-bundle.json"]
+    }
+  ],
+  "master_profile_bindings": [
+    {
+      "binding_id": "binding-unknown",
+      "tenant_id": "tenant-unknown",
+      "platform_profile_role": "consumer",
+      "ssom_profile_refs": ["docs/servicenow-serving-projection-profile-v0.9.md"],
+      "projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"]
+    }
+  ],
+  "governance_controls": {
+    "change_control_ref": "chg:invalid-binding",
+    "security_review_ref": "sec:invalid-binding",
+    "data_boundary_notes": ["Invalid fixture for unknown tenant binding.", "Portable SSOM Core must stay distinct."]
+  }
+}

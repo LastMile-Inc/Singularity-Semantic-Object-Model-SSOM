@@ -1,0 +1,118 @@
+{
+  "record_id": "urn:ssom:record:t101-temperature-fahrenheit-normalized",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:heat-exchanger-e101",
+  "metric": "outlet_temperature",
+  "value": 176,
+  "unit": "degF",
+  "event_time": "2026-06-29T10:15:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.98
+  },
+  "original_measurement": {
+    "source_value": 176,
+    "source_unit": {
+      "unit_code": "DEG_F",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degF",
+      "dimension": "temperature"
+    },
+    "source_timestamp": "2026-06-29T10:15:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "temperature",
+    "canonical_value": 80,
+    "canonical_unit": {
+      "unit_code": "DEG_C",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degC",
+      "dimension": "temperature"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "DEG_F",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degF"
+    },
+    "canonical_unit": {
+      "unit_code": "DEG_C",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degC"
+    },
+    "formula_reference": "(degF - 32) * 5 / 9",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:15:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "uncertainty": 0.1,
+    "accuracy": 0.3,
+    "precision": 0.1,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_reference": "cal-tt101-2026q1",
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-03-10T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:tt-101"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:heat-exchanger-e101",
+    "source_device_ref": "urn:ssom:asset:tt-101",
+    "source_signal_ref": "tag:TT-101.PV",
+    "engineering_unit": {
+      "unit_code": "DEG_F",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degF"
+    },
+    "display_unit": {
+      "unit_code": "DEG_C",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "degC"
+    },
+    "engineering_range": {
+      "low": 32,
+      "high": 250,
+      "unit": {
+        "unit_code": "DEG_F",
+        "vocabulary_id": "ucum-compatible",
+        "symbol": "degF"
+      }
+    },
+    "sampling_interval": "PT5S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "startup"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:15:00Z",
+    "ingestion_timestamp": "2026-06-29T10:15:01Z",
+    "clock_source_context": "source_plc_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:TT-101.PV",
+    "lineage_id": "ln-obs-e101-temp-v06",
+    "ingest_time": "2026-06-29T10:15:01Z",
+    "processing_time": "2026-06-29T10:15:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:15:00Z",
+    "source_time": "2026-06-29T10:15:00Z",
+    "receive_time": "2026-06-29T10:15:01Z",
+    "processing_time": "2026-06-29T10:15:02Z",
+    "delivery_classification": "live"
+  }
+}

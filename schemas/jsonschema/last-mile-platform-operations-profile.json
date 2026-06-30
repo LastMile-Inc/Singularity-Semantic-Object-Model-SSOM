@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/last-mile-platform-operations-profile.json",
+  "title": "Last Mile Platform Operations And SSOM Master Profile",
+  "description": "Proprietary Last Mile operating-layer profile that depends on SSOM core semantics without redefining them.",
+  "type": "object",
+  "required": [
+    "profile_id",
+    "profile_version",
+    "profile_label",
+    "boundary_statement",
+    "portable_core_dependency_refs",
+    "tenant_control_planes",
+    "rights_and_learning_planes",
+    "workload_isolation_policies",
+    "observability_agent_surfaces",
+    "master_profile_bindings",
+    "governance_controls"
+  ],
+  "properties": {
+    "profile_id": { "type": "string" },
+    "profile_version": { "type": "string" },
+    "profile_label": { "type": "string" },
+    "boundary_statement": { "type": "string" },
+    "portable_core_dependency_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string" }
+    },
+    "tenant_control_planes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "region",
+          "isolation_domain_id",
+          "allowed_projection_classes",
+          "prohibited_projection_classes",
+          "workflow_projection_refs",
+          "raw_evidence_storage_allowed"
+        ],
+        "properties": {
+          "tenant_id": { "type": "string" },
+          "region": { "type": "string" },
+          "isolation_domain_id": { "type": "string" },
+          "allowed_projection_classes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "prohibited_projection_classes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "workflow_projection_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "raw_evidence_storage_allowed": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "rights_and_learning_planes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "plane_id",
+          "plane_kind",
+          "scope",
+          "tenant_refs",
+          "allowed_training_inputs",
+          "prohibited_training_inputs",
+          "approval_refs",
+          "model_promotion_policy"
+        ],
+        "properties": {
+          "plane_id": { "type": "string" },
+          "plane_kind": { "type": "string", "enum": ["rights_management", "master_learning"] },
+          "scope": { "type": "string" },
+          "tenant_refs": { "type": "array", "items": { "type": "string" } },
+          "allowed_training_inputs": { "type": "array", "items": { "type": "string" } },
+          "prohibited_training_inputs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "approval_refs": { "type": "array", "items": { "type": "string" } },
+          "model_promotion_policy": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "workload_isolation_policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["policy_id", "isolation_level", "tenant_refs", "allowed_shared_surfaces", "prohibited_shared_surfaces"],
+        "properties": {
+          "policy_id": { "type": "string" },
+          "isolation_level": { "type": "string", "enum": ["tenant_strict", "regional_partitioned", "shared_benchmark_only"] },
+          "tenant_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "allowed_shared_surfaces": { "type": "array", "items": { "type": "string" } },
+          "prohibited_shared_surfaces": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "observability_agent_surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["surface_id", "agent_type", "tenant_scope", "exposed_data_classes", "prohibited_data_classes", "evidence_refs"],
+        "properties": {
+          "surface_id": { "type": "string" },
+          "agent_type": { "type": "string", "enum": ["tenant_observer", "benchmark_observer", "workflow_agent", "platform_observer"] },
+          "tenant_scope": { "type": "string" },
+          "exposed_data_classes": { "type": "array", "items": { "type": "string" } },
+          "prohibited_data_classes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "master_profile_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["binding_id", "tenant_id", "platform_profile_role", "ssom_profile_refs", "projection_refs"],
+        "properties": {
+          "binding_id": { "type": "string" },
+          "tenant_id": { "type": "string" },
+          "platform_profile_role": { "type": "string" },
+          "ssom_profile_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "projection_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "governance_controls": {
+      "type": "object",
+      "required": ["change_control_ref", "security_review_ref", "data_boundary_notes"],
+      "properties": {
+        "change_control_ref": { "type": "string" },
+        "security_review_ref": { "type": "string" },
+        "data_boundary_notes": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

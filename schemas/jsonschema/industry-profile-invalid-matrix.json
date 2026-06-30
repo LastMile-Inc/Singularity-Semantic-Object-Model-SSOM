@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/industry-profile-invalid-matrix.json",
+  "title": "Industry Profile Invalid Coverage Matrix",
+  "type": "object",
+  "required": ["matrix_id", "profile_failures"],
+  "properties": {
+    "matrix_id": { "type": "string" },
+    "profile_failures": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["profile_id", "fixture_path", "invalid_case_type", "expected_failure_fragment"],
+        "properties": {
+          "profile_id": { "type": "string" },
+          "fixture_path": { "type": "string" },
+          "invalid_case_type": { "type": "string" },
+          "expected_failure_fragment": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

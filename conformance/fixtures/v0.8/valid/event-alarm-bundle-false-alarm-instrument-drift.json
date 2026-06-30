@@ -1,0 +1,251 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:tt305-temperature-spike",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tt-305",
+      "metric": "reactor_temperature",
+      "value": 245,
+      "unit": "degC",
+      "event_time": "2026-06-30T14:00:00Z",
+      "quality": {
+        "status": "uncertain",
+        "validation_status": "partial",
+        "score": 0.61,
+        "reasons": ["suspected_instrument_drift"]
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "obs-tt305-temp-001",
+        "lineage_id": "lin-obs-tt305-temp-001",
+        "ingest_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:00:00Z",
+        "receive_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "condition_id": "urn:ssom:condition:tt305-instrument-drift-suspected",
+      "ssom_version": "0.8.0",
+      "condition_type": "instrument_drift_suspected",
+      "subject_ref": "urn:ssom:asset:tt-305",
+      "lifecycle_state": "detected",
+      "severity": "medium",
+      "confidence": 0.76,
+      "detected_at": "2026-06-30T14:03:00Z",
+      "evidence_refs": ["urn:ssom:record:tt305-temperature-spike"],
+      "provenance": {
+        "source_platform": "operations-analytics",
+        "source_authority_id": "instrument-engineer",
+        "source_reference": "cond-tt305-drift-001",
+        "lineage_id": "lin-cond-tt305-drift-001",
+        "ingest_time": "2026-06-30T14:03:01Z",
+        "processing_time": "2026-06-30T14:03:02Z"
+      },
+      "quality_summary": {
+        "status": "uncertain",
+        "validation_status": "partial"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:reactor-high-temperature-false",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:reactor-05",
+      "alarm_type": "high_temperature_alarm",
+      "alarm_state": "cleared",
+      "raised_at": "2026-06-30T14:00:00Z",
+      "cleared_at": "2026-06-30T15:05:00Z",
+      "severity": "high",
+      "priority": "high",
+      "derivation_type": "observation_threshold_breach",
+      "observation_ref": "urn:ssom:record:tt305-temperature-spike",
+      "condition_ref": "urn:ssom:condition:tt305-instrument-drift-suspected",
+      "threshold": {
+        "threshold_type": "high",
+        "threshold_value": 230,
+        "unit": {
+          "unit_code": "DEG_C",
+          "vocabulary_id": "ucum-compatible",
+          "symbol": "degC",
+          "dimension": "temperature"
+        }
+      },
+      "lifecycle": {
+        "canonical_alarm_state": "cleared",
+        "original_source_alarm_state": "RTN",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "active",
+            "transition_type": "raised",
+            "event_time": "2026-06-30T14:00:00Z",
+            "confidence": 0.95,
+            "evidence_refs": ["urn:ssom:record:tt305-temperature-spike"]
+          },
+          {
+            "from_state": "active",
+            "to_state": "acknowledged",
+            "transition_type": "acknowledged",
+            "event_time": "2026-06-30T14:02:00Z",
+            "confidence": 0.91,
+            "evidence_refs": ["urn:ssom:record:tt305-temperature-spike"]
+          },
+          {
+            "from_state": "acknowledged",
+            "to_state": "cleared",
+            "transition_type": "cleared",
+            "event_time": "2026-06-30T15:05:00Z",
+            "confidence": 0.93,
+            "evidence_refs": [
+              "urn:ssom:condition:tt305-instrument-drift-suspected",
+              "urn:ssom:work-verification:tt305-recalibration-verified"
+            ]
+          }
+        ]
+      },
+      "provenance": {
+        "source_platform": "alarm-server",
+        "source_authority_id": "controls",
+        "source_reference": "alm-reactor05-temp-001",
+        "lineage_id": "lin-alm-reactor05-temp-001",
+        "ingest_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:00:00Z",
+        "receive_time": "2026-06-30T14:00:01Z",
+        "processing_time": "2026-06-30T14:00:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:tt305-recalibration",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tt-305",
+      "request_type": "instrument_recalibration",
+      "request_status": "approved",
+      "requested_action": "Recalibrate TT-305 to verify whether the temperature alarm was false.",
+      "basis_refs": [
+        "urn:ssom:alarm:reactor-high-temperature-false",
+        "urn:ssom:condition:tt305-instrument-drift-suspected"
+      ],
+      "requested_at": "2026-06-30T14:10:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "instrument-engineer",
+        "source_reference": "wr-tt305-001",
+        "lineage_id": "lin-wr-tt305-001",
+        "ingest_time": "2026-06-30T14:10:01Z",
+        "processing_time": "2026-06-30T14:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:10:00Z",
+        "receive_time": "2026-06-30T14:10:01Z",
+        "processing_time": "2026-06-30T14:10:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:tt305-recalibration-plan",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tt-305",
+      "work_request_ref": "urn:ssom:work-request:tt305-recalibration",
+      "plan_status": "approved",
+      "planned_actions": ["Remove transmitter from service", "Perform calibration", "Compare with reference"],
+      "planned_verification_method": "Compare recalibrated reading against reference thermometer",
+      "expected_outcome": {
+        "description": "Determine whether the prior high-temperature alarm reflected true process temperature or sensor drift."
+      },
+      "planned_start": "2026-06-30T14:20:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-tt305-001",
+        "lineage_id": "lin-wp-tt305-001",
+        "ingest_time": "2026-06-30T14:20:01Z",
+        "processing_time": "2026-06-30T14:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:20:00Z",
+        "receive_time": "2026-06-30T14:20:01Z",
+        "processing_time": "2026-06-30T14:20:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:tt305-recalibration-execution",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.8.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:tt-305",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:tt305-recalibration-plan"],
+      "executed_at": "2026-06-30T14:50:00Z",
+      "work_request_ref": "urn:ssom:work-request:tt305-recalibration",
+      "work_plan_ref": "urn:ssom:work-plan:tt305-recalibration-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "instrument-technician",
+        "source_reference": "wx-tt305-001",
+        "lineage_id": "lin-wx-tt305-001",
+        "ingest_time": "2026-06-30T14:50:01Z",
+        "processing_time": "2026-06-30T14:50:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T14:50:00Z",
+        "receive_time": "2026-06-30T14:50:01Z",
+        "processing_time": "2026-06-30T14:50:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:tt305-recalibration-verified",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:tt-305",
+      "work_execution_ref": "urn:ssom:action:tt305-recalibration-execution",
+      "verification_status": "verified",
+      "verification_method": "Post-calibration reference comparison",
+      "restoration_status": "restored",
+      "evidence_refs": [
+        "urn:ssom:record:tt305-temperature-spike",
+        "urn:ssom:condition:tt305-instrument-drift-suspected",
+        "urn:ssom:alarm:reactor-high-temperature-false"
+      ],
+      "verified_at": "2026-06-30T15:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "instrument-engineer",
+        "source_reference": "wv-tt305-001",
+        "lineage_id": "lin-wv-tt305-001",
+        "ingest_time": "2026-06-30T15:00:01Z",
+        "processing_time": "2026-06-30T15:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T15:00:00Z",
+        "receive_time": "2026-06-30T15:00:01Z",
+        "processing_time": "2026-06-30T15:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "condition_id": "urn:ssom:condition:p101-cavitation-risk",
+  "ssom_version": "0.3.0",
+  "condition_type": "cavitation_risk",
+  "subject_ref": "urn:ssom:asset:pump-p101",
+  "lifecycle_state": "detected",
+  "severity": "medium",
+  "confidence": 0.84,
+  "detected_at": "2026-06-29T10:10:00Z",
+  "evidence_refs": [
+    "urn:ssom:record:p101-discharge-pressure-20260629t100900z"
+  ],
+  "provenance": {
+    "source_platform": "analytics",
+    "source_authority_id": "condition_engine",
+    "source_reference": "rule:cavitation-risk-v3",
+    "lineage_id": "ln-cond-p101-cavitation",
+    "ingest_time": "2026-06-29T10:10:01Z",
+    "processing_time": "2026-06-29T10:10:02Z"
+  },
+  "quality_summary": {
+    "status": "good",
+    "validation_status": "valid",
+    "mapping_confidence": 0.84
+  }
+}

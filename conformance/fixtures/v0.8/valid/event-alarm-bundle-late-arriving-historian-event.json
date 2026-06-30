@@ -1,0 +1,68 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:p101-pressure-observation-prior",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "metric": "discharge_pressure",
+      "value": 4.1,
+      "unit": "bar",
+      "event_time": "2026-06-30T08:59:00Z",
+      "quality": {
+        "status": "good",
+        "validation_status": "valid",
+        "score": 0.92
+      },
+      "provenance": {
+        "source_platform": "historian",
+        "source_authority_id": "historian",
+        "source_reference": "obs-p101-pressure-previous",
+        "lineage_id": "lin-obs-p101-pressure-previous",
+        "ingest_time": "2026-06-30T08:59:01Z",
+        "processing_time": "2026-06-30T08:59:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T08:59:00Z",
+        "receive_time": "2026-06-30T08:59:01Z",
+        "processing_time": "2026-06-30T08:59:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "events": [
+    {
+      "event_id": "urn:ssom:event:p101-cavitation-backfill",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p101",
+      "event_type": "cavitation_indicator_backfill",
+      "event_category": "operational_occurrence",
+      "event_time": "2026-06-30T08:58:30Z",
+      "event_description": "Historian backfill recovered a cavitation indicator event that arrived late.",
+      "related_refs": ["urn:ssom:record:p101-pressure-observation-prior"],
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "historian_event_id": "hist-88421",
+          "marker": "late_recovery"
+        }
+      },
+      "provenance": {
+        "source_platform": "historian",
+        "source_authority_id": "historian",
+        "source_reference": "evt-p101-cav-backfill-001",
+        "lineage_id": "lin-evt-p101-cav-backfill-001",
+        "ingest_time": "2026-06-30T09:40:00Z",
+        "processing_time": "2026-06-30T09:40:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T08:58:30Z",
+        "source_time": "2026-06-30T08:58:30Z",
+        "receive_time": "2026-06-30T09:40:00Z",
+        "processing_time": "2026-06-30T09:40:02Z",
+        "delivery_classification": "late_arrival"
+      }
+    }
+  ]
+}

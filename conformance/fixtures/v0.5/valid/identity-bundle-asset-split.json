@@ -1,0 +1,215 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:conveyor-line-7",
+      "asset_type": "conveyor_system",
+      "display_name": "Conveyor Line 7",
+      "lifecycle_state": "retired",
+      "asset_form": "system",
+      "equipment_roles": [
+        "material_handling_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "line7",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.94,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-line7-tag",
+            "identifier_value": "LINE-7",
+            "identifier_role": "asset_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "dc-01"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2021-01-01T00:00:00Z",
+            "valid_to": "2026-06-01T00:00:00Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "line7",
+              "lineage_id": "lin-line7-tag",
+              "ingest_time": "2026-06-29T11:20:00Z",
+              "processing_time": "2026-06-29T11:20:01Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:conveyor-line-7a",
+      "asset_type": "conveyor_segment",
+      "display_name": "Conveyor Line 7A",
+      "lifecycle_state": "in_service",
+      "asset_form": "system",
+      "equipment_roles": [
+        "material_handling_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "line7a",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.94,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-line7a-tag",
+            "identifier_value": "LINE-7A",
+            "identifier_role": "asset_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "dc-01"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-06-01T00:00:01Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "line7a",
+              "lineage_id": "lin-line7a-tag",
+              "ingest_time": "2026-06-29T11:20:00Z",
+              "processing_time": "2026-06-29T11:20:01Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:conveyor-line-7b",
+      "asset_type": "conveyor_segment",
+      "display_name": "Conveyor Line 7B",
+      "lifecycle_state": "in_service",
+      "asset_form": "system",
+      "equipment_roles": [
+        "material_handling_equipment"
+      ],
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "line7b",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.94,
+        "identifier_assignments": [
+          {
+            "assignment_id": "assign-line7b-tag",
+            "identifier_value": "LINE-7B",
+            "identifier_role": "asset_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "dc-01"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-06-01T00:00:01Z",
+            "confidence": 0.96,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "line7b",
+              "lineage_id": "lin-line7b-tag",
+              "ingest_time": "2026-06-29T11:20:00Z",
+              "processing_time": "2026-06-29T11:20:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:line7-split-into-7a",
+      "relationship_type": "split_into",
+      "from_ref": "urn:ssom:asset:conveyor-line-7",
+      "to_ref": "urn:ssom:asset:conveyor-line-7a",
+      "valid_from": "2026-06-01T00:00:01Z",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "split:line7",
+        "lineage_id": "lin-line7-split-7a",
+        "ingest_time": "2026-06-29T11:20:00Z",
+        "processing_time": "2026-06-29T11:20:01Z"
+      }
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:line7-split-into-7b",
+      "relationship_type": "split_into",
+      "from_ref": "urn:ssom:asset:conveyor-line-7",
+      "to_ref": "urn:ssom:asset:conveyor-line-7b",
+      "valid_from": "2026-06-01T00:00:01Z",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "split:line7",
+        "lineage_id": "lin-line7-split-7b",
+        "ingest_time": "2026-06-29T11:20:00Z",
+        "processing_time": "2026-06-29T11:20:01Z"
+      }
+    }
+  ],
+  "identity_lifecycle_events": [
+    {
+      "event_id": "urn:ssom:identity-event:line7-split-20260601",
+      "semantic_truth_state": "identity_lifecycle_event",
+      "ssom_version": "0.5.0",
+      "event_type": "split",
+      "subject_refs": [
+        "urn:ssom:asset:conveyor-line-7"
+      ],
+      "resulting_asset_refs": [
+        "urn:ssom:asset:conveyor-line-7a",
+        "urn:ssom:asset:conveyor-line-7b"
+      ],
+      "reason": "The original conveyor system was split into two managed conveyor segments for separate maintenance ownership.",
+      "effective_time": "2026-06-01T00:00:01Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "split:line7",
+        "lineage_id": "lin-line7-split-event",
+        "ingest_time": "2026-06-29T11:20:00Z",
+        "processing_time": "2026-06-29T11:20:01Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-01T00:00:01Z",
+        "source_time": "2026-06-01T00:00:01Z",
+        "receive_time": "2026-06-29T11:19:55Z",
+        "processing_time": "2026-06-29T11:20:01Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

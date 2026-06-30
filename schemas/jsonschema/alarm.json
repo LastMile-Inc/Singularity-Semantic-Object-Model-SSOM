@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/alarm.json",
+  "title": "SSOM Alarm",
+  "description": "A governed operational alert condition that requires, permits, suppresses, shelves, escalates, or otherwise drives human or automated attention.",
+  "type": "object",
+  "required": [
+    "alarm_id",
+    "subject_ref",
+    "alarm_type",
+    "alarm_state",
+    "raised_at",
+    "derivation_type",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "alarm_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:alarm:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "alarm"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "alarm_type": {
+      "type": "string"
+    },
+    "alarm_state": {
+      "$ref": "common.json#/$defs/alarmState"
+    },
+    "raised_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cleared_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "priority": {
+      "$ref": "common.json#/$defs/priorityLevel"
+    },
+    "derivation_type": {
+      "$ref": "common.json#/$defs/alarmDerivationType"
+    },
+    "event_ref": {
+      "type": "string"
+    },
+    "observation_ref": {
+      "type": "string"
+    },
+    "condition_ref": {
+      "type": "string"
+    },
+    "threshold": {
+      "$ref": "common.json#/$defs/thresholdReference"
+    },
+    "operating_mode": {
+      "type": "string"
+    },
+    "risk_context": {
+      "type": "string"
+    },
+    "rationalization_ref": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "$ref": "common.json#/$defs/alarmLifecycleContext"
+    },
+    "suppression_context": {
+      "$ref": "common.json#/$defs/suppressionContext"
+    },
+    "source_payload": {
+      "$ref": "common.json#/$defs/eventSourcePayload"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "event_ref"
+      ]
+    },
+    {
+      "required": [
+        "observation_ref"
+      ]
+    },
+    {
+      "required": [
+        "condition_ref"
+      ]
+    },
+    {
+      "required": [
+        "threshold"
+      ]
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/identity-lifecycle-event.json",
+  "title": "SSOM Identity Lifecycle Event",
+  "description": "A time-bound identity-affecting event such as commissioning, decommissioning, replacement, recommissioning, relocation, tag reassignment, merge, split, or source-system migration.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "subject_refs",
+    "effective_time",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:identity-event:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "identity_lifecycle_event"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "event_type": {
+      "$ref": "common.json#/$defs/identityLifecycleEventType"
+    },
+    "subject_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "resulting_asset_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "affected_identifier_values": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "location_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reason": {
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "effective_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,99 @@
+{
+  "operational_boundaries": [
+    {
+      "boundary_id": "urn:ssom:operational-boundary:mcc-2a-feeder-7",
+      "boundary_type": "control_entity",
+      "display_name": "MCC-2A Feeder 7",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "electrical-design",
+        "source_authority_id": "engineering",
+        "source_reference": "MCC2A:FDR7",
+        "lineage_id": "lin-boundary-feeder7",
+        "ingest_time": "2026-06-29T10:00:00Z",
+        "processing_time": "2026-06-29T10:00:01Z"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:pump-p101",
+      "asset_type": "centrifugal_pump",
+      "display_name": "Pump P-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": ["process_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:P-101" }], "confidence": 0.98 }
+    },
+    {
+      "asset_id": "urn:ssom:asset:motor-m101",
+      "asset_type": "electric_motor",
+      "display_name": "Motor M-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "component",
+      "equipment_roles": ["utility_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:M-101" }], "confidence": 0.97 }
+    },
+    {
+      "asset_id": "urn:ssom:asset:vfd-12",
+      "asset_type": "variable_frequency_drive",
+      "display_name": "VFD-12",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "device_roles": ["control_device", "actuation_device"],
+      "equipment_roles": ["utility_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": { "source_references": [{ "source_platform": "scada", "source_reference": "drive:VFD-12" }], "confidence": 0.96 }
+    },
+    {
+      "asset_id": "urn:ssom:asset:vb-101",
+      "asset_type": "vibration_sensor",
+      "display_name": "VB-101",
+      "lifecycle_state": "in_service",
+      "asset_form": "instrument",
+      "device_roles": ["measurement_device", "sensing_device"],
+      "ssom_version": "0.9.0",
+      "identity": { "source_references": [{ "source_platform": "instrument-index", "source_reference": "inst:VB-101" }], "confidence": 0.95 }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:motor-drives-pump",
+      "relationship_type": "drives",
+      "from_ref": "urn:ssom:asset:motor-m101",
+      "to_ref": "urn:ssom:asset:pump-p101",
+      "confidence": 0.98,
+      "provenance": { "source_platform": "engineering-model", "source_authority_id": "engineering", "source_reference": "M101>P101", "lineage_id": "lin-m101-p101", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:motor-is-powered-by-feeder",
+      "relationship_type": "is_powered_by",
+      "from_ref": "urn:ssom:asset:motor-m101",
+      "to_ref": "urn:ssom:operational-boundary:mcc-2a-feeder-7",
+      "confidence": 0.96,
+      "provenance": { "source_platform": "electrical-design", "source_authority_id": "engineering", "source_reference": "M101<FDR7", "lineage_id": "lin-m101-fdr7", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:motor-is-controlled-by-vfd",
+      "relationship_type": "is_controlled_by",
+      "from_ref": "urn:ssom:asset:motor-m101",
+      "to_ref": "urn:ssom:asset:vfd-12",
+      "confidence": 0.95,
+      "provenance": { "source_platform": "controls_design", "source_authority_id": "controls", "source_reference": "M101<VFD12", "lineage_id": "lin-m101-vfd12", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:p101-is-monitored-by-vb101",
+      "relationship_type": "is_monitored_by",
+      "from_ref": "urn:ssom:asset:pump-p101",
+      "to_ref": "urn:ssom:asset:vb-101",
+      "confidence": 0.93,
+      "provenance": { "source_platform": "monitoring_design", "source_authority_id": "reliability", "source_reference": "P101<VB101", "lineage_id": "lin-p101-vb101", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" },
+      "direction": "directed"
+    }
+  ]
+}

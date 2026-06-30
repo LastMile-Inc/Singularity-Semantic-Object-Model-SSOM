@@ -1,0 +1,109 @@
+{
+  "record_id": "urn:ssom:record:ft201-flow-gpm-normalized",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:cooling-water-loop-cw01",
+  "metric": "supply_flow",
+  "value": 158.5,
+  "unit": "gpm",
+  "event_time": "2026-06-29T10:20:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.98
+  },
+  "original_measurement": {
+    "source_value": 158.5,
+    "source_unit": {
+      "unit_code": "GAL_US_PER_MIN",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "gpm",
+      "dimension": "volumetric_flow_rate"
+    },
+    "source_timestamp": "2026-06-29T10:20:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "volumetric_flow_rate",
+    "canonical_value": 10,
+    "canonical_unit": {
+      "unit_code": "L_PER_S",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "L/s",
+      "dimension": "volumetric_flow_rate"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "GAL_US_PER_MIN",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "gpm"
+    },
+    "canonical_unit": {
+      "unit_code": "L_PER_S",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "L/s"
+    },
+    "formula_reference": "gpm * 0.0630902",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:20:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "uncertainty": 0.03,
+    "accuracy": 0.15,
+    "precision": 0.01,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_reference": "cal-ft201-2026q2",
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-05-01T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:ft-201"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:cooling-water-loop-cw01",
+    "source_device_ref": "urn:ssom:asset:ft-201",
+    "source_signal_ref": "tag:FT-201.PV",
+    "engineering_unit": {
+      "unit_code": "GAL_US_PER_MIN",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "gpm"
+    },
+    "display_unit": {
+      "unit_code": "L_PER_S",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "L/s"
+    },
+    "sampling_interval": "PT2S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "circulation"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:20:00Z",
+    "ingestion_timestamp": "2026-06-29T10:20:01Z",
+    "clock_source_context": "source_plc_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:FT-201.PV",
+    "lineage_id": "ln-obs-cw01-flow-v06",
+    "ingest_time": "2026-06-29T10:20:01Z",
+    "processing_time": "2026-06-29T10:20:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:20:00Z",
+    "source_time": "2026-06-29T10:20:00Z",
+    "receive_time": "2026-06-29T10:20:01Z",
+    "processing_time": "2026-06-29T10:20:02Z",
+    "delivery_classification": "live"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:vfd12-fault-trip",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "event_type": "drive_fault_trip",
+      "event_category": "fault",
+      "event_time": "2026-06-30T09:00:00Z",
+      "event_description": "VFD-12 reported a fault trip and stopped the motor.",
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "alarm_code": "F231",
+          "state": "TRIPPED"
+        }
+      },
+      "state_transition": {
+        "from_state": "running",
+        "to_state": "faulted",
+        "transition_type": "state_change",
+        "event_time": "2026-06-30T09:00:00Z",
+        "confidence": 0.93
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "evt-vfd12-trip-001",
+        "lineage_id": "lin-evt-vfd12-trip-001",
+        "ingest_time": "2026-06-30T09:00:02Z",
+        "processing_time": "2026-06-30T09:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T09:00:00Z",
+        "receive_time": "2026-06-30T09:00:02Z",
+        "processing_time": "2026-06-30T09:00:03Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:vfd12-fault-trip",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "alarm_type": "drive_trip_alarm",
+      "alarm_state": "active",
+      "raised_at": "2026-06-30T09:00:00Z",
+      "severity": "high",
+      "priority": "critical",
+      "derivation_type": "event_driven",
+      "event_ref": "urn:ssom:event:vfd12-fault-trip",
+      "source_payload": {
+        "payload_format": "json",
+        "payload": {
+          "source_alarm_state": "ACTIVE_UNACK",
+          "alarm_text": "Drive Trip"
+        }
+      },
+      "lifecycle": {
+        "canonical_alarm_state": "active",
+        "original_source_alarm_state": "ACTIVE_UNACK",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "active",
+            "transition_type": "raised",
+            "event_time": "2026-06-30T09:00:00Z",
+            "confidence": 0.94,
+            "source_event_ref": "urn:ssom:event:vfd12-fault-trip",
+            "evidence_refs": ["urn:ssom:event:vfd12-fault-trip"]
+          }
+        ]
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "alm-vfd12-trip-001",
+        "lineage_id": "lin-alm-vfd12-trip-001",
+        "ingest_time": "2026-06-30T09:00:02Z",
+        "processing_time": "2026-06-30T09:00:03Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T09:00:00Z",
+        "receive_time": "2026-06-30T09:00:02Z",
+        "processing_time": "2026-06-30T09:00:03Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:vfd12-inspect-after-trip",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.8.0",
+      "recommendation_type": "fault_response",
+      "target_ref": "urn:ssom:asset:vfd-12",
+      "recommended_action": "Inspect VFD-12 fault history and determine whether replacement or capacitor remediation is required.",
+      "rationale": "The trip event and active alarm indicate a governed intervention decision is required.",
+      "priority": "critical",
+      "confidence": 0.87,
+      "evidence_refs": [
+        "urn:ssom:event:vfd12-fault-trip",
+        "urn:ssom:alarm:vfd12-fault-trip"
+      ],
+      "expected_outcome": {
+        "description": "Restore controlled operation and prevent repeated trip events."
+      },
+      "recommended_at": "2026-06-30T09:05:00Z",
+      "provenance": {
+        "source_platform": "operations-analytics",
+        "source_authority_id": "controls-engineer",
+        "source_reference": "rec-vfd12-trip-001",
+        "lineage_id": "lin-rec-vfd12-trip-001",
+        "ingest_time": "2026-06-30T09:05:01Z",
+        "processing_time": "2026-06-30T09:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T09:05:00Z",
+        "receive_time": "2026-06-30T09:05:01Z",
+        "processing_time": "2026-06-30T09:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "bundle_id": "urn:ssom:proof:ai-comparability-invalid-v1",
+  "proof_version": "1.0.0-draft",
+  "site_contexts": [
+    {
+      "site_id": "site-a",
+      "canonical_asset_id": "urn:ssom:asset:pump-site-a-01",
+      "asset_class_ref": "urn:ssom:asset-class:centrifugal-pump",
+      "source_unit_code": "PSI",
+      "canonical_unit_code": "BAR",
+      "engineering_range_summary": "0-150 PSI",
+      "calibration_state": "in_calibration",
+      "maintenance_practice_ref": "predictive_monthly",
+      "operating_regime": "continuous_process",
+      "source_evidence_refs": ["conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json"],
+      "comparable_view_eligible": true
+    },
+    {
+      "site_id": "site-c",
+      "canonical_asset_id": "urn:ssom:asset:pump-site-c-07",
+      "asset_class_ref": "urn:ssom:asset-class:centrifugal-pump",
+      "source_unit_code": "UNKNOWN_SENSOR_SCALE",
+      "canonical_unit_code": null,
+      "engineering_range_summary": "unknown",
+      "calibration_state": "unknown",
+      "maintenance_practice_ref": "reactive_only",
+      "operating_regime": "intermittent_service",
+      "source_evidence_refs": ["conformance/fixtures/v0.6/valid/observation-vibration-unknown-unit-raw-evidence.json"],
+      "comparable_view_eligible": false
+    }
+  ],
+  "comparability_assessments": [
+    {
+      "assessment_id": "urn:ssom:comparability:sites-a-c",
+      "compared_site_ids": ["site-a", "site-c"],
+      "eligible": false,
+      "disqualifying_reasons": ["unknown_unit_evidence", "maintenance_practice_mismatch"],
+      "policy_ref": "policy:comparability:v1"
+    }
+  ],
+  "feature_lineage_records": [
+    {
+      "feature_id": "urn:ssom:feature:invalid-a-c",
+      "assessment_ref": "urn:ssom:comparability:sites-a-c",
+      "included_site_ids": ["site-a", "site-c"],
+      "evidence_refs": [
+        "conformance/fixtures/v0.6/valid/observation-pressure-bar-analytical-consumer-psi.json",
+        "conformance/fixtures/v0.6/valid/observation-vibration-unknown-unit-raw-evidence.json"
+      ],
+      "excluded_evidence_refs": [],
+      "model_input_ref": "model-input:invalid-a-c"
+    }
+  ],
+  "benchmark_outputs": [
+    {
+      "output_id": "urn:ssom:benchmark:invalid-a-c",
+      "assessment_ref": "urn:ssom:comparability:sites-a-c",
+      "comparability_claim": "comparable",
+      "included_feature_ids": ["urn:ssom:feature:invalid-a-c"]
+    }
+  ]
+}

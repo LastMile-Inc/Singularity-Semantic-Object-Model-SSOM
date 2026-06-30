@@ -1,1 +1,6 @@
-<!-- Placeholder for ssom-core.xsd -->
+<!--
+Deprecated non-normative compatibility marker.
+
+This repository does not maintain SSOM XSD artifacts as normative schemas.
+Use the JSON Schemas under schemas/jsonschema/ and the RFC text as the maintained semantic definition surface.
+-->

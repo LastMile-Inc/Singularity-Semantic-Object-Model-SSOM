@@ -1,0 +1,35 @@
+{
+  "assertion_id": "urn:ssom:assertion:pump-p201-oem-vibration-advisory",
+  "semantic_truth_state": "source_assertion",
+  "ssom_version": "0.4.0",
+  "assertion_type": "condition_monitoring_advisory",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "asserted_property": "pump_health_state",
+  "asserted_value": "inspect_within_24_hours",
+  "asserted_by": "OEM Condition Monitor",
+  "asserted_at": "2026-06-29T10:05:00Z",
+  "assertion_state": "reported",
+  "confidence": 0.78,
+  "evidence_refs": [
+    "urn:ssom:record:pump-p201-vibration-rms-20260629t100000z"
+  ],
+  "contradiction_group": "pump-p201-health-2026-06-29",
+  "provenance": {
+    "source_platform": "oem_monitoring_cloud",
+    "source_authority_id": "oem-predictor",
+    "source_reference": "adv-20481",
+    "lineage_id": "lin-p201-assert-001",
+    "ingest_time": "2026-06-29T10:05:10Z",
+    "processing_time": "2026-06-29T10:05:20Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:05:00Z",
+    "source_time": "2026-06-29T10:05:00Z",
+    "receive_time": "2026-06-29T10:05:08Z",
+    "processing_time": "2026-06-29T10:05:20Z",
+    "delivery_classification": "live"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:05:00Z"
+  }
+}

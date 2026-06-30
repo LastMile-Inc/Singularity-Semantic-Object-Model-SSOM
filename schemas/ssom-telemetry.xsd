@@ -1,1 +1,6 @@
-<!-- Placeholder for ssom-telemetry.xsd -->
+<!--
+Deprecated non-normative compatibility marker.
+
+Telemetry and observation semantics are maintained through the JSON Schemas under schemas/jsonschema/
+and the executable conformance fixtures in conformance/.
+-->

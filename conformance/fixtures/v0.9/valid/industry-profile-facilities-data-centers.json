@@ -1,0 +1,131 @@
+{
+  "profile_id": "facilities-data-centers-profile",
+  "profile_version": "0.9.0",
+  "industry_label": "Facilities and Data Centers",
+  "intended_scope": "Chillers, CRAH or CRAC context, pumps, BMS or DCIM-connected controllers, utility support assets, and workflow-facing operational evidence typical of facilities and data-center operations, while excluding complete building automation or IT configuration-management products.",
+  "core_ssom_objects_used": [
+    "Asset",
+    "Functional Location",
+    "Observation",
+    "Condition",
+    "Relationship",
+    "Event",
+    "Alarm",
+    "Recommendation",
+    "Action",
+    "Work Verification",
+    "Work Outcome"
+  ],
+  "required_roles": [
+    "utility_equipment",
+    "maintainable_asset"
+  ],
+  "optional_roles": [
+    "control_device",
+    "compute_device",
+    "cyber_managed_asset"
+  ],
+  "profile_specific_relationships": [
+    "contains",
+    "is_installed_in",
+    "communicates_with",
+    "monitors",
+    "powers",
+    "protects"
+  ],
+  "measurement_signal_expectations": [
+    "Temperature, humidity, differential pressure, power, and utility measurements should preserve typed unit and quality semantics.",
+    "Identity convergence across BMS, CMMS, OEM cloud, and workflow systems should remain time-aware."
+  ],
+  "event_alarm_expectations": [
+    "Environmental alarms, communication loss, and maintenance suppressions should remain explicit.",
+    "Late-arriving evidence should remain distinguishable from live operational time."
+  ],
+  "reliability_work_requirements": [
+    "Facilities maintenance should preserve requested work, verification, and observed outcome separately.",
+    "Condition trends should remain linkable to work effectiveness for repeated utility assets."
+  ],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Applicable for bounded interlock or bypass visibility where utility protection context matters.",
+    "cyber_profile_applicability": "Applicable for BMS, DCIM, controller, and gateway identity and posture context.",
+    "notes": [
+      "The scaffold does not convert SSOM into a building-management product.",
+      "Cyber applicability is foundational and does not imply IT asset-management completeness."
+    ]
+  },
+  "servicenow_serving_projection_implications": [
+    "Project facility or data-center operational state, risk, anomalies, and related work references for workflow consumers.",
+    "Do not mirror all raw BMS or OEM cloud data as workflow-primary storage."
+  ],
+  "standards_mapping_applicability": [
+    "OPC UA",
+    "ISO 55000",
+    "IEC 62443 foundation profile",
+    "MIMOSA or OSA-EAI",
+    "ISA-95 or IEC 62264 where enterprise-control boundaries matter"
+  ],
+  "profile_specific_conformance_fixtures": [
+    "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+    "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+  ],
+  "known_exclusions": [
+    "Complete DCIM, ITSM, or building-automation application schemas.",
+    "Detailed rack, VM, or server software-configuration modeling.",
+    "Energy market, billing, or lease-management semantics."
+  ],
+  "end_to_end_example": {
+    "scenario_id": "chiller-multi-source-workflow-context",
+    "scenario_label": "Chiller identity convergence and workflow projection",
+    "narrative_summary": "A facility chiller preserves identity continuity across BMS, CMMS, OEM cloud, and ServiceNow-facing workflows while keeping raw evidence and analytics outside workflow-primary storage.",
+    "involved_entities": [
+      {
+        "entity_id": "urn:ssom:asset:chiller-7a",
+        "entity_kind": "asset",
+        "roles": [
+          "utility_equipment",
+          "maintainable_asset"
+        ]
+      },
+      {
+        "entity_id": "urn:ssom:asset:bms-gateway-3",
+        "entity_kind": "asset",
+        "roles": [
+          "control_device",
+          "cyber_managed_asset"
+        ]
+      }
+    ],
+    "stages": [
+      {
+        "stage_type": "measurement_signal",
+        "summary": "Environmental and utility observations remain typed and normalization-aware."
+      },
+      {
+        "stage_type": "event_alarm",
+        "summary": "Operational facility alarms remain separate from workflow tasks or tickets."
+      },
+      {
+        "stage_type": "reliability_work",
+        "summary": "Work and verification context can remain linked to utility equipment condition and outcome."
+      },
+      {
+        "stage_type": "safety_or_cyber",
+        "summary": "Gateway or controller posture context can be attached through the cyber foundation profile where needed."
+      },
+      {
+        "stage_type": "serving_projection",
+        "summary": "A ServiceNow-facing projection exposes current condition, related assets, and evidence freshness."
+      },
+      {
+        "stage_type": "outcome",
+        "summary": "The example ends with preserved identity continuity and workflow-facing context, not a replacement of the evidence layer."
+      }
+    ],
+    "related_repo_artifacts": [
+      "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+      "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+      "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+    ]
+  }
+}

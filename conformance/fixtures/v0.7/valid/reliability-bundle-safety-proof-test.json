@@ -1,0 +1,176 @@
+{
+  "maintenance_strategies": [
+    {
+      "strategy_id": "urn:ssom:maintenance-strategy:sis-proof-test",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:sis-sdv-201",
+      "strategy_type": "proof_test",
+      "objective": "Periodically verify shutdown valve proof-test response evidence.",
+      "evidence_refs": ["urn:ssom:work-verification:sis-sdv-201-proof-test"],
+      "effective_from": "2026-06-29T06:00:00Z",
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "safety-team",
+        "source_reference": "ms-sis-001",
+        "lineage_id": "lin-ms-sis-001",
+        "ingest_time": "2026-06-29T06:00:01Z",
+        "processing_time": "2026-06-29T06:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T06:00:00Z",
+        "receive_time": "2026-06-29T06:00:01Z",
+        "processing_time": "2026-06-29T06:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:sis-sdv-201-proof-test",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:sis-sdv-201",
+      "request_type": "proof_test",
+      "request_status": "approved",
+      "requested_action": "Perform scheduled shutdown valve proof test.",
+      "maintenance_strategy_ref": "urn:ssom:maintenance-strategy:sis-proof-test",
+      "basis_refs": ["urn:ssom:maintenance-strategy:sis-proof-test"],
+      "requested_at": "2026-06-29T06:10:00Z",
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "scheduler",
+        "source_reference": "wr-sis-001",
+        "lineage_id": "lin-wr-sis-001",
+        "ingest_time": "2026-06-29T06:10:01Z",
+        "processing_time": "2026-06-29T06:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T06:10:00Z",
+        "receive_time": "2026-06-29T06:10:01Z",
+        "processing_time": "2026-06-29T06:10:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:sis-sdv-201-proof-test-plan",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:sis-sdv-201",
+      "work_request_ref": "urn:ssom:work-request:sis-sdv-201-proof-test",
+      "plan_status": "approved",
+      "planned_actions": ["Stroke shutdown valve", "Capture closing time", "Review reset state"],
+      "planned_verification_method": "proof-test evidence review",
+      "expected_outcome": { "description": "Collect proof-test evidence without claiming broader compliance." },
+      "planned_start": "2026-06-29T07:00:00Z",
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "planner",
+        "source_reference": "wp-sis-001",
+        "lineage_id": "lin-wp-sis-001",
+        "ingest_time": "2026-06-29T06:11:01Z",
+        "processing_time": "2026-06-29T06:11:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T06:11:00Z",
+        "receive_time": "2026-06-29T06:11:01Z",
+        "processing_time": "2026-06-29T06:11:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:sis-sdv-201-proof-test-completed",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:sis-sdv-201",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:sis-sdv-201-proof-test-plan"],
+      "executed_at": "2026-06-29T07:45:00Z",
+      "work_request_ref": "urn:ssom:work-request:sis-sdv-201-proof-test",
+      "work_plan_ref": "urn:ssom:work-plan:sis-sdv-201-proof-test-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "technician",
+        "source_reference": "we-sis-001",
+        "lineage_id": "lin-we-sis-001",
+        "ingest_time": "2026-06-29T07:45:01Z",
+        "processing_time": "2026-06-29T07:45:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T07:45:00Z",
+        "receive_time": "2026-06-29T07:45:01Z",
+        "processing_time": "2026-06-29T07:45:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:sis-sdv-201-proof-test",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:sis-sdv-201",
+      "work_execution_ref": "urn:ssom:action:sis-sdv-201-proof-test-completed",
+      "verification_status": "inconclusive",
+      "verification_method": "proof-test evidence review",
+      "restoration_status": "inconclusive",
+      "evidence_refs": ["urn:ssom:action:sis-sdv-201-proof-test-completed"],
+      "verified_at": "2026-06-29T08:00:00Z",
+      "policy_evidence": {
+        "classification": "proof_test_evidence",
+        "purpose": "maintenance_verification"
+      },
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "safety-engineer",
+        "source_reference": "wv-sis-001",
+        "lineage_id": "lin-wv-sis-001",
+        "ingest_time": "2026-06-29T08:00:01Z",
+        "processing_time": "2026-06-29T08:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:00:00Z",
+        "receive_time": "2026-06-29T08:00:01Z",
+        "processing_time": "2026-06-29T08:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:sis-sdv-201-proof-test-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:sis-sdv-201",
+      "action_ref": "urn:ssom:action:sis-sdv-201-proof-test-completed",
+      "work_execution_ref": "urn:ssom:action:sis-sdv-201-proof-test-completed",
+      "verification_refs": ["urn:ssom:work-verification:sis-sdv-201-proof-test"],
+      "outcome_disposition": "inconclusive",
+      "intended_outcome": { "description": "Capture proof-test evidence for review." },
+      "observed_outcome": {
+        "description": "Proof-test evidence was captured, but broader functional-safety compliance was not established by this record alone.",
+        "result_class": "unknown"
+      },
+      "assessed_at": "2026-06-29T08:05:00Z",
+      "evidence_refs": ["urn:ssom:work-verification:sis-sdv-201-proof-test"],
+      "confidence": 0.73,
+      "provenance": {
+        "source_platform": "integrity-management",
+        "source_authority_id": "safety-engineer",
+        "source_reference": "wo-sis-001",
+        "lineage_id": "lin-wo-sis-001",
+        "ingest_time": "2026-06-29T08:05:01Z",
+        "processing_time": "2026-06-29T08:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T08:05:00Z",
+        "receive_time": "2026-06-29T08:05:01Z",
+        "processing_time": "2026-06-29T08:05:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ]
+}

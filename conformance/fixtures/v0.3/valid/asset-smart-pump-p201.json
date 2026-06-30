@@ -1,0 +1,123 @@
+{
+  "asset_id": "urn:ssom:asset:smart-pump-p201",
+  "asset_type": "smart_pump",
+  "display_name": "Smart Pump P-201",
+  "lifecycle_state": "in_service",
+  "asset_form": "machine",
+  "equipment_roles": [
+    "process_equipment"
+  ],
+  "device_roles": [
+    "sensing_device",
+    "control_device"
+  ],
+  "lifecycle_roles": [
+    "serialized_asset",
+    "maintainable_asset",
+    "monitored_asset",
+    "cyber_managed_asset"
+  ],
+  "primary_operational_role": "process_equipment",
+  "ssom_version": "0.3.0",
+  "identity": {
+    "source_references": [
+      {
+        "source_platform": "opcuaserver",
+        "source_reference": "ns=2;s=Pump.P201",
+        "authority": "opcua-primary"
+      },
+      {
+        "source_platform": "eam",
+        "source_reference": "asset:P-201",
+        "authority": "plant_eam"
+      }
+    ],
+    "confidence": 0.94
+  },
+  "classification_assertions": [
+    {
+      "classification_scheme": "vendor-type",
+      "classification_category": "source_type",
+      "classification_code": "SMART_PUMP_X200",
+      "asserted_by": "opcua-adapter",
+      "source_reference": "ns=2;s=Pump.P201",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.99,
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "opcuaserver",
+        "source_authority_id": "opcua-primary",
+        "source_reference": "ns=2;s=Pump.P201",
+        "lineage_id": "ln-p201-source-type",
+        "ingest_time": "2026-06-29T10:05:00Z",
+        "processing_time": "2026-06-29T10:05:01Z"
+      }
+    },
+    {
+      "classification_scheme": "ssom-core",
+      "classification_category": "equipment_role",
+      "classification_code": "process_equipment",
+      "asserted_by": "ssom-mapper",
+      "source_reference": "asset:P-201",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.95,
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "plant_eam",
+        "source_reference": "asset:P-201",
+        "lineage_id": "ln-p201-equipment-role",
+        "ingest_time": "2026-06-29T10:05:00Z",
+        "processing_time": "2026-06-29T10:05:01Z"
+      }
+    },
+    {
+      "classification_scheme": "ssom-core",
+      "classification_category": "device_role",
+      "classification_code": "sensing_device",
+      "asserted_by": "ssom-mapper",
+      "source_reference": "ns=2;s=Pump.P201",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.87,
+      "derivation_method": "embedded_sensor_mapping_v2",
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "opcuaserver",
+        "source_authority_id": "opcua-primary",
+        "source_reference": "ns=2;s=Pump.P201",
+        "lineage_id": "ln-p201-device-role-1",
+        "ingest_time": "2026-06-29T10:05:00Z",
+        "processing_time": "2026-06-29T10:05:01Z"
+      }
+    },
+    {
+      "classification_scheme": "ssom-core",
+      "classification_category": "device_role",
+      "classification_code": "control_device",
+      "asserted_by": "ssom-mapper",
+      "source_reference": "ns=2;s=Pump.P201",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.82,
+      "derivation_method": "opcua_method_mapping_v1",
+      "semantic_profile_version": "0.3.0",
+      "provenance": {
+        "source_platform": "opcuaserver",
+        "source_authority_id": "opcua-primary",
+        "source_reference": "ns=2;s=Pump.P201",
+        "lineage_id": "ln-p201-device-role-2",
+        "ingest_time": "2026-06-29T10:05:00Z",
+        "processing_time": "2026-06-29T10:05:01Z"
+      }
+    }
+  ],
+  "context": {
+    "opc_ua_endpoint": "opc.tcp://plant2.local:4840/pumps/p201",
+    "network_identity": "10.20.1.201",
+    "supports_condition_monitoring": true,
+    "supports_work_execution": true,
+    "embedded_diagnostics": {
+      "bearing_health": "normal",
+      "seal_health": "watch"
+    }
+  }
+}

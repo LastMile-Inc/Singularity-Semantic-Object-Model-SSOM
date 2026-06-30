@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/prediction.json",
+  "title": "SSOM Prediction",
+  "description": "A future-oriented estimate or forecast derived from evidence with an explicit target and prediction horizon.",
+  "type": "object",
+  "required": [
+    "prediction_id",
+    "prediction_type",
+    "subject_ref",
+    "prediction_target",
+    "predicted_value",
+    "prediction_horizon",
+    "predicted_at",
+    "derivation_method",
+    "confidence",
+    "evidence_refs",
+    "responsible_party",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "prediction_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:prediction:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "prediction"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "prediction_type": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "prediction_target": {
+      "type": "object",
+      "properties": {
+        "target_ref": {
+          "type": "string"
+        },
+        "target_metric": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "target_ref"
+          ]
+        },
+        {
+          "required": [
+            "target_metric"
+          ]
+        }
+      ],
+      "additionalProperties": true
+    },
+    "predicted_value": {},
+    "prediction_horizon": {
+      "$ref": "common.json#/$defs/predictionHorizon"
+    },
+    "predicted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "derivation_method": {
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "responsible_party": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

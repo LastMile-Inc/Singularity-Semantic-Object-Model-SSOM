@@ -1,0 +1,38 @@
+{
+  "bundle_id": "urn:ssom:proof:servicenow-outcome-feedback-invalid-v1",
+  "proof_version": "1.0.0-draft",
+  "tenant_id": "tenant-alpha",
+  "originating_condition_ref": "urn:ssom:condition:p101-bearing-recurrence",
+  "originating_recommendation_ref": "urn:ssom:recommendation:p101-bearing-intervention",
+  "workflow_projection": {
+    "projection_ref": "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+    "projected_tenant_id": "tenant-beta",
+    "prohibited_payload_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+    "workflow_refs": ["WO-P101-20260703"]
+  },
+  "workflow_execution_context": {
+    "workflow_system": "servicenow",
+    "related_tenant_id": "tenant-beta",
+    "task_closed": true,
+    "execution_evidence_refs": ["urn:ssom:action:p101-bearing-work-completed"]
+  },
+  "verification_context": {
+    "verified": false,
+    "verification_ref": "urn:ssom:work-verification:p101-bearing-postwork",
+    "evidence_refs": ["urn:ssom:work-verification:p101-bearing-postwork"]
+  },
+  "outcome_context": {
+    "outcome_ref": "urn:ssom:outcome:p101-bearing-work-outcome",
+    "success_disposition": "successful",
+    "originating_recommendation_ref": "urn:ssom:recommendation:p101-bearing-intervention"
+  },
+  "updated_context": {
+    "updated_condition_ref": "urn:ssom:condition:p101-bearing-recurrence",
+    "updated_reliability_ref": "urn:ssom:failure-event:p101-bearing-failure-repeat",
+    "updated_recommendation_ref": "urn:ssom:recommendation:p101-bearing-intervention-followup"
+  },
+  "supporting_artifacts": [
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+    "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+  ]
+}

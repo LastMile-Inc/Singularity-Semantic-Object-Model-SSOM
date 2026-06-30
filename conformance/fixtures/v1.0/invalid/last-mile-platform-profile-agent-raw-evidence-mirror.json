@@ -1,0 +1,66 @@
+{
+  "profile_id": "last-mile-platform-operations-master-profile",
+  "profile_version": "1.0.0-draft",
+  "profile_label": "Invalid Agent Raw Evidence Mirror",
+  "boundary_statement": "This invalid fixture preserves the portable SSOM Core boundary while intentionally exposing raw evidence through an agent surface.",
+  "portable_core_dependency_refs": [
+    "RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md",
+    "docs/servicenow-serving-projection-profile-v0.9.md"
+  ],
+  "tenant_control_planes": [
+    {
+      "tenant_id": "tenant-gamma",
+      "region": "europe-west1",
+      "isolation_domain_id": "iso-eu-gamma",
+      "allowed_projection_classes": ["current_condition_summary"],
+      "prohibited_projection_classes": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "workflow_projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"],
+      "raw_evidence_storage_allowed": false
+    }
+  ],
+  "rights_and_learning_planes": [
+    {
+      "plane_id": "rights-plane",
+      "plane_kind": "rights_management",
+      "scope": "tenant_admin",
+      "tenant_refs": ["tenant-gamma"],
+      "allowed_training_inputs": [],
+      "prohibited_training_inputs": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"],
+      "approval_refs": ["approval:rights:gamma"],
+      "model_promotion_policy": "not_applicable"
+    }
+  ],
+  "workload_isolation_policies": [
+    {
+      "policy_id": "tenant-strict",
+      "isolation_level": "tenant_strict",
+      "tenant_refs": ["tenant-gamma"],
+      "allowed_shared_surfaces": ["none"],
+      "prohibited_shared_surfaces": ["raw_historian_samples", "high_frequency_telemetry", "raw_opcua_payloads"]
+    }
+  ],
+  "observability_agent_surfaces": [
+    {
+      "surface_id": "invalid-platform-observer",
+      "agent_type": "platform_observer",
+      "tenant_scope": "tenant-gamma",
+      "exposed_data_classes": ["raw_historian_samples"],
+      "prohibited_data_classes": ["high_frequency_telemetry", "raw_opcua_payloads"],
+      "evidence_refs": ["conformance/fixtures/v1.0/valid/chiller-multi-system-proof-bundle.json"]
+    }
+  ],
+  "master_profile_bindings": [
+    {
+      "binding_id": "binding-gamma",
+      "tenant_id": "tenant-gamma",
+      "platform_profile_role": "consumer",
+      "ssom_profile_refs": ["docs/servicenow-serving-projection-profile-v0.9.md"],
+      "projection_refs": ["conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"]
+    }
+  ],
+  "governance_controls": {
+    "change_control_ref": "chg:invalid-agent",
+    "security_review_ref": "sec:invalid-agent",
+    "data_boundary_notes": ["Invalid fixture for agent raw evidence mirror.", "Portable SSOM Core must stay distinct."]
+  }
+}

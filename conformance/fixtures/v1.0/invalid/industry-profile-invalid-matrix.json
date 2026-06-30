@@ -1,0 +1,35 @@
+{
+  "matrix_id": "urn:ssom:industry-profile-invalid-matrix:v1",
+  "profile_failures": [
+    {
+      "profile_id": "process-manufacturing-profile",
+      "fixture_path": "conformance/fixtures/v1.0/invalid/industry-profile-process-manufacturing-duplicate-role.json",
+      "invalid_case_type": "duplicate_required_role_in_optional_roles",
+      "expected_failure_fragment": "must not duplicate required roles in optional roles"
+    },
+    {
+      "profile_id": "discrete-manufacturing-profile",
+      "fixture_path": "conformance/fixtures/v1.0/invalid/industry-profile-discrete-manufacturing-duplicate-role.json",
+      "invalid_case_type": "duplicate_required_role_in_optional_roles",
+      "expected_failure_fragment": "must not duplicate required roles in optional roles"
+    },
+    {
+      "profile_id": "utilities-electric-power-profile",
+      "fixture_path": "conformance/fixtures/v1.0/invalid/industry-profile-utilities-electric-power-duplicate-role.json",
+      "invalid_case_type": "duplicate_required_role_in_optional_roles",
+      "expected_failure_fragment": "must not duplicate required roles in optional roles"
+    },
+    {
+      "profile_id": "water-wastewater-profile",
+      "fixture_path": "conformance/fixtures/v1.0/invalid/industry-profile-water-wastewater-duplicate-role.json",
+      "invalid_case_type": "duplicate_required_role_in_optional_roles",
+      "expected_failure_fragment": "must not duplicate required roles in optional roles"
+    },
+    {
+      "profile_id": "facilities-data-centers-profile",
+      "fixture_path": "conformance/fixtures/v1.0/invalid/industry-profile-facilities-data-centers-duplicate-role.json",
+      "invalid_case_type": "duplicate_required_role_in_optional_roles",
+      "expected_failure_fragment": "must not duplicate required roles in optional roles"
+    }
+  ]
+}

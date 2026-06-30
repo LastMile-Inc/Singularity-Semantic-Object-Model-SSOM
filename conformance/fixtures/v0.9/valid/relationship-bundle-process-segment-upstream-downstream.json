@@ -1,0 +1,16 @@
+{
+  "operational_boundaries": [
+    { "boundary_id": "urn:ssom:operational-boundary:blend-segment", "boundary_type": "process_segment", "display_name": "Blend Segment", "ssom_version": "0.9.0", "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "segment:BLEND", "lineage_id": "lin-blend", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" } },
+    { "boundary_id": "urn:ssom:operational-boundary:fill-segment", "boundary_type": "process_segment", "display_name": "Fill Segment", "ssom_version": "0.9.0", "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "segment:FILL", "lineage_id": "lin-fill", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" } }
+  ],
+  "assets": [
+    { "asset_id": "urn:ssom:asset:tank-t101", "asset_type": "mix_tank", "display_name": "Tank T-101", "lifecycle_state": "in_service", "asset_form": "machine", "equipment_roles": ["process_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:T-101" }], "confidence": 0.97 } },
+    { "asset_id": "urn:ssom:asset:mixer-mx101", "asset_type": "mixer", "display_name": "Mixer MX-101", "lifecycle_state": "in_service", "asset_form": "machine", "equipment_roles": ["process_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:MX-101" }], "confidence": 0.97 } },
+    { "asset_id": "urn:ssom:asset:filler-f201", "asset_type": "filler", "display_name": "Filler F-201", "lifecycle_state": "in_service", "asset_form": "machine", "equipment_roles": ["production_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:F-201" }], "confidence": 0.97 } }
+  ],
+  "relationships": [
+    { "relationship_id": "urn:ssom:relationship:blend-upstream-fill", "relationship_type": "is_upstream_of", "from_ref": "urn:ssom:operational-boundary:blend-segment", "to_ref": "urn:ssom:operational-boundary:fill-segment", "confidence": 0.94, "provenance": { "source_platform": "mes", "source_authority_id": "mes", "source_reference": "BLEND>FILL", "lineage_id": "lin-blend-fill", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:tank-feeds-mixer", "relationship_type": "feeds", "from_ref": "urn:ssom:asset:tank-t101", "to_ref": "urn:ssom:asset:mixer-mx101", "confidence": 0.95, "provenance": { "source_platform": "process-model", "source_authority_id": "engineering", "source_reference": "T101>MX101", "lineage_id": "lin-tank-mixer", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" },
+    { "relationship_id": "urn:ssom:relationship:mixer-is-upstream-of-filler", "relationship_type": "is_upstream_of", "from_ref": "urn:ssom:asset:mixer-mx101", "to_ref": "urn:ssom:asset:filler-f201", "confidence": 0.95, "provenance": { "source_platform": "process-model", "source_authority_id": "engineering", "source_reference": "MX101>F201", "lineage_id": "lin-mixer-filler", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" }, "direction": "directed" }
+  ]
+}

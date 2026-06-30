@@ -1,0 +1,13 @@
+{
+  "name": "ssom-rfc-validation",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Local validation harness for SSOM JSON Schemas and conformance fixtures.",
+  "scripts": {
+    "validate": "node conformance/validate-schemas.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

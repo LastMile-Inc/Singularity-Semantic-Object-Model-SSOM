@@ -1,0 +1,214 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:p201-maintenance-window-opened",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "event_type": "maintenance_window_opened",
+      "event_category": "work_lifecycle",
+      "event_time": "2026-06-30T12:00:00Z",
+      "event_description": "Planned seal replacement window opened for P-201.",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "evt-p201-maint-001",
+        "lineage_id": "lin-evt-p201-maint-001",
+        "ingest_time": "2026-06-30T12:00:01Z",
+        "processing_time": "2026-06-30T12:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:00:00Z",
+        "receive_time": "2026-06-30T12:00:01Z",
+        "processing_time": "2026-06-30T12:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:p201-seal-replacement",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "request_type": "planned_maintenance",
+      "request_status": "approved",
+      "requested_action": "Replace P-201 seal and inspect associated leak alarm inputs.",
+      "basis_refs": ["urn:ssom:event:p201-maintenance-window-opened"],
+      "requested_at": "2026-06-30T12:05:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr-p201-001",
+        "lineage_id": "lin-wr-p201-001",
+        "ingest_time": "2026-06-30T12:05:01Z",
+        "processing_time": "2026-06-30T12:05:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:05:00Z",
+        "receive_time": "2026-06-30T12:05:01Z",
+        "processing_time": "2026-06-30T12:05:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:p201-seal-replacement-plan",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "work_request_ref": "urn:ssom:work-request:p201-seal-replacement",
+      "plan_status": "approved",
+      "planned_actions": ["Isolate pump", "Replace seal", "Re-enable leak alarm"],
+      "planned_verification_method": "Leak-free restart and alarm restore check",
+      "expected_outcome": {
+        "description": "Complete seal replacement without nuisance leak alarms during isolation."
+      },
+      "planned_start": "2026-06-30T12:30:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-p201-001",
+        "lineage_id": "lin-wp-p201-001",
+        "ingest_time": "2026-06-30T12:06:01Z",
+        "processing_time": "2026-06-30T12:06:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:06:00Z",
+        "receive_time": "2026-06-30T12:06:01Z",
+        "processing_time": "2026-06-30T12:06:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:p201-seal-replacement-execution",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.8.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:pump-p201",
+      "action_status": "in_progress",
+      "basis_refs": ["urn:ssom:work-plan:p201-seal-replacement-plan"],
+      "executed_at": "2026-06-30T12:35:00Z",
+      "work_request_ref": "urn:ssom:work-request:p201-seal-replacement",
+      "work_plan_ref": "urn:ssom:work-plan:p201-seal-replacement-plan",
+      "verification_required": true,
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "maintenance-supervisor",
+        "source_reference": "wx-p201-001",
+        "lineage_id": "lin-wx-p201-001",
+        "ingest_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:35:00Z",
+        "receive_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:p201-leak-alarm",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:pump-p201",
+      "alarm_type": "seal_leak_alarm",
+      "alarm_state": "suppressed",
+      "raised_at": "2026-06-30T11:58:00Z",
+      "severity": "medium",
+      "priority": "medium",
+      "derivation_type": "source_alarm_projection",
+      "event_ref": "urn:ssom:event:p201-maintenance-window-opened",
+      "lifecycle": {
+        "canonical_alarm_state": "suppressed",
+        "original_source_alarm_state": "SUPPRESSED",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "active",
+            "transition_type": "raised",
+            "event_time": "2026-06-30T11:58:00Z",
+            "confidence": 0.85,
+            "source_event_ref": "urn:ssom:event:p201-maintenance-window-opened",
+            "evidence_refs": ["urn:ssom:event:p201-maintenance-window-opened"]
+          },
+          {
+            "from_state": "active",
+            "to_state": "suppressed",
+            "transition_type": "suppressed",
+            "event_time": "2026-06-30T12:35:00Z",
+            "confidence": 0.92,
+            "source_event_ref": "urn:ssom:event:p201-maintenance-window-opened",
+            "evidence_refs": ["urn:ssom:action:p201-seal-replacement-execution"]
+          }
+        ]
+      },
+      "suppression_context": {
+        "suppression_reason": "Maintenance isolation expected to trigger nuisance leak indications.",
+        "policy_reference": "alarm-rationalization:P201-SEAL",
+        "valid_from": "2026-06-30T12:35:00Z",
+        "valid_to": "2026-06-30T14:00:00Z",
+        "work_context_ref": "urn:ssom:action:p201-seal-replacement-execution",
+        "provenance": {
+          "source_platform": "alarm-management",
+          "source_authority_id": "maintenance-supervisor",
+          "source_reference": "supp-p201-001",
+          "lineage_id": "lin-supp-p201-001",
+          "ingest_time": "2026-06-30T12:35:01Z",
+          "processing_time": "2026-06-30T12:35:02Z"
+        }
+      },
+      "provenance": {
+        "source_platform": "alarm-management",
+        "source_authority_id": "maintenance-supervisor",
+        "source_reference": "alm-p201-leak-001",
+        "lineage_id": "lin-alm-p201-leak-001",
+        "ingest_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:35:00Z",
+        "receive_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "state_transitions": [
+    {
+      "transition_id": "urn:ssom:state-transition:p201-leak-alarm-suppressed",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:alarm:p201-leak-alarm",
+      "state_subject_type": "alarm",
+      "from_state": "active",
+      "to_state": "suppressed",
+      "transition_type": "suppressed",
+      "event_time": "2026-06-30T12:35:00Z",
+      "valid_from": "2026-06-30T12:35:00Z",
+      "valid_to": "2026-06-30T14:00:00Z",
+      "confidence": 0.92,
+      "source_ref": "urn:ssom:event:p201-maintenance-window-opened",
+      "evidence_refs": [
+        "urn:ssom:event:p201-maintenance-window-opened",
+        "urn:ssom:action:p201-seal-replacement-execution"
+      ],
+      "provenance": {
+        "source_platform": "alarm-management",
+        "source_authority_id": "maintenance-supervisor",
+        "source_reference": "st-p201-supp-001",
+        "lineage_id": "lin-st-p201-supp-001",
+        "ingest_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T12:35:00Z",
+        "receive_time": "2026-06-30T12:35:01Z",
+        "processing_time": "2026-06-30T12:35:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ]
+}

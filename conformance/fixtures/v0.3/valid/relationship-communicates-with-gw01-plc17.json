@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:gw01-communicates-with-plc17",
+  "relationship_type": "communicates_with",
+  "from_ref": "urn:ssom:asset:gw-01",
+  "to_ref": "urn:ssom:asset:plc-17",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.9,
+  "provenance": {
+    "source_platform": "network_inventory",
+    "source_authority_id": "network_inventory",
+    "source_reference": "GW01<>PLC17",
+    "lineage_id": "ln-rel-comm-001",
+    "ingest_time": "2026-06-29T10:08:50Z",
+    "processing_time": "2026-06-29T10:08:51Z"
+  },
+  "relationship_context": {
+    "protocol": "OPC UA"
+  },
+  "source_system": "network_inventory",
+  "source_record": "GW01<>PLC17",
+  "semantic_profile_version": "0.3.0",
+  "direction": "bidirectional",
+  "cardinality": "n:n"
+}

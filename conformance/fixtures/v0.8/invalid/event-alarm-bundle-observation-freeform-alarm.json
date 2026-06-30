@@ -1,0 +1,35 @@
+{
+  "observations": [
+    {
+      "record_id": "urn:ssom:record:boiler01-pressure-reading",
+      "semantic_truth_state": "observation",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:boiler-01",
+      "metric": "steam_pressure",
+      "value": 18.2,
+      "unit": "bar",
+      "event_time": "2026-06-30T16:10:00Z",
+      "quality": {
+        "status": "good",
+        "validation_status": "valid"
+      },
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "obs-boiler01-pressure-001",
+        "lineage_id": "lin-obs-boiler01-pressure-001",
+        "ingest_time": "2026-06-30T16:10:01Z",
+        "processing_time": "2026-06-30T16:10:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T16:10:00Z",
+        "receive_time": "2026-06-30T16:10:01Z",
+        "processing_time": "2026-06-30T16:10:02Z",
+        "delivery_classification": "live"
+      },
+      "extensions": {
+        "uncontrolled_alarm_text": "PRESSURE HI-HI"
+      }
+    }
+  ]
+}

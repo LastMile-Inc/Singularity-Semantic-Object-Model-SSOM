@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/decision.json",
+  "title": "SSOM Decision",
+  "description": "An approval, rejection, deferral, selection, or override made by an authorized human or governed automated process.",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "decision_type",
+    "decision_status",
+    "context_refs",
+    "evidence_refs",
+    "decision_time",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:decision:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "decision"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "decision_type": {
+      "type": "string"
+    },
+    "decision_status": {
+      "$ref": "common.json#/$defs/decisionStatus"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "context_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "decision_actor": {
+      "type": "string"
+    },
+    "decision_authority": {
+      "$ref": "common.json#/$defs/decisionAuthority"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "decision_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "decision_actor"
+      ]
+    },
+    {
+      "required": [
+        "decision_authority"
+      ]
+    }
+  ],
+  "additionalProperties": true
+}

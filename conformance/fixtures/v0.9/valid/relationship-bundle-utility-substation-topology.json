@@ -1,0 +1,285 @@
+{
+  "operational_boundaries": [
+    {
+      "boundary_id": "urn:ssom:operational-boundary:substation-east-1",
+      "boundary_type": "functional_system",
+      "display_name": "East Utility Substation",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "power-engineering",
+        "source_reference": "substation:EAST-1",
+        "lineage_id": "lin-substation-east-1",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      }
+    },
+    {
+      "boundary_id": "urn:ssom:operational-boundary:substation-east-1-protection-zone",
+      "boundary_type": "control_entity",
+      "display_name": "East Utility Protection Zone",
+      "parent_boundary_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "ssom_version": "0.9.0",
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "protection-engineering",
+        "source_reference": "zone:EAST-1-PROTECT",
+        "lineage_id": "lin-substation-east-1-protection-zone",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:transformer-east-1",
+      "asset_type": "power_transformer",
+      "display_name": "Transformer EAST-1",
+      "lifecycle_state": "in_service",
+      "asset_form": "machine",
+      "equipment_roles": ["utility_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "asset:XFMR-EAST-1"
+          }
+        ],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:breaker-east-1-main",
+      "asset_type": "power_breaker",
+      "display_name": "Main Breaker EAST-1",
+      "lifecycle_state": "in_service",
+      "asset_form": "assembly",
+      "equipment_roles": ["utility_equipment"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "asset:BRKR-EAST-1-MAIN"
+          }
+        ],
+        "confidence": 0.96
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:relay-east-1-main",
+      "asset_type": "protective_relay",
+      "display_name": "Protective Relay EAST-1 Main",
+      "lifecycle_state": "in_service",
+      "asset_form": "controller",
+      "device_roles": ["protection_device", "communication_device", "compute_device"],
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "ot_cmdb",
+            "source_reference": "ci:RELAY-EAST-1-MAIN"
+          }
+        ],
+        "confidence": 0.97
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:control-cabinet-east-1",
+      "asset_type": "control_cabinet",
+      "display_name": "Control Cabinet EAST-1",
+      "lifecycle_state": "in_service",
+      "asset_form": "assembly",
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "asset:CAB-EAST-1"
+          }
+        ],
+        "confidence": 0.95
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:conduit-east-1-control-run",
+      "asset_type": "conduit_run",
+      "display_name": "Control Conduit Run EAST-1",
+      "lifecycle_state": "in_service",
+      "asset_form": "component",
+      "ssom_version": "0.9.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "construction_drawings",
+            "source_reference": "conduit:E1-CTRL-RUN"
+          }
+        ],
+        "confidence": 0.9
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:relationship:substation-east-1-contains-transformer",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "to_ref": "urn:ssom:asset:transformer-east-1",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "power-engineering",
+        "source_reference": "EAST-1>XFMR",
+        "lineage_id": "lin-substation-transformer",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:substation-east-1-contains-main-breaker",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "to_ref": "urn:ssom:asset:breaker-east-1-main",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "power-engineering",
+        "source_reference": "EAST-1>BRKR-MAIN",
+        "lineage_id": "lin-substation-breaker",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:substation-east-1-contains-control-cabinet",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "to_ref": "urn:ssom:asset:control-cabinet-east-1",
+      "confidence": 0.96,
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "power-engineering",
+        "source_reference": "EAST-1>CAB",
+        "lineage_id": "lin-substation-cabinet",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:substation-east-1-contains-conduit-run",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "to_ref": "urn:ssom:asset:conduit-east-1-control-run",
+      "confidence": 0.92,
+      "provenance": {
+        "source_platform": "construction_drawings",
+        "source_authority_id": "power-engineering",
+        "source_reference": "EAST-1>CONDUIT",
+        "lineage_id": "lin-substation-conduit",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:substation-east-1-contains-protection-zone",
+      "relationship_type": "contains",
+      "from_ref": "urn:ssom:operational-boundary:substation-east-1",
+      "to_ref": "urn:ssom:operational-boundary:substation-east-1-protection-zone",
+      "confidence": 0.95,
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "protection-engineering",
+        "source_reference": "EAST-1>ZONE",
+        "lineage_id": "lin-substation-zone",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:control-cabinet-east-1-hosts-relay",
+      "relationship_type": "hosts",
+      "from_ref": "urn:ssom:asset:control-cabinet-east-1",
+      "to_ref": "urn:ssom:asset:relay-east-1-main",
+      "confidence": 0.95,
+      "provenance": {
+        "source_platform": "construction_drawings",
+        "source_authority_id": "power-engineering",
+        "source_reference": "CAB>RELAY",
+        "lineage_id": "lin-cabinet-relay",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:relay-east-1-main-protects-breaker",
+      "relationship_type": "protects",
+      "from_ref": "urn:ssom:asset:relay-east-1-main",
+      "to_ref": "urn:ssom:asset:breaker-east-1-main",
+      "confidence": 0.97,
+      "provenance": {
+        "source_platform": "protection-settings",
+        "source_authority_id": "protection-engineering",
+        "source_reference": "RELAY>BRKR",
+        "lineage_id": "lin-relay-breaker",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:relay-east-1-main-communicates-with-protection-zone",
+      "relationship_type": "communicates_with",
+      "from_ref": "urn:ssom:asset:relay-east-1-main",
+      "to_ref": "urn:ssom:operational-boundary:substation-east-1-protection-zone",
+      "confidence": 0.91,
+      "provenance": {
+        "source_platform": "ot_network",
+        "source_authority_id": "network-ops",
+        "source_reference": "RELAY<->ZONE",
+        "lineage_id": "lin-relay-zone",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "undirected"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:breaker-east-1-main-connected-to-transformer",
+      "relationship_type": "is_connected_to",
+      "from_ref": "urn:ssom:asset:breaker-east-1-main",
+      "to_ref": "urn:ssom:asset:transformer-east-1",
+      "confidence": 0.96,
+      "provenance": {
+        "source_platform": "power-model",
+        "source_authority_id": "power-engineering",
+        "source_reference": "BRKR<->XFMR",
+        "lineage_id": "lin-breaker-transformer",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "undirected"
+    },
+    {
+      "relationship_id": "urn:ssom:relationship:relay-east-1-main-controls-main-breaker",
+      "relationship_type": "controls",
+      "from_ref": "urn:ssom:asset:relay-east-1-main",
+      "to_ref": "urn:ssom:asset:breaker-east-1-main",
+      "confidence": 0.9,
+      "provenance": {
+        "source_platform": "protection-settings",
+        "source_authority_id": "protection-engineering",
+        "source_reference": "RELAY>TRIP>BRKR",
+        "lineage_id": "lin-relay-controls-breaker",
+        "ingest_time": "2026-06-30T18:05:00Z",
+        "processing_time": "2026-06-30T18:05:01Z"
+      },
+      "direction": "directed"
+    }
+  ]
+}

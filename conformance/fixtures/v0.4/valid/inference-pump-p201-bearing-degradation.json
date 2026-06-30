@@ -1,0 +1,40 @@
+{
+  "inference_id": "urn:ssom:inference:pump-p201-bearing-degradation",
+  "semantic_truth_state": "inference",
+  "ssom_version": "0.4.0",
+  "inference_type": "diagnostic_interpretation",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "conclusion": {
+    "assessment": "probable_bearing_degradation",
+    "severity": "medium"
+  },
+  "evidence_refs": [
+    "urn:ssom:assertion:pump-p201-vibration-trend",
+    "urn:ssom:assertion:pump-p201-oem-vibration-advisory"
+  ],
+  "derivation_method": "rule_based_diagnostic_reasoning",
+  "confidence": 0.81,
+  "responsible_party": {
+    "model_id": "lm-bearing-diagnostic",
+    "model_version": "2026.06.1"
+  },
+  "inferred_at": "2026-06-29T10:10:00Z",
+  "provenance": {
+    "source_platform": "ssom_reasoner",
+    "source_authority_id": "diagnostic-engine",
+    "source_reference": "inf-8841",
+    "lineage_id": "lin-p201-inference-001",
+    "ingest_time": "2026-06-29T10:10:05Z",
+    "processing_time": "2026-06-29T10:10:12Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:10:00Z",
+    "source_time": "2026-06-29T10:10:00Z",
+    "receive_time": "2026-06-29T10:10:04Z",
+    "processing_time": "2026-06-29T10:10:12Z",
+    "delivery_classification": "reconstructed"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:10:00Z"
+  }
+}

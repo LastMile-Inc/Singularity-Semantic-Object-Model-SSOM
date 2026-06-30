@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/work-execution.json",
+  "title": "SSOM Work Execution",
+  "description": "A specialization of Action for maintenance or repair work. Completed work is not proof of restored function.",
+  "allOf": [
+    {
+      "$ref": "action.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "action_type",
+        "work_request_ref",
+        "work_plan_ref",
+        "verification_required"
+      ],
+      "properties": {
+        "action_type": {
+          "const": "work_execution"
+        },
+        "work_request_ref": {
+          "type": "string"
+        },
+        "work_plan_ref": {
+          "type": "string"
+        },
+        "verification_required": {
+          "type": "boolean"
+        },
+        "parts_used": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/materialUsage"
+          }
+        },
+        "labor_participation": {
+          "type": "array",
+          "items": {
+            "$ref": "common.json#/$defs/laborParticipation"
+          }
+        },
+        "service_interruption": {
+          "$ref": "common.json#/$defs/serviceInterruption"
+        },
+        "warranty_coverage": {
+          "$ref": "common.json#/$defs/warrantyCoverage"
+        }
+      },
+      "additionalProperties": true
+    }
+  ]
+}

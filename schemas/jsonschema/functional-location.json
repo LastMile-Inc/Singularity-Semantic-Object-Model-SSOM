@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/functional-location.json",
+  "title": "SSOM Functional Location",
+  "description": "A distinct operational or engineering location reference used for placement, context, and succession scenarios without being treated as an Asset identity.",
+  "type": "object",
+  "required": [
+    "location_id",
+    "display_name",
+    "location_type",
+    "ssom_version"
+  ],
+  "properties": {
+    "location_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:functional-location:"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "location_type": {
+      "type": "string"
+    },
+    "parent_location_ref": {
+      "type": "string"
+    },
+    "external_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_platform",
+          "source_reference"
+        ],
+        "properties": {
+          "source_platform": {
+            "type": "string"
+          },
+          "source_reference": {
+            "type": "string"
+          },
+          "authority": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

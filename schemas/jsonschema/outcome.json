@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/outcome.json",
+  "title": "SSOM Outcome",
+  "description": "A measured or assessed result following an action, decision, event, or operational condition. Intended and observed outcomes remain distinct.",
+  "type": "object",
+  "required": [
+    "outcome_id",
+    "outcome_type",
+    "subject_ref",
+    "intended_outcome",
+    "observed_outcome",
+    "assessed_at",
+    "evidence_refs",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "outcome_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:outcome:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "outcome"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "outcome_type": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "action_ref": {
+      "type": "string"
+    },
+    "decision_ref": {
+      "type": "string"
+    },
+    "intended_outcome": {
+      "$ref": "common.json#/$defs/expectedOutcome"
+    },
+    "observed_outcome": {
+      "$ref": "common.json#/$defs/observedOutcome"
+    },
+    "assessed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "action_ref"
+      ]
+    },
+    {
+      "required": [
+        "decision_ref"
+      ]
+    }
+  ],
+  "additionalProperties": true
+}

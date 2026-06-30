@@ -1,0 +1,34 @@
+{
+  "outcome_id": "urn:ssom:outcome:invalid-missing-context",
+  "semantic_truth_state": "outcome",
+  "ssom_version": "0.4.0",
+  "outcome_type": "post_action_assessment",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "intended_outcome": {
+    "description": "Reduce vibration RMS below 5.0 mm/s"
+  },
+  "observed_outcome": {
+    "description": "Vibration improved after intervention.",
+    "result_class": "improved"
+  },
+  "assessed_at": "2026-06-29T16:05:00Z",
+  "evidence_refs": [
+    "urn:ssom:record:pump-p201-vibration-rms-20260629t160000z"
+  ],
+  "confidence": 0.8,
+  "provenance": {
+    "source_platform": "ssom_assessment_service",
+    "source_authority_id": "outcome-evaluator",
+    "source_reference": "out-invalid-001",
+    "lineage_id": "lin-invalid-outcome-001",
+    "ingest_time": "2026-06-29T16:05:05Z",
+    "processing_time": "2026-06-29T16:05:12Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T16:05:00Z",
+    "source_time": "2026-06-29T16:05:00Z",
+    "receive_time": "2026-06-29T16:05:04Z",
+    "processing_time": "2026-06-29T16:05:12Z",
+    "delivery_classification": "reconstructed"
+  }
+}

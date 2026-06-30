@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/maintenance-strategy.json",
+  "title": "SSOM Maintenance Strategy",
+  "description": "A governed maintenance intent such as corrective, preventive, predictive, condition-based, or proof-test strategy.",
+  "type": "object",
+  "required": [
+    "strategy_id",
+    "subject_ref",
+    "strategy_type",
+    "objective",
+    "evidence_refs",
+    "effective_from",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:maintenance-strategy:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "strategy_type": {
+      "$ref": "common.json#/$defs/maintenanceStrategyType"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "target_failure_mode_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "target_failure_mechanism_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "review_interval": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,38 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:duplicate-pump-1",
+      "asset_type": "pump",
+      "display_name": "Duplicate Pump One",
+      "lifecycle_state": "in_service",
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "dup-one",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.9
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:duplicate-pump-1",
+      "asset_type": "pump",
+      "display_name": "Duplicate Pump Two",
+      "lifecycle_state": "in_service",
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "dup-two",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.9
+      }
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "profile_id": "water-wastewater-profile",
+  "profile_version": "0.9.0",
+  "industry_label": "Water and Wastewater",
+  "intended_scope": "Lift stations, pump trains, treatment boundaries, instrumentation, SCADA-facing alerts, and maintenance evidence common in water and wastewater operations, while leaving chemistry models, compliance reporting, and full hydraulic simulation outside the scaffold.",
+  "core_ssom_objects_used": [
+    "Asset",
+    "Operational Boundary",
+    "Observation",
+    "Condition",
+    "Event",
+    "Alarm",
+    "Failure Event",
+    "Recommendation",
+    "Action",
+    "Work Verification",
+    "Work Outcome"
+  ],
+  "required_roles": [
+    "process_equipment",
+    "maintainable_asset"
+  ],
+  "optional_roles": [
+    "control_device",
+    "actuation_device",
+    "cyber_managed_asset"
+  ],
+  "profile_specific_relationships": [
+    "contains",
+    "powers",
+    "controls",
+    "monitors",
+    "is_connected_to"
+  ],
+  "measurement_signal_expectations": [
+    "Level, flow, pressure, vibration, and water-quality observations should remain typed and quality-aware.",
+    "Telemetry comparability matters for cross-site pump and treatment analysis."
+  ],
+  "event_alarm_expectations": [
+    "High-level, high-pressure, pump fault, and communication-loss contexts should remain explicit.",
+    "Alarm suppression during maintenance should remain bounded and traceable."
+  ],
+  "reliability_work_requirements": [
+    "Pump or valve work should preserve verification and measurable outcome context.",
+    "Failure or recurrence context should remain available for maintenance strategy review."
+  ],
+  "safety_cyber_applicability": {
+    "safety_profile_applicability": "Applicable where bypass or interlock semantics affect treatment or pumping safety boundaries.",
+    "cyber_profile_applicability": "Applicable where remote stations, PLCs, and gateways are networked and cyber-managed.",
+    "notes": [
+      "The scaffold supports foundational safety and cyber traceability only.",
+      "Water-quality regulatory semantics remain outside the core profile scaffold."
+    ]
+  },
+  "servicenow_serving_projection_implications": [
+    "Project station status, risk, anomalies, related work, and evidence freshness rather than raw SCADA samples.",
+    "Preserve references to full SSOM evidence for maintenance and incident workflows."
+  ],
+  "standards_mapping_applicability": [
+    "OPC UA",
+    "IEC 62443 foundation profile",
+    "ISA-18 or IEC 62682",
+    "ISO 14224",
+    "MIMOSA or OSA-EAI"
+  ],
+  "profile_specific_conformance_fixtures": [
+    "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+    "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+    "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+  ],
+  "known_exclusions": [
+    "Detailed hydraulic model or chemistry calculation semantics.",
+    "Regulatory reporting and compliance submission formats.",
+    "Full distribution-network GIS modeling."
+  ],
+  "end_to_end_example": {
+    "scenario_id": "lift-station-pump-risk-and-workflow",
+    "scenario_label": "Lift station pump degradation and workflow projection",
+    "narrative_summary": "A water or wastewater pump train preserves observation, condition, work, and projection semantics so reliability risk and maintenance context remain interoperable without flattening treatment boundaries into one workflow table.",
+    "involved_entities": [
+      {
+        "entity_id": "urn:ssom:boundary:cooling-water-system",
+        "entity_kind": "operational_boundary",
+        "roles": [
+          "functional_system_context"
+        ]
+      },
+      {
+        "entity_id": "urn:ssom:asset:pump-p101-v2",
+        "entity_kind": "asset",
+        "roles": [
+          "process_equipment",
+          "maintainable_asset"
+        ]
+      }
+    ],
+    "stages": [
+      {
+        "stage_type": "measurement_signal",
+        "summary": "Flow, pressure, level, and vibration semantics remain typed and comparable."
+      },
+      {
+        "stage_type": "event_alarm",
+        "summary": "High-level or pump-fault alarm context remains distinct from conditions and work."
+      },
+      {
+        "stage_type": "reliability_work",
+        "summary": "Maintenance work and measurable outcome remain linked to pump recurrence evidence."
+      },
+      {
+        "stage_type": "safety_or_cyber",
+        "summary": "Remote station or PLC context can use bounded safety or cyber profiles where applicable."
+      },
+      {
+        "stage_type": "serving_projection",
+        "summary": "A curated workflow projection exposes station status, risk, and related work references."
+      },
+      {
+        "stage_type": "outcome",
+        "summary": "The example preserves recurrence-aware outcome semantics for asset strategy review."
+      }
+    ],
+    "related_repo_artifacts": [
+      "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+      "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+      "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "events": [
+    {
+      "event_id": "urn:ssom:event:fan01-overtemp",
+      "semantic_truth_state": "event",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:fan-01",
+      "event_type": "overtemperature_event",
+      "event_category": "operational_occurrence",
+      "event_time": "2026-06-30T16:20:00Z",
+      "event_description": "Fan-01 exceeded temperature threshold.",
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "evt-fan01-temp-001",
+        "lineage_id": "lin-evt-fan01-temp-001",
+        "ingest_time": "2026-06-30T16:20:01Z",
+        "processing_time": "2026-06-30T16:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T16:20:00Z",
+        "receive_time": "2026-06-30T16:20:01Z",
+        "processing_time": "2026-06-30T16:20:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "alarms": [
+    {
+      "alarm_id": "urn:ssom:alarm:fan01-overtemp",
+      "semantic_truth_state": "alarm",
+      "ssom_version": "0.8.0",
+      "subject_ref": "urn:ssom:asset:fan-01",
+      "alarm_type": "overtemperature_alarm",
+      "alarm_state": "acknowledged",
+      "raised_at": "2026-06-30T16:20:00Z",
+      "severity": "high",
+      "priority": "high",
+      "derivation_type": "event_driven",
+      "event_ref": "urn:ssom:event:fan01-overtemp",
+      "lifecycle": {
+        "canonical_alarm_state": "acknowledged",
+        "original_source_alarm_state": "ACK",
+        "state_transitions": [
+          {
+            "from_state": "unknown",
+            "to_state": "active",
+            "transition_type": "raised",
+            "event_time": "2026-06-30T16:20:00Z",
+            "confidence": 0.91,
+            "evidence_refs": ["urn:ssom:event:fan01-overtemp"]
+          },
+          {
+            "from_state": "active",
+            "to_state": "cleared",
+            "transition_type": "cleared",
+            "event_time": "2026-06-30T16:21:00Z",
+            "confidence": 0.89,
+            "evidence_refs": ["urn:ssom:event:fan01-overtemp"]
+          }
+        ]
+      },
+      "provenance": {
+        "source_platform": "alarm-server",
+        "source_authority_id": "controls",
+        "source_reference": "alm-fan01-temp-001",
+        "lineage_id": "lin-alm-fan01-temp-001",
+        "ingest_time": "2026-06-30T16:20:01Z",
+        "processing_time": "2026-06-30T16:20:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-30T16:20:00Z",
+        "receive_time": "2026-06-30T16:20:01Z",
+        "processing_time": "2026-06-30T16:20:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ]
+}

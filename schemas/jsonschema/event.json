@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/event.json",
+  "title": "SSOM Event",
+  "description": "A time-bound operational occurrence, state transition, or detected change relevant to an Asset, System, Process Segment, Device, Condition, or operational context.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "subject_ref",
+    "event_type",
+    "event_category",
+    "event_time",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:event:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "event"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "event_category": {
+      "$ref": "common.json#/$defs/eventCategory"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "effective_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_description": {
+      "type": "string"
+    },
+    "source_payload": {
+      "$ref": "common.json#/$defs/eventSourcePayload"
+    },
+    "state_transition": {
+      "$ref": "common.json#/$defs/stateTransitionContext"
+    },
+    "related_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "source_state": {
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

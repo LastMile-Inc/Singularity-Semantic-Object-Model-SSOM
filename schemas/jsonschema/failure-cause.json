@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/failure-cause.json",
+  "title": "SSOM Failure Cause",
+  "description": "The causal factor attributed to a failure event or mechanism. A cause is not the same as a failure mode or failure mechanism.",
+  "type": "object",
+  "required": [
+    "failure_cause_id",
+    "subject_ref",
+    "failure_cause_ref",
+    "evidence_refs",
+    "determined_at",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "failure_cause_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:failure-cause:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "failure_cause_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "determined_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,30 @@
+{
+  "asset_id": "urn:ssom:asset:cw-system-catalog-entry",
+  "asset_type": "source_catalog_node",
+  "display_name": "Cooling Water Catalog Entry",
+  "lifecycle_state": "proposed",
+  "asset_form": "logical_asset",
+  "ssom_version": "0.3.0",
+  "identity": {
+    "source_references": [
+      {
+        "source_platform": "data_catalog",
+        "source_reference": "catalog:CW-LOGICAL-ENTRY",
+        "authority": "integration_hub"
+      }
+    ],
+    "confidence": 0.61
+  },
+  "classification_assertions": [
+    {
+      "classification_scheme": "source-catalog",
+      "classification_category": "source_type",
+      "classification_code": "logical_group",
+      "asserted_by": "catalog-sync",
+      "source_reference": "catalog:CW-LOGICAL-ENTRY",
+      "valid_from": "2026-06-29T00:00:00Z",
+      "confidence": 0.61,
+      "semantic_profile_version": "0.3.0"
+    }
+  ]
+}

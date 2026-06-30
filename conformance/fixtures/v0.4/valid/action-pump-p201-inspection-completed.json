@@ -1,0 +1,33 @@
+{
+  "action_id": "urn:ssom:action:pump-p201-inspection-completed",
+  "semantic_truth_state": "action",
+  "ssom_version": "0.4.0",
+  "action_type": "inspection_action",
+  "target_ref": "urn:ssom:asset:pump-p201",
+  "action_status": "completed",
+  "basis_refs": [
+    "urn:ssom:decision:pump-p201-approve-inspection",
+    "urn:ssom:recommendation:pump-p201-inspection"
+  ],
+  "performed_by": "urn:lastmile:user:maintenance-tech:mnguyen",
+  "execution_notes": "Technician tightened the coupling guard fasteners and lubricated the inboard bearing after finding elevated friction.",
+  "executed_at": "2026-06-29T14:30:00Z",
+  "provenance": {
+    "source_platform": "field_service_app",
+    "source_authority_id": "inspection-workflow",
+    "source_reference": "act-912",
+    "lineage_id": "lin-p201-action-001",
+    "ingest_time": "2026-06-29T14:30:08Z",
+    "processing_time": "2026-06-29T14:30:15Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T14:30:00Z",
+    "source_time": "2026-06-29T14:30:00Z",
+    "receive_time": "2026-06-29T14:30:06Z",
+    "processing_time": "2026-06-29T14:30:15Z",
+    "delivery_classification": "manual_entry"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T14:30:00Z"
+  }
+}

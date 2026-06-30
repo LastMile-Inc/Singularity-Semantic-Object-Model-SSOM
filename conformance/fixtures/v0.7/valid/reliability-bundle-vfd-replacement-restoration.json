@@ -1,0 +1,355 @@
+{
+  "failure_mechanisms": [
+    {
+      "failure_mechanism_id": "urn:ssom:failure-mechanism:vfd12-dc-bus-capacitor-degradation",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "failure_mechanism_ref": { "scheme": "ssom.failure", "code": "dc_bus_capacitor_degradation", "display_name": "DC bus capacitor degradation" },
+      "evidence_refs": ["urn:ssom:diagnostic:vfd12-overtemp-trip"],
+      "inferred_at": "2026-06-29T09:30:00Z",
+      "confidence": 0.82,
+      "provenance": {
+        "source_platform": "drives-analytics",
+        "source_authority_id": "vfd-oem",
+        "source_reference": "mech-vfd12-001",
+        "lineage_id": "lin-mech-vfd12-001",
+        "ingest_time": "2026-06-29T09:30:01Z",
+        "processing_time": "2026-06-29T09:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:30:00Z",
+        "receive_time": "2026-06-29T09:30:01Z",
+        "processing_time": "2026-06-29T09:30:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "urn:ssom:diagnostic:vfd12-overtemp-trip",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "diagnostic_type": "drive_failure_diagnostic",
+      "diagnostic_status": "confirmed",
+      "conclusion": "VFD replacement is required due to degraded DC bus capacitors and repeated trips.",
+      "failure_mechanism_ref": { "scheme": "ssom.failure", "code": "dc_bus_capacitor_degradation", "display_name": "DC bus capacitor degradation" },
+      "evidence_refs": ["urn:ssom:failure-event:vfd12-trip"],
+      "diagnosed_at": "2026-06-29T09:31:00Z",
+      "confidence": 0.85,
+      "provenance": {
+        "source_platform": "drives-analytics",
+        "source_authority_id": "controls-engineer",
+        "source_reference": "diag-vfd12-001",
+        "lineage_id": "lin-diag-vfd12-001",
+        "ingest_time": "2026-06-29T09:31:01Z",
+        "processing_time": "2026-06-29T09:31:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:31:00Z",
+        "receive_time": "2026-06-29T09:31:01Z",
+        "processing_time": "2026-06-29T09:31:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "failure_events": [
+    {
+      "failure_event_id": "urn:ssom:failure-event:vfd12-trip",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "failure_mode_ref": { "scheme": "iso14224-like", "code": "drive_trip", "display_name": "Drive trip" },
+      "failure_mechanism_ref": { "scheme": "ssom.failure", "code": "dc_bus_capacitor_degradation", "display_name": "DC bus capacitor degradation" },
+      "event_status": "active",
+      "occurred_at": "2026-06-29T09:00:00Z",
+      "service_interruption": { "interruption_type": "partial_outage", "duration_hours": 1.5 },
+      "evidence_refs": ["urn:ssom:diagnostic:vfd12-overtemp-trip"],
+      "provenance": {
+        "source_platform": "scada",
+        "source_authority_id": "controls",
+        "source_reference": "trip-vfd12-001",
+        "lineage_id": "lin-fe-vfd12-001",
+        "ingest_time": "2026-06-29T09:00:01Z",
+        "processing_time": "2026-06-29T09:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:00:00Z",
+        "receive_time": "2026-06-29T09:00:01Z",
+        "processing_time": "2026-06-29T09:00:02Z",
+        "delivery_classification": "live"
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "urn:ssom:recommendation:vfd12-replace",
+      "semantic_truth_state": "recommendation",
+      "ssom_version": "0.7.0",
+      "recommendation_type": "replacement_recommendation",
+      "target_ref": "urn:ssom:asset:vfd-12",
+      "recommended_action": "Replace the failed VFD and restore firmware and configuration backup.",
+      "rationale": "Repeated trips and confirmed capacitor degradation indicate replacement is the lowest-risk intervention.",
+      "priority": "critical",
+      "confidence": 0.88,
+      "evidence_refs": ["urn:ssom:diagnostic:vfd12-overtemp-trip"],
+      "expected_outcome": {
+        "description": "Restore controlled motor operation and reduce lost production minutes.",
+        "target_metric": "trip_count",
+        "target_value": 0,
+        "unit": "count"
+      },
+      "recommended_at": "2026-06-29T09:32:00Z",
+      "provenance": {
+        "source_platform": "controls",
+        "source_authority_id": "controls-engineer",
+        "source_reference": "rec-vfd12-001",
+        "lineage_id": "lin-rec-vfd12-001",
+        "ingest_time": "2026-06-29T09:32:01Z",
+        "processing_time": "2026-06-29T09:32:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:32:00Z",
+        "receive_time": "2026-06-29T09:32:01Z",
+        "processing_time": "2026-06-29T09:32:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "urn:ssom:decision:vfd12-replace-approved",
+      "semantic_truth_state": "decision",
+      "ssom_version": "0.7.0",
+      "decision_type": "capital_spares_approval",
+      "decision_status": "approved",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "context_refs": ["urn:ssom:recommendation:vfd12-replace"],
+      "evidence_refs": ["urn:ssom:diagnostic:vfd12-overtemp-trip"],
+      "decision_actor": "operations_manager",
+      "decision_time": "2026-06-29T09:40:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "operations-manager",
+        "source_reference": "dec-vfd12-001",
+        "lineage_id": "lin-dec-vfd12-001",
+        "ingest_time": "2026-06-29T09:40:01Z",
+        "processing_time": "2026-06-29T09:40:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:40:00Z",
+        "receive_time": "2026-06-29T09:40:01Z",
+        "processing_time": "2026-06-29T09:40:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_requests": [
+    {
+      "work_request_id": "urn:ssom:work-request:vfd12-replacement",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "request_type": "replacement_work",
+      "request_status": "approved",
+      "requested_action": "Replace VFD-12 and restore parameters.",
+      "recommendation_ref": "urn:ssom:recommendation:vfd12-replace",
+      "decision_ref": "urn:ssom:decision:vfd12-replace-approved",
+      "basis_refs": ["urn:ssom:failure-event:vfd12-trip"],
+      "requested_at": "2026-06-29T09:45:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wr-vfd12-001",
+        "lineage_id": "lin-wr-vfd12-001",
+        "ingest_time": "2026-06-29T09:45:01Z",
+        "processing_time": "2026-06-29T09:45:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:45:00Z",
+        "receive_time": "2026-06-29T09:45:01Z",
+        "processing_time": "2026-06-29T09:45:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_plans": [
+    {
+      "work_plan_id": "urn:ssom:work-plan:vfd12-replacement-plan",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "work_request_ref": "urn:ssom:work-request:vfd12-replacement",
+      "plan_status": "approved",
+      "planned_actions": ["Isolate power", "Swap drive", "Restore firmware", "Load configuration", "Run production verification"],
+      "planned_verification_method": "motor run-up and parameter audit",
+      "expected_outcome": {
+        "description": "Restore drive availability and reduce production loss.",
+        "target_metric": "lost_production_minutes",
+        "target_value": 0,
+        "unit": "minutes"
+      },
+      "required_parts": [
+        {
+          "material_ref": { "scheme": "catalog", "code": "VFD-12-RPL", "display_name": "Replacement VFD" },
+          "quantity": 1,
+          "warranty_reference": "oem-warranty-vfd12"
+        }
+      ],
+      "labor_requirements": [
+        {
+          "participant_type": "contractor",
+          "participant_ref": "vendor:oem-drive-service",
+          "role": "drive_specialist",
+          "labor_hours": 6,
+          "organization": "OEM Drive Service"
+        }
+      ],
+      "planned_start": "2026-06-29T11:00:00Z",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "planner",
+        "source_reference": "wp-vfd12-001",
+        "lineage_id": "lin-wp-vfd12-001",
+        "ingest_time": "2026-06-29T09:46:01Z",
+        "processing_time": "2026-06-29T09:46:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T09:46:00Z",
+        "receive_time": "2026-06-29T09:46:01Z",
+        "processing_time": "2026-06-29T09:46:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_executions": [
+    {
+      "action_id": "urn:ssom:action:vfd12-replacement-completed",
+      "semantic_truth_state": "action",
+      "ssom_version": "0.7.0",
+      "action_type": "work_execution",
+      "target_ref": "urn:ssom:asset:vfd-12",
+      "action_status": "completed",
+      "basis_refs": ["urn:ssom:work-plan:vfd12-replacement-plan"],
+      "executed_at": "2026-06-29T13:00:00Z",
+      "work_request_ref": "urn:ssom:work-request:vfd12-replacement",
+      "work_plan_ref": "urn:ssom:work-plan:vfd12-replacement-plan",
+      "verification_required": true,
+      "parts_used": [
+        {
+          "material_ref": { "scheme": "catalog", "code": "VFD-12-RPL", "display_name": "Replacement VFD" },
+          "quantity": 1,
+          "serial_number": "VFD12-NEW-7741",
+          "warranty_reference": "oem-warranty-vfd12"
+        }
+      ],
+      "labor_participation": [
+        {
+          "participant_type": "contractor",
+          "participant_ref": "vendor:oem-drive-service",
+          "role": "commissioning_specialist",
+          "labor_hours": 5.5,
+          "organization": "OEM Drive Service"
+        }
+      ],
+      "service_interruption": { "interruption_type": "planned_shutdown", "duration_hours": 3 },
+      "warranty_coverage": {
+        "coverage_status": "active",
+        "coverage_reference": "oem-warranty-vfd12",
+        "provider": "OEM Drive Service"
+      },
+      "execution_notes": "Restored firmware 5.4.2 and parameter backup set PROD-LN3-VFD12.",
+      "provenance": {
+        "source_platform": "eam",
+        "source_authority_id": "oem-technician",
+        "source_reference": "we-vfd12-001",
+        "lineage_id": "lin-we-vfd12-001",
+        "ingest_time": "2026-06-29T13:00:01Z",
+        "processing_time": "2026-06-29T13:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T13:00:00Z",
+        "receive_time": "2026-06-29T13:00:01Z",
+        "processing_time": "2026-06-29T13:00:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_verifications": [
+    {
+      "verification_id": "urn:ssom:work-verification:vfd12-run-test",
+      "ssom_version": "0.7.0",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "work_execution_ref": "urn:ssom:action:vfd12-replacement-completed",
+      "verification_status": "verified",
+      "verification_method": "motor run-up and parameter restore audit",
+      "restoration_status": "restored",
+      "evidence_refs": ["urn:ssom:action:vfd12-replacement-completed"],
+      "verified_at": "2026-06-29T13:30:00Z",
+      "provenance": {
+        "source_platform": "commissioning",
+        "source_authority_id": "controls-engineer",
+        "source_reference": "wv-vfd12-001",
+        "lineage_id": "lin-wv-vfd12-001",
+        "ingest_time": "2026-06-29T13:30:01Z",
+        "processing_time": "2026-06-29T13:30:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T13:30:00Z",
+        "receive_time": "2026-06-29T13:30:01Z",
+        "processing_time": "2026-06-29T13:30:02Z",
+        "delivery_classification": "manual_entry"
+      }
+    }
+  ],
+  "work_outcomes": [
+    {
+      "outcome_id": "urn:ssom:outcome:vfd12-replacement-outcome",
+      "semantic_truth_state": "outcome",
+      "ssom_version": "0.7.0",
+      "outcome_type": "work_outcome",
+      "subject_ref": "urn:ssom:asset:vfd-12",
+      "action_ref": "urn:ssom:action:vfd12-replacement-completed",
+      "decision_ref": "urn:ssom:decision:vfd12-replace-approved",
+      "work_execution_ref": "urn:ssom:action:vfd12-replacement-completed",
+      "verification_refs": ["urn:ssom:work-verification:vfd12-run-test"],
+      "outcome_disposition": "positive",
+      "intended_outcome": {
+        "description": "Restore drive operation and eliminate production trips.",
+        "target_metric": "lost_production_minutes",
+        "target_value": 0,
+        "unit": "minutes"
+      },
+      "observed_outcome": {
+        "description": "Drive returned to service with restored parameters and no further trips during shift.",
+        "result_class": "successful"
+      },
+      "assessed_at": "2026-06-29T18:00:00Z",
+      "evidence_refs": ["urn:ssom:work-verification:vfd12-run-test"],
+      "confidence": 0.87,
+      "availability_impact": {
+        "direction": "improved",
+        "description": "Drive availability restored."
+      },
+      "operational_impact": {
+        "direction": "improved",
+        "description": "Production interruption was reduced after replacement."
+      },
+      "warranty_coverage": {
+        "coverage_status": "active",
+        "coverage_reference": "oem-warranty-vfd12",
+        "provider": "OEM Drive Service"
+      },
+      "provenance": {
+        "source_platform": "assessment",
+        "source_authority_id": "operations-manager",
+        "source_reference": "wo-vfd12-001",
+        "lineage_id": "lin-wo-vfd12-001",
+        "ingest_time": "2026-06-29T18:00:01Z",
+        "processing_time": "2026-06-29T18:00:02Z"
+      },
+      "temporal_integrity": {
+        "event_time": "2026-06-29T18:00:00Z",
+        "receive_time": "2026-06-29T18:00:01Z",
+        "processing_time": "2026-06-29T18:00:02Z",
+        "delivery_classification": "reconstructed"
+      }
+    }
+  ]
+}

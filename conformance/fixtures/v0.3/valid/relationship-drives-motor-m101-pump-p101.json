@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:motor-m101-drives-pump-p101",
+  "relationship_type": "drives",
+  "from_ref": "urn:ssom:asset:motor-m101",
+  "to_ref": "urn:ssom:asset:pump-p101",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.98,
+  "provenance": {
+    "source_platform": "mechanical_design",
+    "source_authority_id": "mechanical_design",
+    "source_reference": "M101>P101",
+    "lineage_id": "ln-rel-drives-001",
+    "ingest_time": "2026-06-29T10:08:40Z",
+    "processing_time": "2026-06-29T10:08:41Z"
+  },
+  "relationship_context": {
+    "drive_coupling": "direct"
+  },
+  "source_system": "mechanical_design",
+  "source_record": "M101>P101",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "1:1"
+}

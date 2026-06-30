@@ -1,0 +1,32 @@
+{
+  "assertion_id": "urn:ssom:assertion:pump-p201-operator-normal-claim",
+  "semantic_truth_state": "source_assertion",
+  "ssom_version": "0.4.0",
+  "assertion_type": "operator_assessment",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "asserted_property": "pump_health_state",
+  "asserted_value": "normal_operation",
+  "asserted_by": "shift_supervisor_jrivera",
+  "asserted_at": "2026-06-29T10:07:00Z",
+  "assertion_state": "reported",
+  "confidence": 0.61,
+  "contradiction_group": "pump-p201-health-2026-06-29",
+  "provenance": {
+    "source_platform": "operator_logbook",
+    "source_authority_id": "manual_entry",
+    "source_reference": "log-7712",
+    "lineage_id": "lin-p201-assert-002",
+    "ingest_time": "2026-06-29T10:07:20Z",
+    "processing_time": "2026-06-29T10:07:30Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:07:00Z",
+    "source_time": "2026-06-29T10:07:00Z",
+    "receive_time": "2026-06-29T10:07:15Z",
+    "processing_time": "2026-06-29T10:07:30Z",
+    "delivery_classification": "manual_entry"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:07:00Z"
+  }
+}

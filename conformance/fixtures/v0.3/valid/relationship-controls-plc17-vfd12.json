@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:plc17-controls-vfd12",
+  "relationship_type": "controls",
+  "from_ref": "urn:ssom:asset:plc-17",
+  "to_ref": "urn:ssom:asset:vfd-12",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.97,
+  "provenance": {
+    "source_platform": "scada",
+    "source_authority_id": "scada",
+    "source_reference": "logic:PLC17>VFD12",
+    "lineage_id": "ln-rel-controls-001",
+    "ingest_time": "2026-06-29T10:08:00Z",
+    "processing_time": "2026-06-29T10:08:01Z"
+  },
+  "relationship_context": {
+    "control_scope": "speed_setpoint"
+  },
+  "source_system": "scada",
+  "source_record": "logic:PLC17>VFD12",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "1:n"
+}

@@ -1,0 +1,24 @@
+{
+  "relationship_id": "urn:ssom:relationship:pt101-measures-p101-discharge-pressure",
+  "relationship_type": "measures",
+  "from_ref": "urn:ssom:asset:pt-101",
+  "to_ref": "urn:ssom:asset:pump-p101",
+  "valid_from": "2026-06-29T00:00:00Z",
+  "confidence": 0.93,
+  "provenance": {
+    "source_platform": "historiantagmap",
+    "source_authority_id": "historiantagmap",
+    "source_reference": "PT101:P101_DISCH_PRESS",
+    "lineage_id": "ln-rel-measures-001",
+    "ingest_time": "2026-06-29T10:08:10Z",
+    "processing_time": "2026-06-29T10:08:11Z"
+  },
+  "relationship_context": {
+    "measurement_target": "discharge_pressure"
+  },
+  "source_system": "historian",
+  "source_record": "PT101:P101_DISCH_PRESS",
+  "semantic_profile_version": "0.3.0",
+  "direction": "directed",
+  "cardinality": "n:1"
+}

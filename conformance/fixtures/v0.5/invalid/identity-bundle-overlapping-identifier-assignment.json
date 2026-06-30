@@ -1,0 +1,94 @@
+{
+  "assets": [
+    {
+      "asset_id": "urn:ssom:asset:pump-overlap-a",
+      "asset_type": "pump",
+      "display_name": "Pump Overlap A",
+      "lifecycle_state": "in_service",
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "overlap-a",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.9,
+        "identifier_assignments": [
+          {
+            "assignment_id": "overlap-a-tag",
+            "identifier_value": "P-501",
+            "identifier_role": "engineering_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "plant-9"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-01-01T00:00:00Z",
+            "valid_to": "2026-12-31T00:00:00Z",
+            "confidence": 0.95,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "overlap-a",
+              "lineage_id": "lin-overlap-a",
+              "ingest_time": "2026-06-29T11:30:00Z",
+              "processing_time": "2026-06-29T11:30:01Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "asset_id": "urn:ssom:asset:pump-overlap-b",
+      "asset_type": "pump",
+      "display_name": "Pump Overlap B",
+      "lifecycle_state": "in_service",
+      "ssom_version": "0.5.0",
+      "identity": {
+        "source_references": [
+          {
+            "source_platform": "eam",
+            "source_reference": "overlap-b",
+            "authority": "plant_eam"
+          }
+        ],
+        "confidence": 0.9,
+        "identifier_assignments": [
+          {
+            "assignment_id": "overlap-b-tag",
+            "identifier_value": "P-501",
+            "identifier_role": "engineering_tag",
+            "semantic_usage": "external_identity",
+            "identifier_scope": {
+              "scope_type": "site",
+              "scope_value": "plant-9"
+            },
+            "identifier_authority": {
+              "authority_id": "plant_eam",
+              "authority_type": "source_system"
+            },
+            "verification_status": "verified",
+            "valid_from": "2026-06-01T00:00:00Z",
+            "valid_to": "2026-12-31T00:00:00Z",
+            "confidence": 0.95,
+            "provenance": {
+              "source_platform": "eam",
+              "source_authority_id": "plant_eam",
+              "source_reference": "overlap-b",
+              "lineage_id": "lin-overlap-b",
+              "ingest_time": "2026-06-29T11:30:00Z",
+              "processing_time": "2026-06-29T11:30:01Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

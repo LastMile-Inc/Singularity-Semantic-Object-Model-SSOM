@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/servicenow-outcome-feedback-bundle.json",
+  "title": "ServiceNow Outcome Feedback Closure Bundle",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "proof_version",
+    "tenant_id",
+    "originating_condition_ref",
+    "originating_recommendation_ref",
+    "workflow_projection",
+    "workflow_execution_context",
+    "verification_context",
+    "outcome_context",
+    "updated_context",
+    "supporting_artifacts"
+  ],
+  "properties": {
+    "bundle_id": { "type": "string" },
+    "proof_version": { "type": "string" },
+    "tenant_id": { "type": "string" },
+    "originating_condition_ref": { "type": "string" },
+    "originating_recommendation_ref": { "type": "string" },
+    "workflow_projection": {
+      "type": "object",
+      "required": ["projection_ref", "projected_tenant_id", "prohibited_payload_classes", "workflow_refs"],
+      "properties": {
+        "projection_ref": { "type": "string" },
+        "projected_tenant_id": { "type": "string" },
+        "prohibited_payload_classes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "workflow_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "workflow_execution_context": {
+      "type": "object",
+      "required": ["workflow_system", "related_tenant_id", "task_closed", "execution_evidence_refs"],
+      "properties": {
+        "workflow_system": { "type": "string" },
+        "related_tenant_id": { "type": "string" },
+        "task_closed": { "type": "boolean" },
+        "execution_evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "verification_context": {
+      "type": "object",
+      "required": ["verified", "verification_ref", "evidence_refs"],
+      "properties": {
+        "verified": { "type": "boolean" },
+        "verification_ref": { "type": "string" },
+        "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "outcome_context": {
+      "type": "object",
+      "required": ["outcome_ref", "success_disposition", "originating_recommendation_ref"],
+      "properties": {
+        "outcome_ref": { "type": "string" },
+        "success_disposition": { "type": "string" },
+        "originating_recommendation_ref": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "updated_context": {
+      "type": "object",
+      "required": ["updated_condition_ref", "updated_reliability_ref", "updated_recommendation_ref"],
+      "properties": {
+        "updated_condition_ref": { "type": ["string", "null"] },
+        "updated_reliability_ref": { "type": ["string", "null"] },
+        "updated_recommendation_ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "supporting_artifacts": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

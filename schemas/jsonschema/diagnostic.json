@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/diagnostic.json",
+  "title": "SSOM Diagnostic",
+  "description": "A reasoned diagnosis or failure hypothesis derived from evidence. A symptom is not automatically a diagnosis.",
+  "type": "object",
+  "required": [
+    "diagnostic_id",
+    "subject_ref",
+    "diagnostic_type",
+    "diagnostic_status",
+    "conclusion",
+    "evidence_refs",
+    "diagnosed_at",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "diagnostic_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:diagnostic:"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "diagnostic_type": {
+      "type": "string"
+    },
+    "diagnostic_status": {
+      "$ref": "common.json#/$defs/diagnosticStatus"
+    },
+    "conclusion": {
+      "type": "string"
+    },
+    "symptom_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "failure_mode_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "failure_mechanism_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "failure_cause_ref": {
+      "$ref": "common.json#/$defs/governedTermReference"
+    },
+    "condition_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "diagnosed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "responsible_party": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "symptom_refs"
+      ]
+    },
+    {
+      "required": [
+        "failure_mode_ref"
+      ]
+    },
+    {
+      "required": [
+        "failure_mechanism_ref"
+      ]
+    },
+    {
+      "required": [
+        "failure_cause_ref"
+      ]
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,9 @@
+{
+  "assets": [
+    { "asset_id": "urn:ssom:asset:pump-p101", "asset_type": "centrifugal_pump", "display_name": "Pump P-101", "lifecycle_state": "in_service", "asset_form": "machine", "equipment_roles": ["process_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:P-101" }], "confidence": 0.98 } },
+    { "asset_id": "urn:ssom:asset:motor-m101", "asset_type": "electric_motor", "display_name": "Motor M-101", "lifecycle_state": "in_service", "asset_form": "component", "equipment_roles": ["utility_equipment"], "ssom_version": "0.9.0", "identity": { "source_references": [{ "source_platform": "eam", "source_reference": "asset:M-101" }], "confidence": 0.97 } }
+  ],
+  "relationships": [
+    { "relationship_id": "urn:ssom:relationship:bad-free-text", "relationship_type": "mountedInside", "from_ref": "urn:ssom:asset:pump-p101", "to_ref": "urn:ssom:asset:motor-m101", "confidence": 0.8, "provenance": { "source_platform": "bad-source", "source_authority_id": "bad-source", "source_reference": "mountedInside", "lineage_id": "lin-bad-free", "ingest_time": "2026-06-29T10:00:00Z", "processing_time": "2026-06-29T10:00:01Z" } }
+  ]
+}

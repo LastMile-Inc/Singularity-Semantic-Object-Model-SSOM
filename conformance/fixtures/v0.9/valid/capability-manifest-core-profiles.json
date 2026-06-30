@@ -1,0 +1,218 @@
+{
+  "manifest_id": "urn:ssom:capability-manifest:ssom-rfc-v0.9-core-profiles",
+  "manifest_version": "0.9.0",
+  "ssom_version": "0.9.0",
+  "implementation": {
+    "name": "SSOM RFC Reference Validation Surface",
+    "implementation_class": "validation_harness",
+    "repository_scope": "public_rfc_repo",
+    "notes": "Declares the schema-backed and fixture-backed capability surface maintained in this repository."
+  },
+  "supported_profiles": [
+    {
+      "profile_id": "truth-state-lineage-profile",
+      "profile_version": "0.4.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.4/valid/truth-state-lineage-corrections-and-supersession.json",
+        "conformance/validate-schemas.mjs"
+      ]
+    },
+    {
+      "profile_id": "identity-lifecycle-profile",
+      "profile_version": "0.5.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.5/valid/identity-bundle-pump-replacement-same-tag.json",
+        "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+      ]
+    },
+    {
+      "profile_id": "measurement-safety-profile",
+      "profile_version": "0.6.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json",
+        "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+      ]
+    },
+    {
+      "profile_id": "reliability-maintenance-profile",
+      "profile_version": "0.7.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.7/valid/reliability-bundle-pump-seal-unresolved.json",
+        "conformance/fixtures/v0.7/valid/reliability-bundle-pump-multicycle-recurrence.json"
+      ]
+    },
+    {
+      "profile_id": "event-alarm-profile",
+      "profile_version": "0.8.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
+        "conformance/fixtures/v0.8/valid/event-alarm-bundle-false-alarm-instrument-drift.json"
+      ]
+    },
+    {
+      "profile_id": "relationship-governance-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/relationship-bundle-cooling-water-system.json",
+        "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json"
+      ]
+    },
+    {
+      "profile_id": "integrated-lifecycle-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json",
+        "docs/integrated-pump-lifecycle-conformance-v0.9.md"
+      ]
+    },
+    {
+      "profile_id": "serving-projection-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/servicenow-serving-projection-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+      ],
+      "notes": "The serving projection surface is bounded, curated, and fixture-backed rather than treated as a canonical evidence store."
+    },
+    {
+      "profile_id": "safety-context-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/functional-safety-foundation-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+        "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json"
+      ],
+      "notes": "The safety profile is intentionally bounded to foundational context and traceability rather than lifecycle-complete safety management."
+    },
+    {
+      "profile_id": "cyber-context-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
+      ],
+      "notes": "The OT cyber profile is intentionally bounded to foundational identity, topology, posture, and mitigation context."
+    },
+    {
+      "profile_id": "process-manufacturing-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-process-manufacturing.json"
+      ],
+      "notes": "Initial bounded process-manufacturing scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "discrete-manufacturing-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-discrete-manufacturing.json"
+      ],
+      "notes": "Initial bounded discrete-manufacturing scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "utilities-electric-power-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-utilities-electric-power.json"
+      ],
+      "notes": "Initial bounded utilities and electric-power scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "water-wastewater-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-water-wastewater.json"
+      ],
+      "notes": "Initial bounded water and wastewater scaffold with one end-to-end example."
+    },
+    {
+      "profile_id": "facilities-data-centers-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/industry-profile-index-v0.9.md",
+        "conformance/fixtures/v0.9/valid/industry-profile-facilities-data-centers.json"
+      ],
+      "notes": "Initial bounded facilities and data-centers scaffold with one end-to-end example."
+    }
+  ],
+  "conformance_artifacts": {
+    "schema_validation": {
+      "command": "npm run validate",
+      "result": "pass",
+      "evidence_ref": "conformance/validate-schemas.mjs"
+    },
+    "fixture_validation": {
+      "command": "npm run validate",
+      "result": "pass",
+      "evidence_ref": "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+    },
+    "review_artifacts": [
+      "docs/reviews/SSOM_P0_Closure_Verification.md"
+    ]
+  },
+  "compatibility": {
+    "semantic_version": "0.9.0",
+    "backward_compatibility": "additive",
+    "legacy_artifacts": [
+      {
+        "path": "schemas/ssom-core.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "schemas/ssom-relationships.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "schemas/ssom-telemetry.xsd",
+        "status": "deprecated_non_normative",
+        "compatibility_note": "Placeholder XSD retained only as a legacy discovery marker until removed from downstream references."
+      },
+      {
+        "path": "reference-implementation/bigquery/schema.sql",
+        "status": "example_only",
+        "compatibility_note": "Reference SQL is illustrative and does not define normative SSOM semantics."
+      }
+    ]
+  },
+  "standards_mapping_claims": [
+    {
+      "standard_ref": "ISA-95",
+      "claim_scope": "conceptual_alignment",
+      "qualification": "Core operational boundaries and relationships preserve alignment intent only; formal hierarchy or profile-complete conformance is not claimed by this repository."
+    },
+    {
+      "standard_ref": "ISO 14224",
+      "claim_scope": "conceptual_alignment",
+      "qualification": "Reliability semantics are framed as qualified alignment statements until field-level crosswalk artifacts are published."
+    }
+  ],
+  "provenance": {
+    "source_platform": "repo-maintainer",
+    "source_authority_id": "ssom-maintainer",
+    "source_reference": "capability-manifest-v0.9",
+    "lineage_id": "lin-capability-manifest-v0.9",
+    "ingest_time": "2026-06-30T18:00:00Z",
+    "processing_time": "2026-06-30T18:00:01Z"
+  }
+}

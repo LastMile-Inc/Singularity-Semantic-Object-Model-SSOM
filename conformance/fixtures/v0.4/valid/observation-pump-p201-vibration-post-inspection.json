@@ -1,0 +1,33 @@
+{
+  "record_id": "urn:ssom:record:pump-p201-vibration-rms-20260629t160000z",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.4.0",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "metric": "vibration_rms",
+  "value": 4.1,
+  "unit": "mm/s",
+  "event_time": "2026-06-29T16:00:00Z",
+  "quality": {
+    "status": "good",
+    "score": 0.97,
+    "validation_status": "valid"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "pi-af",
+    "source_reference": "\\P201\\vibration_rms",
+    "lineage_id": "lin-p201-vib-002",
+    "ingest_time": "2026-06-29T16:00:10Z",
+    "processing_time": "2026-06-29T16:00:15Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T16:00:00Z",
+    "source_time": "2026-06-29T16:00:00Z",
+    "receive_time": "2026-06-29T16:00:07Z",
+    "processing_time": "2026-06-29T16:00:15Z",
+    "delivery_classification": "live"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T16:00:00Z"
+  }
+}

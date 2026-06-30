@@ -1,0 +1,16 @@
+{
+  "asset_id": "urn:ssom:asset:legacy-001",
+  "asset_type": "legacy_asset_type",
+  "display_name": "Legacy Asset",
+  "lifecycle_state": "active",
+  "ssom_version": "0.2",
+  "identity": {
+    "source_references": [
+      {
+        "source_platform": "legacy_system",
+        "source_reference": "legacy:001"
+      }
+    ],
+    "confidence": 0.8
+  }
+}

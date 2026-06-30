@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/industry-profile-bundle.json",
+  "title": "SSOM Industry Profile Bundle",
+  "description": "Bounded industry-profile scaffold with scope, semantic expectations, exclusions, and an end-to-end example.",
+  "type": "object",
+  "required": [
+    "profile_id",
+    "profile_version",
+    "industry_label",
+    "intended_scope",
+    "core_ssom_objects_used",
+    "required_roles",
+    "optional_roles",
+    "profile_specific_relationships",
+    "measurement_signal_expectations",
+    "event_alarm_expectations",
+    "reliability_work_requirements",
+    "safety_cyber_applicability",
+    "servicenow_serving_projection_implications",
+    "standards_mapping_applicability",
+    "profile_specific_conformance_fixtures",
+    "known_exclusions",
+    "end_to_end_example"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string"
+    },
+    "profile_version": {
+      "type": "string"
+    },
+    "industry_label": {
+      "type": "string"
+    },
+    "intended_scope": {
+      "type": "string"
+    },
+    "core_ssom_objects_used": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "optional_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "profile_specific_relationships": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "measurement_signal_expectations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "event_alarm_expectations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "reliability_work_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "safety_cyber_applicability": {
+      "type": "object",
+      "required": [
+        "safety_profile_applicability",
+        "cyber_profile_applicability",
+        "notes"
+      ],
+      "properties": {
+        "safety_profile_applicability": {
+          "type": "string"
+        },
+        "cyber_profile_applicability": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "servicenow_serving_projection_implications": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "standards_mapping_applicability": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "profile_specific_conformance_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_exclusions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "end_to_end_example": {
+      "type": "object",
+      "required": [
+        "scenario_id",
+        "scenario_label",
+        "narrative_summary",
+        "involved_entities",
+        "stages",
+        "related_repo_artifacts"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string"
+        },
+        "scenario_label": {
+          "type": "string"
+        },
+        "narrative_summary": {
+          "type": "string"
+        },
+        "involved_entities": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "entity_id",
+              "entity_kind",
+              "roles"
+            ],
+            "properties": {
+              "entity_id": {
+                "type": "string"
+              },
+              "entity_kind": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "type": "object",
+            "required": [
+              "stage_type",
+              "summary"
+            ],
+            "properties": {
+              "stage_type": {
+                "type": "string",
+                "enum": [
+                  "measurement_signal",
+                  "event_alarm",
+                  "reliability_work",
+                  "safety_or_cyber",
+                  "serving_projection",
+                  "outcome"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "related_repo_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,73 @@
+{
+  "record_id": "urn:ssom:record:invalid-incompatible-unit-conversion",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:pump-p101",
+  "metric": "discharge_pressure",
+  "value": 4.8,
+  "unit": "bar",
+  "event_time": "2026-06-29T10:09:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid"
+  },
+  "original_measurement": {
+    "source_value": 4.8,
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible"
+    },
+    "source_timestamp": "2026-06-29T10:09:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "pressure",
+    "canonical_value": 80,
+    "canonical_unit": {
+      "unit_code": "DEG_C",
+      "vocabulary_id": "ucum-compatible"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible"
+    },
+    "canonical_unit": {
+      "unit_code": "DEG_C",
+      "vocabulary_id": "ucum-compatible"
+    },
+    "conversion_method": "invalid_cross_dimension_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:09:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:pump-p101"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:09:00Z",
+    "ingestion_timestamp": "2026-06-29T10:09:01Z"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "invalid:unit-conversion",
+    "lineage_id": "ln-invalid-unit-conv",
+    "ingest_time": "2026-06-29T10:09:01Z",
+    "processing_time": "2026-06-29T10:09:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:09:00Z",
+    "receive_time": "2026-06-29T10:09:01Z",
+    "processing_time": "2026-06-29T10:09:02Z",
+    "delivery_classification": "live"
+  }
+}
