@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/source-assertion.json",
+  "title": "SSOM Source Assertion",
+  "description": "A source-attributed statement that remains distinct from observation, inference, recommendation, and fact claims.",
+  "type": "object",
+  "required": [
+    "assertion_id",
+    "assertion_type",
+    "subject_ref",
+    "asserted_value",
+    "asserted_at",
+    "assertion_state",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "assertion_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:assertion:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "source_assertion"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "assertion_type": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "asserted_property": {
+      "type": "string"
+    },
+    "asserted_value": {},
+    "asserted_by": {
+      "type": "string"
+    },
+    "asserted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assertion_state": {
+      "$ref": "common.json#/$defs/sourceAssertionState"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "contradiction_group": {
+      "type": "string"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

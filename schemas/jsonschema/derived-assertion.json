@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/derived-assertion.json",
+  "title": "SSOM Derived Assertion",
+  "description": "A governed statement calculated from observations, source assertions, conditions, or documented transformations.",
+  "type": "object",
+  "required": [
+    "assertion_id",
+    "assertion_type",
+    "subject_ref",
+    "asserted_value",
+    "derived_at",
+    "evidence_refs",
+    "derivation_method",
+    "confidence",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "assertion_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:assertion:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "derived_assertion"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "assertion_type": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "asserted_property": {
+      "type": "string"
+    },
+    "asserted_value": {},
+    "derived_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "derivation_method": {
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

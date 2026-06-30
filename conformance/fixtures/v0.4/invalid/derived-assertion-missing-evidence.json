@@ -1,0 +1,27 @@
+{
+  "assertion_id": "urn:ssom:assertion:invalid-missing-evidence",
+  "semantic_truth_state": "derived_assertion",
+  "ssom_version": "0.4.0",
+  "assertion_type": "trend_assessment",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "asserted_property": "vibration_trend_state",
+  "asserted_value": "sustained_above_baseline",
+  "derived_at": "2026-06-29T10:08:00Z",
+  "derivation_method": "rolling_6_hour_rms_above_baseline_rule",
+  "confidence": 0.85,
+  "provenance": {
+    "source_platform": "ssom_mapping_service",
+    "source_authority_id": "truth-state-deriver",
+    "source_reference": "derivation-invalid-001",
+    "lineage_id": "lin-invalid-derived-001",
+    "ingest_time": "2026-06-29T10:08:05Z",
+    "processing_time": "2026-06-29T10:08:10Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:08:00Z",
+    "source_time": "2026-06-29T10:08:00Z",
+    "receive_time": "2026-06-29T10:08:04Z",
+    "processing_time": "2026-06-29T10:08:10Z",
+    "delivery_classification": "reconstructed"
+  }
+}

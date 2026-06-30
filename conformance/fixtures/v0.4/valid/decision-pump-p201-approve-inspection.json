@@ -1,0 +1,36 @@
+{
+  "decision_id": "urn:ssom:decision:pump-p201-approve-inspection",
+  "semantic_truth_state": "decision",
+  "ssom_version": "0.4.0",
+  "decision_type": "maintenance_decision",
+  "decision_status": "approved",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "context_refs": [
+    "urn:ssom:recommendation:pump-p201-inspection"
+  ],
+  "evidence_refs": [
+    "urn:ssom:recommendation:pump-p201-inspection",
+    "urn:ssom:inference:pump-p201-bearing-degradation"
+  ],
+  "decision_actor": "urn:lastmile:user:reliability-engineer:arodriguez",
+  "rationale": "Inspection is lower risk than waiting for another process upset while failure probability remains elevated.",
+  "decision_time": "2026-06-29T10:20:00Z",
+  "provenance": {
+    "source_platform": "approval_console",
+    "source_authority_id": "reliability_workflow",
+    "source_reference": "dec-441",
+    "lineage_id": "lin-p201-decision-001",
+    "ingest_time": "2026-06-29T10:20:06Z",
+    "processing_time": "2026-06-29T10:20:10Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:20:00Z",
+    "source_time": "2026-06-29T10:20:00Z",
+    "receive_time": "2026-06-29T10:20:05Z",
+    "processing_time": "2026-06-29T10:20:10Z",
+    "delivery_classification": "manual_entry"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:20:00Z"
+  }
+}

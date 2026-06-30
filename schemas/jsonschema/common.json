@@ -256,6 +256,221 @@
       },
       "additionalProperties": true
     },
+    "confidenceScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "stateLineage": {
+      "type": "object",
+      "properties": {
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "correction_of_ref": {
+          "type": "string"
+        },
+        "supersedes_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "superseded_by_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "responsibleParty": {
+      "type": "object",
+      "properties": {
+        "actor_ref": {
+          "type": "string"
+        },
+        "actor_name": {
+          "type": "string"
+        },
+        "model_id": {
+          "type": "string"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "authority_ref": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "actor_ref"
+          ]
+        },
+        {
+          "required": [
+            "model_id"
+          ]
+        }
+      ],
+      "additionalProperties": true
+    },
+    "decisionAuthority": {
+      "type": "object",
+      "required": [
+        "authority_id",
+        "authority_type"
+      ],
+      "properties": {
+        "authority_id": {
+          "type": "string"
+        },
+        "authority_type": {
+          "type": "string",
+          "enum": [
+            "human",
+            "team",
+            "workflow",
+            "policy_engine",
+            "model",
+            "system"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "predictionHorizon": {
+      "type": "object",
+      "required": [
+        "target_time"
+      ],
+      "properties": {
+        "target_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "horizon_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "horizon_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "horizon_duration": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "expectedOutcome": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "target_metric": {
+          "type": "string"
+        },
+        "target_value": {},
+        "unit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "observedOutcome": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "result_class": {
+          "type": "string",
+          "enum": [
+            "improved",
+            "unchanged",
+            "degraded",
+            "successful",
+            "unsuccessful",
+            "mixed",
+            "unknown"
+          ]
+        },
+        "measured_metric": {
+          "type": "string"
+        },
+        "measured_value": {},
+        "unit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "sourceAssertionState": {
+      "type": "string",
+      "enum": [
+        "reported",
+        "confirmed",
+        "contradicted",
+        "superseded",
+        "retracted",
+        "stale"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "rejected",
+        "deferred",
+        "selected",
+        "overridden"
+      ]
+    },
+    "actionStatus": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "authorized",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "failed",
+        "partial"
+      ]
+    },
+    "priorityLevel": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
     "policyEvidence": {
       "type": "object",
       "properties": {

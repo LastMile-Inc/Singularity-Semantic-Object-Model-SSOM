@@ -1,0 +1,44 @@
+{
+  "recommendation_id": "urn:ssom:recommendation:pump-p201-inspection",
+  "semantic_truth_state": "recommendation",
+  "ssom_version": "0.4.0",
+  "recommendation_type": "inspection_recommendation",
+  "target_ref": "urn:ssom:asset:pump-p201",
+  "recommended_action": "Inspect pump P-201 bearings and coupling alignment within 24 hours.",
+  "rationale": "Vibration has remained above baseline and diagnostic reasoning indicates probable bearing degradation.",
+  "priority": "high",
+  "confidence": 0.79,
+  "evidence_refs": [
+    "urn:ssom:inference:pump-p201-bearing-degradation",
+    "urn:ssom:prediction:pump-p201-failure-risk-14d"
+  ],
+  "expected_outcome": {
+    "description": "Reduce vibration RMS below 5.0 mm/s and confirm whether bearing wear is present.",
+    "target_metric": "vibration_rms",
+    "target_value": 5,
+    "unit": "mm/s"
+  },
+  "recommended_by": {
+    "model_id": "lm-maintenance-advisor",
+    "model_version": "2026.06.2"
+  },
+  "recommended_at": "2026-06-29T10:12:00Z",
+  "provenance": {
+    "source_platform": "ssom_reasoner",
+    "source_authority_id": "maintenance-advisor",
+    "source_reference": "rec-1255",
+    "lineage_id": "lin-p201-recommendation-001",
+    "ingest_time": "2026-06-29T10:12:05Z",
+    "processing_time": "2026-06-29T10:12:12Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:12:00Z",
+    "source_time": "2026-06-29T10:12:00Z",
+    "receive_time": "2026-06-29T10:12:04Z",
+    "processing_time": "2026-06-29T10:12:12Z",
+    "delivery_classification": "reconstructed"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:12:00Z"
+  }
+}

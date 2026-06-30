@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/inference.json",
+  "title": "SSOM Inference",
+  "description": "A reasoned interpretation derived from evidence, with explicit derivation method, confidence, and responsible model or actor.",
+  "type": "object",
+  "required": [
+    "inference_id",
+    "inference_type",
+    "subject_ref",
+    "conclusion",
+    "evidence_refs",
+    "derivation_method",
+    "confidence",
+    "responsible_party",
+    "inferred_at",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "inference_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:inference:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "inference"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "inference_type": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "conclusion": {},
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "derivation_method": {
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "responsible_party": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "inferred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

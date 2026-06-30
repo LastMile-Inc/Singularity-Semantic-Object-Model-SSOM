@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.3.0
+- **Intended Version:** SSOM v0.4.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -11,9 +11,11 @@
 
 This RFC evolves the Standardized Semantic Object Model (SSOM) from an initial conceptual model into an implementable, vendor-neutral semantic standard for operational technology and industrial operations data.
 
-SSOM defines portable semantics for operational facts. It does not define a workflow engine, SaaS administration model, dashboard system, cloud architecture, source-platform product model, or vendor-specific implementation.
+SSOM defines portable semantics for operational records, evidence, and governed truth-state transitions. It does not define a workflow engine, SaaS administration model, dashboard system, cloud architecture, source-platform product model, or vendor-specific implementation.
 
-SSOM v0.3.0 adds a formally governed way to distinguish **Equipment** and **Device** as overlapping operational classifications of an **Asset** while preserving Asset as the canonical lifecycle identity.
+SSOM v0.3.0 added a formally governed way to distinguish **Equipment** and **Device** as overlapping operational classifications of an **Asset** while preserving Asset as the canonical lifecycle identity.
+
+SSOM v0.4.0 adds a formally governed semantic truth and decision lifecycle that distinguishes **Observation**, **Source Assertion**, **Derived Assertion**, **Inference**, **Prediction**, **Recommendation**, **Decision**, **Action**, and **Outcome**.
 
 ## 1. Motivation
 
@@ -38,15 +40,23 @@ SSOM specifies transport-independent semantics for:
 1. Asset
 2. Relationship
 3. Observation
-4. Event
-5. Alarm
-6. Condition
-7. Operational Context
-8. Provenance
-9. Quality
-10. Temporal Integrity
-11. Policy Evidence
-12. Extension and conformance metadata
+4. Source Assertion
+5. Derived Assertion
+6. Inference
+7. Prediction
+8. Recommendation
+9. Decision
+10. Action
+11. Outcome
+12. Condition
+13. Operational Context
+14. Provenance
+15. Quality
+16. Temporal Integrity
+17. Policy Evidence
+18. Extension and conformance metadata
+
+Event and Alarm labels remain reserved profile scope in the Canonical Operational Record envelope, but dedicated Event and Alarm schemas are not normative in this repository version.
 
 ### 2.2 SSOM does not cover
 
@@ -67,7 +77,7 @@ SSOM is a semantic standard. Implementations may materialize SSOM-conformant dat
 
 Implementations should separate:
 
-- semantic operational facts;
+- semantic operational records and governed truth states;
 - derived current-state projections;
 - raw source evidence; and
 - implementation-private application state.
@@ -92,6 +102,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 10. **Operational neutrality.** SSOM MAY reference operational context and policy evidence but MUST NOT become a workflow or application-control schema.
 11. **AI-ready and explainable.** SSOM SHOULD retain the context required for people and models to understand a record and its confidence.
 12. **Implementation portability.** SSOM MUST support multiple serializations and storage patterns.
+13. **Truth-state separation.** SSOM MUST distinguish observation, assertion, inference, prediction, recommendation, decision, action, and outcome semantics.
 
 ## 5. Core semantic objects
 
@@ -129,7 +140,7 @@ An Asset MAY include:
 
 #### 5.1.1 Normative asset-classification rules
 
-1. An Asset MUST remain the canonical identity for lifecycle, provenance, relationships, condition, work history, and outcomes.
+1. An Asset MUST remain the canonical identity for lifecycle, provenance, relationships, condition, actions, and outcomes.
 2. Equipment and Device MUST NOT be modeled as mutually exclusive inheritance branches.
 3. An Asset MAY carry one or more Equipment roles and one or more Device roles at the same time.
 4. Equipment and Device classifications SHOULD preserve source, provenance, effective period, confidence, and semantic-profile information where the existing SSOM model supports those concepts.
@@ -166,7 +177,7 @@ Core `equipment_roles[]` values are:
 - `facility_equipment`
 - `production_equipment`
 
-Equipment classifications commonly support operational concepts such as functional purpose, process role, maintainability, reliability, availability, criticality, performance, capacity, operating envelope, failure modes, maintenance strategy, work history, production impact, safety impact, and energy impact.
+Equipment classifications commonly support operational concepts such as functional purpose, process role, maintainability, reliability context, availability, criticality, performance, capacity, operating envelope, production impact, safety impact, and energy impact. Detailed failure-mode, maintenance strategy, and work-history semantics remain planned profile scope until dedicated schemas are published.
 
 Examples include pumps, compressors, chillers, boilers, turbines, conveyors, packaging machines, production skids, robot cells, reactor vessels, air-handling units, motor control centers, electrical switchgear, production lines, and water-treatment systems.
 
@@ -304,6 +315,8 @@ Relationship examples:
 
 An **Observation** is a time-indexed measurement or state value associated with an Asset or observable subject.
 
+An Observation is not automatically a fact, governed conclusion, recommendation, decision, action, or outcome.
+
 Required fields:
 
 - `record_id`
@@ -315,29 +328,189 @@ Required fields:
 - `provenance`
 - `temporal_integrity`
 
-### 5.4 Event
+### 5.4 Semantic Truth and Decision Lifecycle
 
-An **Event** is a discrete occurrence reported by a source system or inferred through a documented transformation.
+SSOM v0.4.0 defines a semantic truth and decision lifecycle so implementations can preserve source evidence, derived interpretation, future-oriented reasoning, proposed interventions, approvals, executed interventions, and assessed results without collapsing them into one ambiguous record type.
+
+#### 5.4.1 Normative truth-state rules
+
+1. An Observation MUST NOT be treated automatically as a fact or governed conclusion.
+2. A Source Assertion MUST remain distinguishable from an Observation and MUST NOT be treated automatically as a governed conclusion.
+3. A Derived Assertion MUST identify the evidence and derivation method that produced it.
+4. An Inference MUST remain distinguishable from an Observation and a Source Assertion.
+5. A Prediction MUST remain distinguishable from an Observation, Source Assertion, Derived Assertion, and Inference, and MUST NOT be treated automatically as a fact.
+6. A Recommendation MUST remain distinguishable from a Decision and an Action.
+7. A Decision MUST remain distinguishable from an Action.
+8. A completed Action MUST NOT be treated automatically as a successful Outcome.
+9. An Outcome MUST preserve the evidence used to assess the result.
+10. Derived semantic objects MUST remain traceable to source evidence.
+11. Contradictory source assertions MUST be preservable without forcing premature reconciliation.
+12. Truth-state objects that may change over time SHOULD support validity periods, correction lineage, and supersession lineage without deleting original evidence.
+
+Normative machine-readable artifacts for this lifecycle are:
+
+- `schemas/jsonschema/observation.json`
+- `schemas/jsonschema/source-assertion.json`
+- `schemas/jsonschema/derived-assertion.json`
+- `schemas/jsonschema/inference.json`
+- `schemas/jsonschema/prediction.json`
+- `schemas/jsonschema/recommendation.json`
+- `schemas/jsonschema/decision.json`
+- `schemas/jsonschema/action.json`
+- `schemas/jsonschema/outcome.json`
+- `schemas/jsonschema/common.json`
+
+#### 5.4.2 Source Assertion
+
+A **Source Assertion** is a statement attributed to a source system, person, device, or external model.
+
+A Source Assertion MAY be true, false, stale, contradictory, or superseded. It MUST NOT be silently treated as a fact.
 
 Required fields:
 
-- `record_id`
-- `event_type`
+- `assertion_id`
+- `assertion_type`
 - `subject_ref`
-- `event_time`
+- `asserted_value`
+- `asserted_at`
+- `assertion_state`
 - `provenance`
-- `quality`
 - `temporal_integrity`
 
-### 5.5 Alarm
+#### 5.4.3 Derived Assertion
 
-An **Alarm** is an Event representing an abnormal, warning, fault, or critical state.
+A **Derived Assertion** is a governed statement calculated from one or more Observations, Source Assertions, Conditions, or documented transformations.
 
-An Alarm MAY include source alarm identifier, alarm state, acknowledgement state, priority, rule or limit reference, and suppression or maintenance context.
+Required fields:
+
+- `assertion_id`
+- `assertion_type`
+- `subject_ref`
+- `asserted_value`
+- `derived_at`
+- `evidence_refs`
+- `derivation_method`
+- `confidence`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.4 Inference
+
+An **Inference** is a reasoned interpretation derived from evidence.
+
+Required fields:
+
+- `inference_id`
+- `inference_type`
+- `subject_ref`
+- `conclusion`
+- `evidence_refs`
+- `derivation_method`
+- `confidence`
+- `responsible_party`
+- `inferred_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.5 Prediction
+
+A **Prediction** is a future-oriented estimate, forecast, or probability statement.
+
+Required fields:
+
+- `prediction_id`
+- `prediction_type`
+- `subject_ref`
+- `prediction_target`
+- `predicted_value`
+- `prediction_horizon`
+- `predicted_at`
+- `derivation_method`
+- `confidence`
+- `evidence_refs`
+- `responsible_party`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.6 Recommendation
+
+A **Recommendation** is a proposed intervention or action.
+
+Required fields:
+
+- `recommendation_id`
+- `recommendation_type`
+- `target_ref`
+- `recommended_action`
+- `rationale`
+- `priority`
+- `confidence`
+- `evidence_refs`
+- `expected_outcome`
+- `recommended_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.7 Decision
+
+A **Decision** is an approval, rejection, deferral, selection, or override made by an authorized human or governed automated process.
+
+Required fields:
+
+- `decision_id`
+- `decision_type`
+- `decision_status`
+- `context_refs`
+- `evidence_refs`
+- `decision_time`
+- either `decision_actor` or `decision_authority`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.8 Action
+
+An **Action** is an executed operational intervention.
+
+SSOM v0.4.0 defines only a generic Action foundation. Work execution, maintenance, inspection, notification, and control-action specializations remain profile scope.
+
+Required fields:
+
+- `action_id`
+- `action_type`
+- `target_ref`
+- `action_status`
+- `basis_refs`
+- `executed_at`
+- `provenance`
+- `temporal_integrity`
+
+#### 5.4.9 Outcome
+
+An **Outcome** is a measured or assessed result following an Action, Decision, Event, or operational condition.
+
+An Outcome MUST distinguish intended outcome from observed outcome.
+
+Required fields:
+
+- `outcome_id`
+- `outcome_type`
+- `subject_ref`
+- `intended_outcome`
+- `observed_outcome`
+- `assessed_at`
+- `evidence_refs`
+- `confidence`
+- at least one of `action_ref` or `decision_ref`
+- `provenance`
+- `temporal_integrity`
+
+### 5.5 Event and Alarm planned profile scope
+
+Event and Alarm labels remain reserved for future profile work. Implementations MAY use the Canonical Operational Record envelope to label records as `event` or `alarm`, but dedicated machine-readable Event and Alarm schemas are not normative in SSOM v0.4.0.
 
 ### 5.6 Condition
 
-A **Condition** is a qualified operational finding derived from one or more SSOM facts or supplied by an authoritative source.
+A **Condition** is a qualified operational finding derived from one or more SSOM observations, assertions, events, alarms, actions, outcomes, or authoritative source statements.
 
 A Condition distinguishes actionable operational meaning from a raw observation or event.
 
@@ -415,6 +588,8 @@ A **Canonical Operational Record (COR)** is an implementation profile that packa
 
 The COR is not a separate competing semantic object. It is a practical interchange envelope.
 
+Where dedicated truth-state schemas exist, `record_type` MUST align with the packaged semantic object. Event and Alarm remain reserved COR labels until dedicated schemas are published.
+
 ```json
 {
   "record_id": "urn:ssom:record:01J...",
@@ -454,20 +629,23 @@ SSOM v0.3.0 defines:
 
 1. Core Asset and Relationship Profile
 2. Asset Classification Profile
-3. Observation/Event/Alarm Profile
-4. Quality, Provenance, and Temporal Integrity Profile
-5. Condition Profile
-6. Analytical Warehouse Profile
+3. Observation Profile
+4. Semantic Truth and Decision Lifecycle Profile
+5. Quality, Provenance, and Temporal Integrity Profile
+6. Condition Profile
+7. Analytical Warehouse Profile
+
+An Event and Alarm profile remains planned profile scope until dedicated schemas are published.
 
 An implementation MAY support a subset but MUST declare supported profiles.
 
 ## 8. Serialization and schema strategy
 
-SSOM v0.3.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
+SSOM v0.4.0 adopts **JSON Schema** as the normative machine-readable schema for API and event interchange.
 
 JSON Schema is selected because it supports broad API, cloud, event, and validation tooling.
 
-XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.3.0. Placeholder XML artifacts remain informative until a compatibility update is published.
+XML Schema artifacts MAY be retained for compatibility. In this repository, the JSON Schemas are normative for v0.4.0. Placeholder XML artifacts remain informative until a compatibility update is published.
 
 ## 9. Compatibility and versioning
 
@@ -477,11 +655,11 @@ XML Schema artifacts MAY be retained for compatibility. In this repository, the 
 - Implementations MUST include `ssom_version`.
 - Consumers MUST reject or quarantine unsupported major versions.
 - Consumers SHOULD preserve unknown extension fields where safe.
-- SSOM v0.3.0 is an additive, backward-compatible extension of the v0.2 draft.
+- SSOM v0.4.0 is an additive, backward-compatible extension of the v0.3.0 draft.
 
 ## 10. Conformance
 
-An SSOM v0.3.0 implementation MUST:
+An SSOM v0.4.0 implementation MUST:
 
 1. Validate claimed profiles against normative JSON Schemas.
 2. Preserve identity, provenance, quality, and temporal information.
@@ -496,6 +674,10 @@ An SSOM v0.3.0 implementation MUST:
 11. Permit an Asset to carry Equipment roles, Device roles, both, or neither.
 12. Preserve source-specific type assertions or metadata when mapping source types into SSOM role classifications.
 13. Avoid treating Equipment and Device as disjoint inheritance classes in schemas, profiles, or consumers.
+14. Distinguish Observation, Source Assertion, Derived Assertion, Inference, Prediction, Recommendation, Decision, Action, and Outcome records.
+15. Preserve contradictory source assertions without forcing premature reconciliation.
+16. Preserve evidence references for Derived Assertion, Inference, Prediction, Recommendation, Decision, and Outcome records.
+17. Preserve correction or supersession lineage where a truth-state record is updated or replaced.
 
 ## 11. Security and privacy considerations
 
@@ -503,17 +685,17 @@ Operational records can expose sensitive facility, topology, production, equipme
 
 Implementations SHOULD minimize sensitive content, keep credentials outside semantic records, apply purpose and retention metadata, protect source references that reveal proprietary topology, control access to high-resolution telemetry and media references, avoid placing private application authorization logic inside SSOM, and support deletion or tombstone references where required.
 
-## 12. Migration from v0.2
+## 12. Migration from v0.3
 
-Implementations moving from v0.2 to v0.3.0 SHOULD:
+Implementations moving from v0.3.0 to v0.4.0 SHOULD:
 
-1. retain the conceptual Asset, Telemetry Event, and Relationship foundation;
-2. retain existing Assets without re-identifying them;
-3. add `asset_form`, `equipment_roles[]`, `device_roles[]`, `lifecycle_roles[]`, and `classification_assertions[]` where evidence supports them;
-4. preserve source-specific types as source assertions or source metadata;
-5. avoid assuming Equipment and Device are mutually exclusive;
+1. retain existing Assets, Relationships, Observations, and Conditions without re-identifying them;
+2. preserve source-specific statements as Source Assertions rather than silently upgrading them into facts;
+3. emit Derived Assertions, Inferences, Predictions, Recommendations, Decisions, Actions, and Outcomes only when the implementation can supply the required evidence and traceability fields;
+4. preserve contradictory source assertions when sources disagree;
+5. preserve correction and supersession lineage where records are revised;
 6. keep application-private state out of the standard; and
-7. add semantic validation rules that prevent consumers from treating Equipment and Device as disjoint categories.
+7. avoid implying that Recommendation, Decision, Action, and Outcome semantics are interchangeable.
 
 ## 13. Open questions
 

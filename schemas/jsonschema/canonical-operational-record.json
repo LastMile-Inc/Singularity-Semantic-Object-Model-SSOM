@@ -22,6 +22,14 @@
     "record_type": {
       "enum": [
         "observation",
+        "source_assertion",
+        "derived_assertion",
+        "inference",
+        "prediction",
+        "recommendation",
+        "decision",
+        "action",
+        "outcome",
         "event",
         "alarm",
         "condition",
@@ -47,7 +55,8 @@
       ]
     },
     "payload": {
-      "type": "object"
+      "type": "object",
+      "description": "Payload MUST conform to the schema that matches record_type when a dedicated SSOM schema exists for that record type."
     },
     "provenance": {
       "$ref": "common.json#/$defs/provenance"

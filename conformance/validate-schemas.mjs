@@ -185,6 +185,123 @@ validateFixture(
 );
 results.push("composite robot-cell asset examples validate under the overlapping role model");
 
+const vibrationObservation = validateFixture(
+  "truth-state observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/observation-pump-p201-vibration-rms.json"
+);
+assert(vibrationObservation.metric === "vibration_rms", "Truth-state observation fixture must preserve the vibration metric.");
+
+const postActionObservation = validateFixture(
+  "post-action observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/observation-pump-p201-vibration-post-inspection.json"
+);
+assert(postActionObservation.value < vibrationObservation.value, "Post-action observation must show reduced vibration.");
+
+const sourceAssertion = validateFixture(
+  "source assertion",
+  "source-assertion.json",
+  "conformance/fixtures/v0.4/valid/source-assertion-pump-p201-oem-vibration-advisory.json"
+);
+assert(sourceAssertion.evidence_refs.includes(vibrationObservation.record_id), "Source assertions must remain traceable to source evidence when provided.");
+
+const contradictoryAssertion = validateFixture(
+  "contradictory source assertion",
+  "source-assertion.json",
+  "conformance/fixtures/v0.4/valid/source-assertion-pump-p201-operator-normal-claim.json"
+);
+assert(
+  contradictoryAssertion.subject_ref === sourceAssertion.subject_ref &&
+    contradictoryAssertion.asserted_property === sourceAssertion.asserted_property &&
+    contradictoryAssertion.asserted_value !== sourceAssertion.asserted_value,
+  "Contradictory source assertions must be preservable for the same subject without forced reconciliation."
+);
+
+const derivedAssertion = validateFixture(
+  "derived assertion",
+  "derived-assertion.json",
+  "conformance/fixtures/v0.4/valid/derived-assertion-pump-p201-vibration-trend.json"
+);
+assert(derivedAssertion.evidence_refs.includes(sourceAssertion.assertion_id), "Derived assertions must retain evidence references.");
+
+const inference = validateFixture(
+  "inference",
+  "inference.json",
+  "conformance/fixtures/v0.4/valid/inference-pump-p201-bearing-degradation.json"
+);
+assert(inference.evidence_refs.includes(derivedAssertion.assertion_id), "Inference must retain derived evidence references.");
+
+const prediction = validateFixture(
+  "prediction",
+  "prediction.json",
+  "conformance/fixtures/v0.4/valid/prediction-pump-p201-failure-risk-14d.json"
+);
+assert(prediction.evidence_refs.includes(inference.inference_id), "Prediction must retain evidence references.");
+
+const recommendation = validateFixture(
+  "recommendation",
+  "recommendation.json",
+  "conformance/fixtures/v0.4/valid/recommendation-pump-p201-inspection.json"
+);
+assert(recommendation.evidence_refs.includes(inference.inference_id), "Recommendation must remain traceable to inference evidence.");
+
+const decision = validateFixture(
+  "decision",
+  "decision.json",
+  "conformance/fixtures/v0.4/valid/decision-pump-p201-approve-inspection.json"
+);
+assert(decision.context_refs.includes(recommendation.recommendation_id), "Decision context must reference the recommendation chain.");
+
+const action = validateFixture(
+  "action",
+  "action.json",
+  "conformance/fixtures/v0.4/valid/action-pump-p201-inspection-completed.json"
+);
+assert(action.basis_refs.includes(decision.decision_id), "Action must retain decision context.");
+
+const outcome = validateFixture(
+  "outcome",
+  "outcome.json",
+  "conformance/fixtures/v0.4/valid/outcome-pump-p201-vibration-reduced.json"
+);
+assert(outcome.action_ref === action.action_id, "Outcome must reference the action context.");
+assert(outcome.decision_ref === decision.decision_id, "Outcome must reference the decision context when available.");
+assert(outcome.evidence_refs.includes(postActionObservation.record_id), "Outcome must retain evidence used for assessment.");
+results.push("semantic truth-state fixtures validate from observation through outcome");
+
+expectInvalid(
+  "recommendation cannot masquerade as observation",
+  "observation.json",
+  "conformance/fixtures/v0.4/valid/recommendation-pump-p201-inspection.json",
+  "must have required property"
+);
+results.push("recommendation cannot masquerade as an observation");
+
+expectInvalid(
+  "decision requires actor or authority",
+  "decision.json",
+  "conformance/fixtures/v0.4/invalid/decision-missing-actor-or-authority.json",
+  "must match a schema in anyOf"
+);
+results.push("decision requires status and actor or governed authority");
+
+expectInvalid(
+  "outcome requires action or decision context",
+  "outcome.json",
+  "conformance/fixtures/v0.4/invalid/outcome-missing-context.json",
+  "must match a schema in anyOf"
+);
+results.push("outcome must reference action or decision context");
+
+expectInvalid(
+  "derived assertion requires evidence references",
+  "derived-assertion.json",
+  "conformance/fixtures/v0.4/invalid/derived-assertion-missing-evidence.json",
+  "must have required property 'evidence_refs'"
+);
+results.push("derived statements must retain evidence references");
+
 console.log("SSOM schema validation passed:");
 for (const result of results) {
   console.log(`- ${result}`);

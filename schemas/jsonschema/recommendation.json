@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/recommendation.json",
+  "title": "SSOM Recommendation",
+  "description": "A proposed intervention or action with explicit rationale, confidence, priority, supporting evidence, and expected outcome.",
+  "type": "object",
+  "required": [
+    "recommendation_id",
+    "recommendation_type",
+    "target_ref",
+    "recommended_action",
+    "rationale",
+    "priority",
+    "confidence",
+    "evidence_refs",
+    "expected_outcome",
+    "recommended_at",
+    "provenance",
+    "temporal_integrity",
+    "ssom_version"
+  ],
+  "properties": {
+    "recommendation_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:recommendation:"
+    },
+    "semantic_truth_state": {
+      "type": "string",
+      "const": "recommendation"
+    },
+    "ssom_version": {
+      "type": "string"
+    },
+    "recommendation_type": {
+      "type": "string"
+    },
+    "target_ref": {
+      "type": "string"
+    },
+    "recommended_action": {
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "priority": {
+      "$ref": "common.json#/$defs/priorityLevel"
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidenceScore"
+    },
+    "evidence_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "expected_outcome": {
+      "$ref": "common.json#/$defs/expectedOutcome"
+    },
+    "recommended_by": {
+      "$ref": "common.json#/$defs/responsibleParty"
+    },
+    "recommended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
+    },
+    "provenance": {
+      "$ref": "common.json#/$defs/provenance"
+    },
+    "temporal_integrity": {
+      "$ref": "common.json#/$defs/temporalIntegrity"
+    },
+    "policy_evidence": {
+      "$ref": "common.json#/$defs/policyEvidence"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

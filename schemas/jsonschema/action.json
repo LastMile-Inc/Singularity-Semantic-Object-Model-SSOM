@@ -1,47 +1,56 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ssom.dev/schema/observation.json",
-  "title": "SSOM Observation",
+  "$id": "https://ssom.dev/schema/action.json",
+  "title": "SSOM Action",
+  "description": "An executed operational intervention that may later be specialized by work, control, inspection, notification, or other action profiles.",
   "type": "object",
   "required": [
-    "record_id",
-    "subject_ref",
-    "metric",
-    "value",
-    "event_time",
-    "quality",
+    "action_id",
+    "action_type",
+    "target_ref",
+    "action_status",
+    "basis_refs",
+    "executed_at",
     "provenance",
     "temporal_integrity",
     "ssom_version"
   ],
   "properties": {
-    "record_id": {
+    "action_id": {
       "type": "string",
-      "pattern": "^urn:ssom:record:"
+      "pattern": "^urn:ssom:action:"
     },
     "semantic_truth_state": {
       "type": "string",
-      "const": "observation"
+      "const": "action"
     },
     "ssom_version": {
       "type": "string"
     },
-    "subject_ref": {
+    "action_type": {
       "type": "string"
     },
-    "metric": {
+    "target_ref": {
       "type": "string"
     },
-    "value": {},
-    "unit": {
+    "action_status": {
+      "$ref": "common.json#/$defs/actionStatus"
+    },
+    "basis_refs": {
+      "$ref": "common.json#/$defs/evidenceRefs"
+    },
+    "performed_by": {
       "type": "string"
     },
-    "event_time": {
+    "execution_notes": {
+      "type": "string"
+    },
+    "executed_at": {
       "type": "string",
       "format": "date-time"
     },
-    "quality": {
-      "$ref": "common.json#/$defs/quality"
+    "state_lineage": {
+      "$ref": "common.json#/$defs/stateLineage"
     },
     "provenance": {
       "$ref": "common.json#/$defs/provenance"
@@ -51,9 +60,6 @@
     },
     "policy_evidence": {
       "$ref": "common.json#/$defs/policyEvidence"
-    },
-    "state_lineage": {
-      "$ref": "common.json#/$defs/stateLineage"
     },
     "extensions": {
       "type": "object",

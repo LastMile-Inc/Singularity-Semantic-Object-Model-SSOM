@@ -1,0 +1,46 @@
+{
+  "prediction_id": "urn:ssom:prediction:pump-p201-failure-risk-14d",
+  "semantic_truth_state": "prediction",
+  "ssom_version": "0.4.0",
+  "prediction_type": "failure_risk_forecast",
+  "subject_ref": "urn:ssom:asset:pump-p201",
+  "prediction_target": {
+    "target_ref": "urn:ssom:asset:pump-p201",
+    "target_metric": "bearing_failure_probability_14d"
+  },
+  "predicted_value": 0.42,
+  "prediction_horizon": {
+    "horizon_start": "2026-06-29T10:10:00Z",
+    "target_time": "2026-07-13T10:10:00Z",
+    "horizon_end": "2026-07-13T10:10:00Z",
+    "horizon_duration": "P14D"
+  },
+  "predicted_at": "2026-06-29T10:11:00Z",
+  "derivation_method": "survival_model_vibration_bearing_forecast",
+  "confidence": 0.74,
+  "evidence_refs": [
+    "urn:ssom:inference:pump-p201-bearing-degradation"
+  ],
+  "responsible_party": {
+    "model_id": "lm-failure-forecast",
+    "model_version": "2026.06.3"
+  },
+  "provenance": {
+    "source_platform": "ssom_reasoner",
+    "source_authority_id": "forecast-engine",
+    "source_reference": "pred-4407",
+    "lineage_id": "lin-p201-prediction-001",
+    "ingest_time": "2026-06-29T10:11:05Z",
+    "processing_time": "2026-06-29T10:11:15Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:11:00Z",
+    "source_time": "2026-06-29T10:11:00Z",
+    "receive_time": "2026-06-29T10:11:04Z",
+    "processing_time": "2026-06-29T10:11:15Z",
+    "delivery_classification": "reconstructed"
+  },
+  "state_lineage": {
+    "valid_from": "2026-06-29T10:11:00Z"
+  }
+}
