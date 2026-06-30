@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added: Layered BigQuery Reference Architecture
+
+- Replaced illustrative BigQuery SQL with a layered BigQuery reference architecture covering raw evidence, canonical SSOM facts, curated operational intelligence, serving projections, and AI feature or evaluation datasets.
+- Added typed BigQuery DDL for dataset creation, canonical fact history, relationship and identity history, observation and event tables, serving projections, graph-edge views, and AI feature or label surfaces.
+- Added reference queries for condition trends, cross-site peer comparison, action-to-outcome effectiveness, late-arriving corrections, ServiceNow serving projections, and AI retrieval context.
+
+### Changed: BigQuery Guidance And Migration Notes
+
+- Added a dedicated BigQuery architecture document covering event-time partitioning, clustering, workload shapes, late-arriving data, correction lineage, replay, retention, governance, residency, cost controls, and deployment limits.
+- Expanded implementation-boundary and migration guidance so BigQuery reference artifacts stay clearly separate from the normative SSOM semantic contract.
+
 ### Added: Traceable Standards Crosswalks And Claims Boundaries
 
 - Added a reusable standards-mapping artifact schema and structured Prompt 8 artifacts for the standards crosswalk matrix, source-system mapping guidance, transformation-loss register, profile applicability matrix, and standards claims matrix.

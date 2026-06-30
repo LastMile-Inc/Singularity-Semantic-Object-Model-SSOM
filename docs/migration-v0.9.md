@@ -19,3 +19,17 @@ SSOM v0.9 adds governed relationship semantics and explicit non-serialized opera
 - Replace free-text relationship fields such as `mountedInside`, `owns`, or `attachedTo` with either a governed core relationship or a namespaced extension relationship plus mapping metadata.
 - Normalize legacy aliases such as `is_installed_on`, `powered_by`, `replaced_by`, and `preceded_by` through the governed registry rather than introducing more synonymous codes.
 - Model robot cells, cooling-water systems, and process segments as operational boundaries by default unless the organization explicitly manages the aggregate as a serialized asset in its own right.
+
+## BigQuery reference implementation migration note
+
+The illustrative `ssom_core.assets` style SQL examples are now superseded by the layered BigQuery reference architecture under `reference-implementation/bigquery/`.
+
+Migration guidance for existing illustrative deployments:
+
+- Move raw payload and source event landing tables into the `ssom_raw_evidence` dataset.
+- Move typed semantic history into the `ssom_canonical` dataset.
+- Rebuild derived cohorts and operational metrics into `ssom_curated_oi`.
+- Keep workflow and product-serving projections in `ssom_serving` rather than treating them as canonical fact tables.
+- Keep feature tables, retrieval views, labels, and evaluation sets in `ssom_ai`.
+- Replace JSON-first filters on high-frequency telemetry with typed columns such as `measurement_type`, `event_time`, `canonical_asset_id`, `tenant_id`, `site_id`, `quality_state`, and `canonical_unit_code`.
+- Preserve late-arriving, corrected, and superseded facts through append-preserving lineage fields rather than destructive updates.

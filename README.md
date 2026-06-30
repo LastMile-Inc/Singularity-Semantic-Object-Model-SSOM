@@ -121,6 +121,8 @@ docs/
 
 This repository contains public RFCs, schema artifacts, conformance materials, a BigQuery reference implementation, and supporting implementation guidance.
 
+The BigQuery artifacts in this repository define a provider-specific reference architecture for Google Cloud. They do not redefine the SSOM semantic model, and they do not remove production implementation responsibility for IAM, residency, cost controls, ingestion tooling, and workload governance.
+
 Legacy note:
 
 The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
@@ -136,6 +138,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Core specification: [RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md](RFC-0002-SSOM-Core-Operational-Context-and-Conformance.md)
 - JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/asset-class.json](schemas/jsonschema/asset-class.json), [schemas/jsonschema/equipment-model.json](schemas/jsonschema/equipment-model.json), [schemas/jsonschema/operational-boundary.json](schemas/jsonschema/operational-boundary.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/relationship.json](schemas/jsonschema/relationship.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
 - Capability manifest schema: [schemas/jsonschema/capability-manifest.json](schemas/jsonschema/capability-manifest.json)
+- BigQuery reference architecture: [docs/bigquery-reference-architecture-v0.9.md](docs/bigquery-reference-architecture-v0.9.md)
 - Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
 - Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
 - Previous schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
@@ -156,6 +159,8 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Truth-state examples: [docs/examples-v0.4-semantic-truth-lifecycle.md](docs/examples-v0.4-semantic-truth-lifecycle.md)
 - Examples: [docs/examples-v0.3-equipment-device-roles.md](docs/examples-v0.3-equipment-device-roles.md)
 - Migration guidance: [docs/migration-v0.9.md](docs/migration-v0.9.md)
+- BigQuery reference DDL: [reference-implementation/bigquery/schema.sql](reference-implementation/bigquery/schema.sql)
+- BigQuery reference queries: [reference-implementation/bigquery/example-queries.sql](reference-implementation/bigquery/example-queries.sql)
 - Previous migration guidance: [docs/migration-v0.8.md](docs/migration-v0.8.md)
 - Previous migration guidance: [docs/migration-v0.7.md](docs/migration-v0.7.md)
 - Previous migration guidance: [docs/migration-v0.6.md](docs/migration-v0.6.md)

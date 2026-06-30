@@ -457,6 +457,161 @@ function ensureReadmeClaimDiscipline(testName) {
   }
 }
 
+function readText(relativePath) {
+  return fs.readFileSync(path.join(rootDir, relativePath), "utf8");
+}
+
+function assertIncludesAll(content, requiredFragments, testName, label) {
+  const normalizedContent = content.toLowerCase();
+  for (const fragment of requiredFragments) {
+    assert(normalizedContent.includes(fragment.toLowerCase()), `${testName} ${label} must include ${fragment}.`);
+  }
+}
+
+function ensureBigQueryReferenceArchitectureSemantics(testName) {
+  const architectureDoc = readText("docs/bigquery-reference-architecture-v0.9.md");
+  const schemaSql = readText("reference-implementation/bigquery/schema.sql");
+  const exampleQueriesSql = readText("reference-implementation/bigquery/example-queries.sql");
+  const migrationDoc = readText("docs/migration-v0.9.md");
+  const boundaryDoc = readText("docs/IMPLEMENTATION-BOUNDARY-GUIDANCE.md");
+  const readme = readText("README.md");
+
+  assertIncludesAll(
+    architectureDoc,
+    [
+      "Raw Evidence Layer",
+      "Canonical SSOM Layer",
+      "Curated Operational Intelligence Layer",
+      "Serving Projection Layer",
+      "AI Feature and Evaluation Layer",
+      "Dataset and layer diagram",
+      "## Runtime validation status",
+      "## Runnable deployment checklist",
+      "Do not promise infinite scalability"
+    ],
+    testName,
+    "architecture document"
+  );
+
+  assertIncludesAll(
+    architectureDoc,
+    [
+      "event-time partitioning",
+      "late-arriving data",
+      "Corrected and superseded facts",
+      "Replay and projection rebuilds",
+      "Backfills",
+      "Cost governance",
+      "Multi-region and data residency",
+      "Auditability and lineage"
+    ],
+    testName,
+    "architecture guidance"
+  );
+
+  assertIncludesAll(
+    schemaSql,
+    [
+      "CREATE SCHEMA IF NOT EXISTS `ssom_raw_evidence`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_canonical`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_curated_oi`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_serving`",
+      "CREATE SCHEMA IF NOT EXISTS `ssom_ai`",
+      "CREATE TABLE IF NOT EXISTS `ssom_raw_evidence.telemetry_ingest_raw`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.asset_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.identifier_assignment_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.relationship_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.observation_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_canonical.event_facts`",
+      "CREATE TABLE IF NOT EXISTS `ssom_serving.servicenow_ci_projection`",
+      "CREATE TABLE IF NOT EXISTS `ssom_ai.asset_feature_daily`",
+      "CREATE VIEW IF NOT EXISTS `ssom_curated_oi.asset_graph_edges_current`",
+      "CREATE VIEW IF NOT EXISTS `ssom_ai.retrieval_context_v`"
+    ],
+    testName,
+    "reference DDL"
+  );
+
+  assertIncludesAll(
+    schemaSql,
+    [
+      "PARTITION BY DATE(event_time)",
+      "CLUSTER BY tenant_id, site_id, canonical_asset_id, measurement_type",
+      "source_payload JSON NOT NULL",
+      "correction_of_fact_id STRING",
+      "supersedes_fact_id STRING",
+      "superseded_by_fact_id STRING",
+      "fact_version INT64 NOT NULL",
+      "tenant_id STRING NOT NULL",
+      "site_id STRING NOT NULL",
+      "region_code STRING NOT NULL"
+    ],
+    testName,
+    "typed BigQuery layout"
+  );
+
+  assert(
+    !schemaSql.includes("CREATE TABLE IF NOT EXISTS `ssom_serving.telemetry"),
+    `${testName} must not store high-frequency telemetry as a serving-layer transactional table.`
+  );
+
+  assertIncludesAll(
+    exampleQueriesSql,
+    [
+      "-- Condition trend by asset",
+      "-- Cross-site peer comparison",
+      "-- Action-to-outcome effectiveness",
+      "-- Late-arriving correction handling",
+      "-- ServiceNow serving projection",
+      "-- AI retrieval context",
+      "@tenant_id",
+      "@site_id"
+    ],
+    testName,
+    "example query set"
+  );
+
+  assertIncludesAll(
+    migrationDoc,
+    [
+      "BigQuery reference implementation migration note",
+      "illustrative `ssom_core.assets` style SQL examples are now superseded",
+      "ssom_raw_evidence",
+      "ssom_canonical",
+      "ssom_serving",
+      "ssom_ai"
+    ],
+    testName,
+    "migration guidance"
+  );
+
+  assertIncludesAll(
+    boundaryDoc,
+    [
+      "five distinct data domains",
+      "Raw evidence datasets",
+      "Canonical SSOM datasets",
+      "Serving datasets",
+      "AI datasets"
+    ],
+    testName,
+    "implementation-boundary guidance"
+  );
+
+  assertIncludesAll(
+    readme,
+    [
+      "BigQuery reference architecture",
+      "BigQuery reference DDL",
+      "BigQuery reference queries",
+      "provider-specific",
+      "production implementation responsibility"
+    ],
+    testName,
+    "README coverage"
+  );
+}
+
 function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
   try {
     validateMeasurementObservation(testName, relativePath);
@@ -2208,6 +2363,9 @@ for (const [label, relativePath] of [
 ensureReadmeClaimDiscipline("standards claim discipline");
 results.push("standards crosswalk artifacts validate structurally, require maturity and limitation fields, and identify profile-dependent mappings explicitly");
 results.push("README standards language remains qualified and avoids unsupported compliance-style claims");
+
+ensureBigQueryReferenceArchitectureSemantics("BigQuery reference architecture");
+results.push("BigQuery reference architecture stays layered, typed, lineage-aware, and explicitly non-normative while covering serving and AI projections");
 
 expectInvalidCapabilityManifest(
   "capability manifest overclaim",

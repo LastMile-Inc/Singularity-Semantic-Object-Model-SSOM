@@ -33,3 +33,10 @@
 ## Standards Discipline
 - [ ] Implementations do not claim complete ISA-95 hierarchy conformance from the core boundary model alone.
 - [ ] Implementations do not duplicate existing core relationship semantics under new synonymous codes without governance approval.
+
+## BigQuery Reference Architecture
+- [ ] Raw evidence, canonical facts, curated operational intelligence, serving projections, and AI datasets remain explicitly separated.
+- [ ] High-frequency telemetry is not stored in transactional workflow-serving tables.
+- [ ] Frequently queried telemetry and event fields are typed columns rather than JSON-only access paths.
+- [ ] Corrected and superseded facts are append-preserving and lineage-aware.
+- [ ] Serving projections and AI feature tables are rebuildable from canonical history.
