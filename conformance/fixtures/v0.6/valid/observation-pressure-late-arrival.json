@@ -1,0 +1,100 @@
+{
+  "record_id": "urn:ssom:record:p101-pressure-late-arrival",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:pump-p101",
+  "metric": "discharge_pressure",
+  "value": 5.4,
+  "unit": "bar",
+  "event_time": "2026-06-29T10:08:30Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.94
+  },
+  "original_measurement": {
+    "source_value": 5.4,
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar",
+      "dimension": "pressure"
+    },
+    "source_timestamp": "2026-06-29T10:08:30Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "pressure",
+    "canonical_value": 540,
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa",
+      "dimension": "pressure"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa"
+    },
+    "formula_reference": "1 bar = 100 kPa",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:40:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-04-01T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:pt-101"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:pump-p101",
+    "source_device_ref": "urn:ssom:asset:pt-101",
+    "source_signal_ref": "tag:PT-101.PV",
+    "sampling_interval": "PT1S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "normal_operation"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:08:30Z",
+    "ingestion_timestamp": "2026-06-29T10:40:00Z",
+    "clock_source_context": "historian_backfill_recovery",
+    "ordering_state": "late_arrival"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:PT-101.PV:recovered",
+    "lineage_id": "ln-obs-p101-pressure-late-v06",
+    "ingest_time": "2026-06-29T10:40:00Z",
+    "processing_time": "2026-06-29T10:40:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:08:30Z",
+    "source_time": "2026-06-29T10:08:30Z",
+    "receive_time": "2026-06-29T10:40:00Z",
+    "processing_time": "2026-06-29T10:40:02Z",
+    "delivery_classification": "late_arrival"
+  },
+  "state_lineage": {
+    "supersedes_refs": [
+      "urn:ssom:condition:p101-cavitation-risk"
+    ]
+  }
+}

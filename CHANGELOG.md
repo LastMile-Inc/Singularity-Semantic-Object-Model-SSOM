@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added: Measurement and Unit Safety Semantics
+
+- Added structured Observation semantics for original source measurement, canonical normalized measurement, governed unit references, conversion lineage, structured measurement quality, calibration context, signal context, and time-synchronization context.
+- Added semantic validation and v0.6 fixtures for pressure, temperature, vibration acceleration, flow, valve position, stale data, overdue calibration, and late-arriving historian observations.
+- Added negative tests proving incompatible quantity kinds and incompatible units are rejected or flagged, canonical measurement requires explicit quantity kind, conversion lineage requires source-unit traceability, and structured calibration fields are preferred over free-form notes.
+
+### Changed: Observation Safety Rules
+
+- Observation guidance now warns that a value is not operationally comparable merely because it is numeric.
+- RFC-0002 and README now distinguish source unit, canonical unit, quantity kind, engineering unit, display unit, conversion reference, measurement quality, and operational context.
+
 ### Added: Semantic Truth and Decision Lifecycle
 
 - Added normative JSON Schemas for Source Assertion, Derived Assertion, Inference, Prediction, Recommendation, Decision, Action, and Outcome.

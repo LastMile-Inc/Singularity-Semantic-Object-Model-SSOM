@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Category:** Standards Track
-- **Intended Version:** SSOM v0.5.0
+- **Intended Version:** SSOM v0.6.0
 - **Created:** 2026-06
 - **Updates:** RFC-0001
 - **License:** Apache-2.0
@@ -18,6 +18,8 @@ SSOM v0.3.0 added a formally governed way to distinguish **Equipment** and **Dev
 SSOM v0.4.0 adds a formally governed semantic truth and decision lifecycle that distinguishes **Observation**, **Source Assertion**, **Derived Assertion**, **Inference**, **Prediction**, **Recommendation**, **Decision**, **Action**, and **Outcome**.
 
 SSOM v0.5.0 adds a formally governed asset identity lifecycle that distinguishes canonical Asset identity, external identifiers, identifier assignments, scope, authority, aliases, succession, and identity-affecting lifecycle events.
+
+SSOM v0.6.0 adds measurement-safety semantics so Observations can preserve original source measurement, canonical normalized measurement, governed unit and quantity references, conversion lineage, quality state, calibration context, signal context, and time-synchronization context.
 
 ## 1. Motivation
 
@@ -109,6 +111,7 @@ The terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOU
 12. **Implementation portability.** SSOM MUST support multiple serializations and storage patterns.
 13. **Truth-state separation.** SSOM MUST distinguish observation, assertion, inference, prediction, recommendation, decision, action, and outcome semantics.
 14. **Identity continuity.** SSOM MUST preserve canonical Asset identity separately from external identifiers, time-bound assignments, and succession semantics.
+15. **Measurement safety.** SSOM MUST preserve original measurement semantics separately from canonical normalized measurement semantics and MUST NOT treat a numeric value as operationally comparable without governed quantity, unit, quality, and timing context.
 
 ## 5. Core semantic objects
 
@@ -432,6 +435,12 @@ An **Observation** is a time-indexed measurement or state value associated with 
 
 An Observation is not automatically a fact, governed conclusion, recommendation, decision, action, or outcome.
 
+When an Observation carries structured measurement semantics, it MUST preserve original source measurement and canonical normalized measurement as distinct structures rather than overwriting the original source value.
+
+Practical warning:
+
+> A value is not operationally comparable merely because it is numeric.
+
 Required fields:
 
 - `record_id`
@@ -442,6 +451,45 @@ Required fields:
 - `quality`
 - `provenance`
 - `temporal_integrity`
+
+#### 5.5.1 Structured measurement semantics
+
+An Observation MAY additionally carry structured measurement semantics using the following machine-readable elements:
+
+- `original_measurement`
+- `canonical_measurement`
+- `conversion_lineage`
+- `measurement_quality`
+- `calibration_context`
+- `signal_context`
+- `time_synchronization_context`
+
+`original_measurement` preserves source-provided value, source-provided unit, source timestamp, source quality, and source representation.
+
+`canonical_measurement` preserves normalized value, canonical unit, and explicit quantity kind.
+
+`conversion_lineage` preserves the governed source unit, governed canonical unit, conversion method, conversion version, conversion actor or service, conversion timestamp, and formula reference where relevant.
+
+`measurement_quality` preserves quality code, communication quality, validity, uncertainty where available, accuracy where available, precision where available, missing-data state, and stale-data state.
+
+`calibration_context` preserves calibration reference, calibration status, last-known calibration date where available, next-due status where available, and sensor or instrument reference.
+
+`signal_context` preserves measurement target, source Device or Instrument, engineering unit, display unit, engineering range, operational range, setpoint where relevant, alarm threshold where relevant, baseline where relevant, sampling interval, aggregation method, and operating mode context.
+
+`time_synchronization_context` preserves source timestamp, ingestion timestamp, clock or time-source context where available, and ordering context for late-arriving or out-of-order data.
+
+#### 5.5.2 Normative measurement-safety rules
+
+1. Original source value and original source unit MUST be preservable separately from canonical normalized measurement.
+2. Canonical normalized measurement MUST declare explicit quantity kind and canonical unit.
+3. Unit conversion MUST be traceable through governed conversion lineage.
+4. A value with missing, free-form, or unknown unit semantics MUST NOT be treated as safely comparable across sources.
+5. Dimensional incompatibility between unit and quantity kind MUST be rejected or explicitly flagged by semantic validation.
+6. Calibration status, stale-data state, missing-data state, and degraded communication quality MUST be representable in structured fields.
+7. Measurement target context MUST remain explicit and MUST identify the observed Asset, Device, Signal, or equivalent operational target context.
+8. Observation semantics MUST remain distinct from Condition, Event, Alarm, Inference, Recommendation, Decision, Action, and Outcome semantics.
+9. No generic free-form field MAY become the primary carrier for quantity kind, unit meaning, conversion lineage, calibration status, or measurement quality semantics.
+10. SSOM MUST NOT claim or require a new universal unit catalog. Implementations SHOULD use governed references to recognized unit or quantity vocabularies or approved source-specific code systems.
 
 ### 5.6 Semantic Truth and Decision Lifecycle
 

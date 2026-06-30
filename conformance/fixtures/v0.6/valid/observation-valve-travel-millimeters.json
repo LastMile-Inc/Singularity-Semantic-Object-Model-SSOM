@@ -1,0 +1,97 @@
+{
+  "record_id": "urn:ssom:record:valve-xv101-travel-mm",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:xv-101",
+  "metric": "valve_travel",
+  "value": 18,
+  "unit": "mm",
+  "event_time": "2026-06-29T10:21:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.97
+  },
+  "original_measurement": {
+    "source_value": 18,
+    "source_unit": {
+      "unit_code": "MM",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm",
+      "dimension": "valve_travel_length"
+    },
+    "source_timestamp": "2026-06-29T10:21:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "valve_travel_length",
+    "canonical_value": 18,
+    "canonical_unit": {
+      "unit_code": "MM",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm",
+      "dimension": "valve_travel_length"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "MM",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm"
+    },
+    "canonical_unit": {
+      "unit_code": "MM",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm"
+    },
+    "conversion_method": "identity_projection",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:21:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_status": "unknown",
+    "sensor_ref": "urn:ssom:asset:xv-101-positioner"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:xv-101",
+    "source_device_ref": "urn:ssom:asset:xv-101-positioner",
+    "source_signal_ref": "tag:XV-101.TRAVEL_MM",
+    "engineering_unit": {
+      "unit_code": "MM",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "mm"
+    },
+    "sampling_interval": "PT1S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "automatic"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:21:00Z",
+    "ingestion_timestamp": "2026-06-29T10:21:01Z",
+    "clock_source_context": "source_plc_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "scada",
+    "source_authority_id": "scada",
+    "source_reference": "tag:XV-101.TRAVEL_MM",
+    "lineage_id": "ln-obs-xv101-mm-v06",
+    "ingest_time": "2026-06-29T10:21:01Z",
+    "processing_time": "2026-06-29T10:21:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:21:00Z",
+    "source_time": "2026-06-29T10:21:00Z",
+    "receive_time": "2026-06-29T10:21:01Z",
+    "processing_time": "2026-06-29T10:21:02Z",
+    "delivery_classification": "live"
+  }
+}

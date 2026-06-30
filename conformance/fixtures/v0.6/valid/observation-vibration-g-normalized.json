@@ -1,0 +1,113 @@
+{
+  "record_id": "urn:ssom:record:p201-vibration-g-normalized",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:smart-pump-p201",
+  "metric": "bearing_vibration_acceleration",
+  "value": 0.42,
+  "unit": "g",
+  "event_time": "2026-06-29T10:18:00Z",
+  "quality": {
+    "status": "good",
+    "validation_status": "valid",
+    "score": 0.97
+  },
+  "original_measurement": {
+    "source_value": 0.42,
+    "source_unit": {
+      "unit_code": "STD_G",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "g",
+      "dimension": "vibration_acceleration"
+    },
+    "source_timestamp": "2026-06-29T10:18:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "vibration_acceleration",
+    "canonical_value": 4.12,
+    "canonical_unit": {
+      "unit_code": "M_PER_S2",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "m/s2",
+      "dimension": "vibration_acceleration"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "STD_G",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "g"
+    },
+    "canonical_unit": {
+      "unit_code": "M_PER_S2",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "m/s2"
+    },
+    "formula_reference": "g * 9.80665",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:18:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "good",
+    "communication_quality": "good",
+    "validity_status": "valid",
+    "uncertainty": 0.05,
+    "accuracy": 0.1,
+    "precision": 0.01,
+    "missing_data_state": "present",
+    "stale_data_state": "fresh"
+  },
+  "calibration_context": {
+    "calibration_reference": "cal-vib-201-2026q2",
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-05-20T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:accel-p201"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:smart-pump-p201",
+    "source_device_ref": "urn:ssom:asset:accel-p201",
+    "source_signal_ref": "tag:ACCEL-P201.RMS",
+    "engineering_unit": {
+      "unit_code": "STD_G",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "g"
+    },
+    "baseline": {
+      "value": 0.18,
+      "unit": {
+        "unit_code": "STD_G",
+        "vocabulary_id": "ucum-compatible",
+        "symbol": "g"
+      },
+      "basis": "bearing_acceleration_baseline"
+    },
+    "sampling_interval": "PT1S",
+    "aggregation_method": "rms",
+    "operating_mode_context": "steady_state"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:18:00Z",
+    "ingestion_timestamp": "2026-06-29T10:18:01Z",
+    "clock_source_context": "edge_gateway_ntp",
+    "ordering_state": "in_order"
+  },
+  "provenance": {
+    "source_platform": "condition_monitor",
+    "source_authority_id": "edge-gateway",
+    "source_reference": "tag:ACCEL-P201.RMS",
+    "lineage_id": "ln-obs-p201-vibacc-v06",
+    "ingest_time": "2026-06-29T10:18:01Z",
+    "processing_time": "2026-06-29T10:18:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:18:00Z",
+    "source_time": "2026-06-29T10:18:00Z",
+    "receive_time": "2026-06-29T10:18:01Z",
+    "processing_time": "2026-06-29T10:18:02Z",
+    "delivery_classification": "live"
+  }
+}

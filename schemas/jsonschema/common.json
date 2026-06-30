@@ -238,6 +238,384 @@
         "recommissioned_as"
       ]
     },
+    "quantityKind": {
+      "type": "string",
+      "enum": [
+        "pressure",
+        "temperature",
+        "volumetric_flow_rate",
+        "vibration_velocity",
+        "vibration_acceleration",
+        "voltage",
+        "current",
+        "rotational_speed",
+        "energy",
+        "level",
+        "concentration",
+        "position",
+        "valve_position_fraction_open",
+        "valve_travel_length"
+      ]
+    },
+    "unitReference": {
+      "type": "object",
+      "required": [
+        "unit_code",
+        "vocabulary_id"
+      ],
+      "properties": {
+        "unit_code": {
+          "type": "string"
+        },
+        "vocabulary_id": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "dimension": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "sourceMeasurementRepresentation": {
+      "type": "string",
+      "enum": [
+        "numeric_scalar",
+        "boolean_state",
+        "string_state",
+        "structured_payload"
+      ]
+    },
+    "originalMeasurement": {
+      "type": "object",
+      "required": [
+        "source_value",
+        "source_unit",
+        "source_timestamp",
+        "source_representation"
+      ],
+      "properties": {
+        "source_value": {},
+        "source_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "source_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_quality": {
+          "$ref": "common.json#/$defs/quality"
+        },
+        "source_representation": {
+          "$ref": "common.json#/$defs/sourceMeasurementRepresentation"
+        }
+      },
+      "additionalProperties": true
+    },
+    "canonicalMeasurement": {
+      "type": "object",
+      "required": [
+        "quantity_kind",
+        "canonical_value",
+        "canonical_unit"
+      ],
+      "properties": {
+        "quantity_kind": {
+          "$ref": "common.json#/$defs/quantityKind"
+        },
+        "canonical_value": {},
+        "canonical_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        }
+      },
+      "additionalProperties": true
+    },
+    "conversionLineage": {
+      "type": "object",
+      "required": [
+        "source_unit",
+        "canonical_unit",
+        "conversion_method",
+        "conversion_service",
+        "conversion_version",
+        "conversion_timestamp"
+      ],
+      "properties": {
+        "source_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "canonical_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "formula_reference": {
+          "type": "string"
+        },
+        "conversion_method": {
+          "type": "string"
+        },
+        "conversion_service": {
+          "type": "string"
+        },
+        "conversion_version": {
+          "type": "string"
+        },
+        "conversion_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "measurementQuality": {
+      "type": "object",
+      "required": [
+        "quality_code",
+        "communication_quality",
+        "validity_status",
+        "missing_data_state",
+        "stale_data_state"
+      ],
+      "properties": {
+        "quality_code": {
+          "type": "string",
+          "enum": [
+            "good",
+            "degraded",
+            "bad",
+            "estimated",
+            "missing"
+          ]
+        },
+        "communication_quality": {
+          "type": "string",
+          "enum": [
+            "good",
+            "degraded",
+            "lost",
+            "unknown"
+          ]
+        },
+        "validity_status": {
+          "type": "string",
+          "enum": [
+            "valid",
+            "invalid",
+            "suspect",
+            "interpolated",
+            "substituted"
+          ]
+        },
+        "uncertainty": {
+          "type": "number",
+          "minimum": 0
+        },
+        "accuracy": {
+          "type": "number",
+          "minimum": 0
+        },
+        "precision": {
+          "type": "number",
+          "minimum": 0
+        },
+        "missing_data_state": {
+          "type": "string",
+          "enum": [
+            "present",
+            "partially_missing",
+            "missing"
+          ]
+        },
+        "stale_data_state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "stale",
+            "unknown"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "calibrationContext": {
+      "type": "object",
+      "required": [
+        "calibration_status"
+      ],
+      "properties": {
+        "calibration_reference": {
+          "type": "string"
+        },
+        "calibration_status": {
+          "type": "string",
+          "enum": [
+            "calibrated",
+            "due",
+            "overdue",
+            "out_of_service",
+            "unknown"
+          ]
+        },
+        "last_known_calibration_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "next_due_status": {
+          "type": "string",
+          "enum": [
+            "not_due",
+            "due_soon",
+            "overdue",
+            "unknown"
+          ]
+        },
+        "sensor_ref": {
+          "type": "string"
+        },
+        "instrument_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "measurementRange": {
+      "type": "object",
+      "required": [
+        "low",
+        "high",
+        "unit"
+      ],
+      "properties": {
+        "low": {
+          "type": "number"
+        },
+        "high": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        }
+      },
+      "additionalProperties": true
+    },
+    "measurementPoint": {
+      "type": "object",
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {},
+        "unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "basis": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "aggregationMethod": {
+      "type": "string",
+      "enum": [
+        "raw_sample",
+        "average",
+        "min",
+        "max",
+        "median",
+        "rms",
+        "sum",
+        "delta"
+      ]
+    },
+    "signalContext": {
+      "type": "object",
+      "required": [
+        "measurement_target_ref"
+      ],
+      "properties": {
+        "measurement_target_ref": {
+          "type": "string"
+        },
+        "source_device_ref": {
+          "type": "string"
+        },
+        "source_signal_ref": {
+          "type": "string"
+        },
+        "engineering_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "display_unit": {
+          "$ref": "common.json#/$defs/unitReference"
+        },
+        "engineering_range": {
+          "$ref": "common.json#/$defs/measurementRange"
+        },
+        "operational_range": {
+          "$ref": "common.json#/$defs/measurementRange"
+        },
+        "setpoint": {
+          "$ref": "common.json#/$defs/measurementPoint"
+        },
+        "alarm_threshold": {
+          "$ref": "common.json#/$defs/measurementPoint"
+        },
+        "baseline": {
+          "$ref": "common.json#/$defs/measurementPoint"
+        },
+        "sampling_interval": {
+          "type": "string"
+        },
+        "aggregation_method": {
+          "$ref": "common.json#/$defs/aggregationMethod"
+        },
+        "operating_mode_context": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "timeSynchronizationContext": {
+      "type": "object",
+      "required": [
+        "source_timestamp",
+        "ingestion_timestamp"
+      ],
+      "properties": {
+        "source_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ingestion_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "clock_source_context": {
+          "type": "string"
+        },
+        "clock_reference": {
+          "type": "string"
+        },
+        "ordering_state": {
+          "type": "string",
+          "enum": [
+            "in_order",
+            "out_of_order",
+            "late_arrival",
+            "replayed"
+          ]
+        },
+        "clock_offset_ms": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true
+    },
     "classificationAssertion": {
       "type": "object",
       "required": [

@@ -1,0 +1,96 @@
+{
+  "record_id": "urn:ssom:record:p101-pressure-stale-degraded",
+  "semantic_truth_state": "observation",
+  "ssom_version": "0.6.0",
+  "subject_ref": "urn:ssom:asset:pump-p101",
+  "metric": "discharge_pressure",
+  "value": 4.2,
+  "unit": "bar",
+  "event_time": "2026-06-29T10:22:00Z",
+  "quality": {
+    "status": "uncertain",
+    "validation_status": "partial",
+    "score": 0.52
+  },
+  "original_measurement": {
+    "source_value": 4.2,
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar",
+      "dimension": "pressure"
+    },
+    "source_timestamp": "2026-06-29T10:22:00Z",
+    "source_representation": "numeric_scalar"
+  },
+  "canonical_measurement": {
+    "quantity_kind": "pressure",
+    "canonical_value": 420,
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa",
+      "dimension": "pressure"
+    }
+  },
+  "conversion_lineage": {
+    "source_unit": {
+      "unit_code": "BAR",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "bar"
+    },
+    "canonical_unit": {
+      "unit_code": "KPA",
+      "vocabulary_id": "ucum-compatible",
+      "symbol": "kPa"
+    },
+    "formula_reference": "1 bar = 100 kPa",
+    "conversion_method": "deterministic_unit_conversion",
+    "conversion_service": "ssom-unit-normalizer",
+    "conversion_version": "2026.06.1",
+    "conversion_timestamp": "2026-06-29T10:25:02Z"
+  },
+  "measurement_quality": {
+    "quality_code": "degraded",
+    "communication_quality": "degraded",
+    "validity_status": "suspect",
+    "uncertainty": 0.2,
+    "missing_data_state": "present",
+    "stale_data_state": "stale"
+  },
+  "calibration_context": {
+    "calibration_status": "calibrated",
+    "last_known_calibration_date": "2026-04-01T00:00:00Z",
+    "next_due_status": "not_due",
+    "sensor_ref": "urn:ssom:asset:pt-101"
+  },
+  "signal_context": {
+    "measurement_target_ref": "urn:ssom:asset:pump-p101",
+    "source_device_ref": "urn:ssom:asset:pt-101",
+    "source_signal_ref": "tag:PT-101.PV",
+    "sampling_interval": "PT1S",
+    "aggregation_method": "raw_sample",
+    "operating_mode_context": "network_degraded"
+  },
+  "time_synchronization_context": {
+    "source_timestamp": "2026-06-29T10:22:00Z",
+    "ingestion_timestamp": "2026-06-29T10:25:00Z",
+    "clock_source_context": "source_plc_ntp",
+    "ordering_state": "out_of_order"
+  },
+  "provenance": {
+    "source_platform": "historian",
+    "source_authority_id": "historian",
+    "source_reference": "tag:PT-101.PV",
+    "lineage_id": "ln-obs-p101-pressure-stale-v06",
+    "ingest_time": "2026-06-29T10:25:00Z",
+    "processing_time": "2026-06-29T10:25:02Z"
+  },
+  "temporal_integrity": {
+    "event_time": "2026-06-29T10:22:00Z",
+    "source_time": "2026-06-29T10:22:00Z",
+    "receive_time": "2026-06-29T10:25:00Z",
+    "processing_time": "2026-06-29T10:25:02Z",
+    "delivery_classification": "late_arrival"
+  }
+}

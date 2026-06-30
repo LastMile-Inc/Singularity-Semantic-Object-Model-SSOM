@@ -59,6 +59,93 @@ function expectInvalid(testName, schemaFile, relativePath, expectedFragment) {
   }
 }
 
+const unitCatalog = {
+  BAR: { dimension: "pressure" },
+  KPA: { dimension: "pressure" },
+  PA: { dimension: "pressure" },
+  DEG_F: { dimension: "temperature" },
+  DEG_C: { dimension: "temperature" },
+  GAL_US_PER_MIN: { dimension: "volumetric_flow_rate" },
+  L_PER_S: { dimension: "volumetric_flow_rate" },
+  STD_G: { dimension: "vibration_acceleration" },
+  M_PER_S2: { dimension: "vibration_acceleration" },
+  MM_PER_S: { dimension: "vibration_velocity" },
+  PERCENT: { dimension: "valve_position_fraction_open" },
+  MM: { dimension: "valve_travel_length" }
+};
+
+const quantityKindDimensions = {
+  pressure: "pressure",
+  temperature: "temperature",
+  volumetric_flow_rate: "volumetric_flow_rate",
+  vibration_velocity: "vibration_velocity",
+  vibration_acceleration: "vibration_acceleration",
+  valve_position_fraction_open: "valve_position_fraction_open",
+  valve_travel_length: "valve_travel_length"
+};
+
+function getUnitDimension(unitRef, label) {
+  assert(unitRef && unitRef.unit_code, `${label} must include a governed unit code.`);
+  const unitInfo = unitCatalog[unitRef.unit_code];
+  assert(unitInfo, `${label} uses unsupported or unknown unit code ${unitRef.unit_code}.`);
+  return unitInfo.dimension;
+}
+
+function validateMeasurementObservation(testName, relativePath) {
+  const observation = validateFixture(testName, "observation.json", relativePath);
+
+  if (observation.original_measurement || observation.canonical_measurement) {
+    assert(observation.original_measurement, `${testName} must preserve original measurement semantics.`);
+    assert(observation.canonical_measurement, `${testName} must preserve canonical measurement semantics.`);
+    assert(observation.measurement_quality, `${testName} must include structured measurement quality.`);
+    assert(observation.signal_context, `${testName} must include signal semantics.`);
+    assert(observation.time_synchronization_context, `${testName} must include time synchronization context.`);
+
+    const quantityKind = observation.canonical_measurement.quantity_kind;
+    const expectedDimension = quantityKindDimensions[quantityKind];
+    assert(expectedDimension, `${testName} must use a governed quantity kind.`);
+
+    const sourceDimension = getUnitDimension(observation.original_measurement.source_unit, `${testName} source unit`);
+    const canonicalDimension = getUnitDimension(observation.canonical_measurement.canonical_unit, `${testName} canonical unit`);
+
+    assert(
+      sourceDimension === expectedDimension,
+      `${testName} has incompatible quantity kinds or source units for ${quantityKind}.`
+    );
+    assert(
+      canonicalDimension === expectedDimension,
+      `${testName} has incompatible units for canonical quantity kind ${quantityKind}.`
+    );
+
+    assert(
+      observation.conversion_lineage.source_unit.unit_code === observation.original_measurement.source_unit.unit_code,
+      `${testName} conversion lineage must retain the original source unit.`
+    );
+    assert(
+      observation.conversion_lineage.canonical_unit.unit_code === observation.canonical_measurement.canonical_unit.unit_code,
+      `${testName} conversion lineage must retain the canonical unit.`
+    );
+  }
+
+  if (!observation.calibration_context && observation.extensions && observation.extensions.calibration_note) {
+    throw new Error(`${testName} must not use a free-form calibration note when structured calibration context is available.`);
+  }
+
+  return observation;
+}
+
+function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
+  try {
+    validateMeasurementObservation(testName, relativePath);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
 function parseTimestamp(value, label) {
   const parsed = Date.parse(value);
   assert(Number.isFinite(parsed), `${label} must be a valid date-time.`);
@@ -570,6 +657,107 @@ expectInvalidIdentityBundle(
   "invalid validity period"
 );
 results.push("identifier validity periods must be well formed and non-inverted");
+
+const pressureObservation = validateMeasurementObservation(
+  "pressure normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-bar-normalized.json"
+);
+assert(pressureObservation.canonical_measurement.canonical_unit.unit_code === "KPA", "Pressure canonical unit must be explicit.");
+
+const temperatureObservation = validateMeasurementObservation(
+  "temperature normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-temperature-fahrenheit-normalized.json"
+);
+assert(temperatureObservation.canonical_measurement.quantity_kind === "temperature", "Temperature observation must declare quantity kind.");
+
+const vibrationObservationAccel = validateMeasurementObservation(
+  "vibration acceleration normalization",
+  "conformance/fixtures/v0.6/valid/observation-vibration-g-normalized.json"
+);
+assert(vibrationObservationAccel.canonical_measurement.quantity_kind === "vibration_acceleration", "Vibration acceleration must remain explicit.");
+
+const flowObservation = validateMeasurementObservation(
+  "flow normalization measurement",
+  "conformance/fixtures/v0.6/valid/observation-flow-gpm-normalized.json"
+);
+assert(flowObservation.canonical_measurement.canonical_unit.unit_code === "L_PER_S", "Flow canonical unit must be explicit.");
+
+const valvePercentObservation = validateMeasurementObservation(
+  "valve percent open signal",
+  "conformance/fixtures/v0.6/valid/observation-valve-position-percent-open.json"
+);
+const valveTravelObservation = validateMeasurementObservation(
+  "valve travel signal",
+  "conformance/fixtures/v0.6/valid/observation-valve-travel-millimeters.json"
+);
+assert(
+  valvePercentObservation.canonical_measurement.quantity_kind !== valveTravelObservation.canonical_measurement.quantity_kind,
+  "Percent open and millimeters of travel must remain different quantity kinds unless explicitly mapped."
+);
+
+const stalePressureObservation = validateMeasurementObservation(
+  "stale degraded pressure measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-stale-degraded.json"
+);
+assert(stalePressureObservation.measurement_quality.stale_data_state === "stale", "Stale measurement must preserve stale-data status.");
+assert(stalePressureObservation.measurement_quality.communication_quality === "degraded", "Stale measurement must preserve degraded communication quality.");
+
+const overdueCalibrationObservation = validateMeasurementObservation(
+  "overdue calibration measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-overdue-calibration.json"
+);
+assert(overdueCalibrationObservation.calibration_context.next_due_status === "overdue", "Calibration context must preserve overdue status.");
+
+const lateArrivalObservation = validateMeasurementObservation(
+  "late arriving historian measurement",
+  "conformance/fixtures/v0.6/valid/observation-pressure-late-arrival.json"
+);
+assert(lateArrivalObservation.time_synchronization_context.ordering_state === "late_arrival", "Late-arriving data must preserve ordering state.");
+assert(lateArrivalObservation.temporal_integrity.delivery_classification === "late_arrival", "Late-arriving data must preserve temporal delivery classification.");
+const lateArrivalCondition = validateFixture(
+  "late-arrival condition reinterpretation",
+  "condition.json",
+  "conformance/fixtures/v0.6/valid/condition-p101-cavitation-risk-revised-late-data.json"
+);
+assert(lateArrivalCondition.evidence_refs.includes(lateArrivalObservation.record_id), "Late-arriving condition reinterpretation must retain late-data evidence refs.");
+results.push("structured measurement semantics preserve source, canonical, quality, calibration, signal, and timing context");
+
+expectInvalidMeasurementObservation(
+  "incompatible quantity kind conversion",
+  "conformance/fixtures/v0.6/invalid/observation-incompatible-quantity-kind.json",
+  "incompatible quantity kinds"
+);
+results.push("incompatible quantity kinds cannot be silently converted");
+
+expectInvalidMeasurementObservation(
+  "incompatible canonical units",
+  "conformance/fixtures/v0.6/invalid/observation-incompatible-unit-conversion.json",
+  "incompatible units"
+);
+results.push("incompatible units are rejected or flagged");
+
+expectInvalid(
+  "canonical measurement requires quantity kind",
+  "observation.json",
+  "conformance/fixtures/v0.6/invalid/observation-missing-canonical-quantity-kind.json",
+  "must have required property 'quantity_kind'"
+);
+results.push("canonical measurement cannot omit quantity kind");
+
+expectInvalid(
+  "conversion lineage requires source unit",
+  "observation.json",
+  "conformance/fixtures/v0.6/invalid/observation-missing-conversion-source-unit.json",
+  "must have required property 'source_unit'"
+);
+results.push("canonical conversion cannot omit source-unit lineage");
+
+expectInvalidMeasurementObservation(
+  "free-form calibration note without structure",
+  "conformance/fixtures/v0.6/invalid/observation-freeform-calibration-note.json",
+  "free-form calibration note"
+);
+results.push("calibration status cannot be represented only as a free-form note");
 
 console.log("SSOM schema validation passed:");
 for (const result of results) {
