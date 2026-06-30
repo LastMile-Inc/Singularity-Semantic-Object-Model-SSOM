@@ -123,6 +123,8 @@ This repository contains public RFCs, schema artifacts, conformance materials, a
 
 The BigQuery artifacts in this repository define a provider-specific reference architecture for Google Cloud. They do not redefine the SSOM semantic model, and they do not remove production implementation responsibility for IAM, residency, cost controls, ingestion tooling, and workload governance.
 
+> SSOM is the canonical industrial semantic and evidence layer. ServiceNow remains a system of action and workflow consumer. Safety and cybersecurity profiles extend operational context without converting SSOM into a complete safety or cybersecurity management product.
+
 Legacy note:
 
 The placeholder XSD files under `schemas/` are deprecated, non-normative compatibility markers only. The maintained normative artifacts in this repository are the JSON Schemas under `schemas/jsonschema/`, the governed relationship registry, the executable conformance fixtures, and the RFC text.
@@ -139,6 +141,9 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - JSON Schemas: [schemas/jsonschema/asset.json](schemas/jsonschema/asset.json), [schemas/jsonschema/asset-class.json](schemas/jsonschema/asset-class.json), [schemas/jsonschema/equipment-model.json](schemas/jsonschema/equipment-model.json), [schemas/jsonschema/operational-boundary.json](schemas/jsonschema/operational-boundary.json), [schemas/jsonschema/functional-location.json](schemas/jsonschema/functional-location.json), [schemas/jsonschema/relationship.json](schemas/jsonschema/relationship.json), [schemas/jsonschema/event.json](schemas/jsonschema/event.json), [schemas/jsonschema/alarm.json](schemas/jsonschema/alarm.json), [schemas/jsonschema/state-transition.json](schemas/jsonschema/state-transition.json), [schemas/jsonschema/common.json](schemas/jsonschema/common.json)
 - Capability manifest schema: [schemas/jsonschema/capability-manifest.json](schemas/jsonschema/capability-manifest.json)
 - BigQuery reference architecture: [docs/bigquery-reference-architecture-v0.9.md](docs/bigquery-reference-architecture-v0.9.md)
+- ServiceNow serving projection profile: [docs/servicenow-serving-projection-profile-v0.9.md](docs/servicenow-serving-projection-profile-v0.9.md)
+- Functional safety foundation profile: [docs/functional-safety-foundation-profile-v0.9.md](docs/functional-safety-foundation-profile-v0.9.md)
+- OT cybersecurity foundation profile: [docs/ot-cybersecurity-foundation-profile-v0.9.md](docs/ot-cybersecurity-foundation-profile-v0.9.md)
 - Schema reference: [docs/schema-reference-v0.9.md](docs/schema-reference-v0.9.md)
 - Previous schema reference: [docs/schema-reference-v0.8.md](docs/schema-reference-v0.8.md)
 - Previous schema reference: [docs/schema-reference-v0.7.md](docs/schema-reference-v0.7.md)
@@ -154,6 +159,7 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Capability manifest profile: [docs/capability-manifest-v0.9.md](docs/capability-manifest-v0.9.md)
 - Integrated lifecycle conformance: [docs/integrated-pump-lifecycle-conformance-v0.9.md](docs/integrated-pump-lifecycle-conformance-v0.9.md)
 - Event and alarm profile: [docs/event-alarm-profile-v0.8.md](docs/event-alarm-profile-v0.8.md)
+- ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
 - Reliability and maintenance profile: [docs/reliability-maintenance-profile-v0.7.md](docs/reliability-maintenance-profile-v0.7.md)
 - Identity lifecycle examples: [docs/examples-v0.5-identity-lifecycle.md](docs/examples-v0.5-identity-lifecycle.md)
 - Truth-state examples: [docs/examples-v0.4-semantic-truth-lifecycle.md](docs/examples-v0.4-semantic-truth-lifecycle.md)
@@ -170,7 +176,6 @@ The placeholder XSD files under `schemas/` are deprecated, non-normative compati
 - Standards mapping claims are qualified conceptual-alignment statements unless an implementation publishes additional mapping evidence and profile-specific conformance artifacts.
 - Previous standards mapping note: [docs/standards-mapping-v0.3.md](docs/standards-mapping-v0.3.md)
 - Previous migration guidance: [docs/migration-v0.3.md](docs/migration-v0.3.md)
-- ServiceNow coexistence: [docs/servicenow-coexistence.md](docs/servicenow-coexistence.md)
 - Conformance: [conformance/checklist-v0.9.md](conformance/checklist-v0.9.md)
 
 ## Participation

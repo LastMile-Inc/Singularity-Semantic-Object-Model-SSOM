@@ -1,0 +1,147 @@
+{
+  "bundle_id": "urn:ssom:safety-foundation:sis-proof-test-context-v0.9",
+  "profile_id": "safety-context-profile",
+  "profile_version": "0.9.0",
+  "scope_boundary": "Foundational safety context and traceability only. This bundle does not claim a complete safety lifecycle, SIL calculation, or IEC 61511 implementation.",
+  "assets": [
+    {
+      "canonical_asset_id": "urn:ssom:asset:pt-201",
+      "asset_label": "PT-201 Reactor Pressure Sensor",
+      "safety_asset_role": "sensor_element"
+    },
+    {
+      "canonical_asset_id": "urn:ssom:asset:sis-logic-1",
+      "asset_label": "SIS Logic Solver 1",
+      "safety_asset_role": "logic_solver"
+    },
+    {
+      "canonical_asset_id": "urn:ssom:asset:sdv-201",
+      "asset_label": "SDV-201 Shutdown Valve",
+      "safety_asset_role": "final_element"
+    },
+    {
+      "canonical_asset_id": "urn:ssom:asset:reactor-feed-pump-201",
+      "asset_label": "Reactor Feed Pump 201",
+      "safety_asset_role": "controlled_process_asset"
+    },
+    {
+      "canonical_asset_id": "urn:ssom:asset:safety-controller-201",
+      "asset_label": "Safety Controller 201",
+      "safety_asset_role": "safety_related_asset"
+    }
+  ],
+  "safety_contexts": [
+    {
+      "context_id": "urn:ssom:safety-context:high-pressure-trip-201",
+      "context_label": "High Pressure Trip 201",
+      "safety_function_label": "Trip the feed path when reactor pressure exceeds the governed limit.",
+      "related_process_asset_id": "urn:ssom:asset:reactor-feed-pump-201",
+      "sensor_asset_id": "urn:ssom:asset:pt-201",
+      "logic_solver_asset_id": "urn:ssom:asset:sis-logic-1",
+      "final_element_asset_id": "urn:ssom:asset:sdv-201",
+      "bypass_state": "cleared",
+      "bypass_active_until": "2026-06-29T10:10:00Z",
+      "proof_test_status": "completed",
+      "verification_evidence_refs": [
+        "urn:ssom:safety-evidence:proof-test-pt201-20260629",
+        "urn:ssom:safety-evidence:work-verification-20260629"
+      ],
+      "work_action_refs": [
+        "urn:ssom:safety-work:proof-test-20260629"
+      ],
+      "note": "Bypass was activated for proof testing and cleared before work closure."
+    }
+  ],
+  "work_actions": [
+    {
+      "work_action_id": "urn:ssom:safety-work:proof-test-20260629",
+      "status": "closed",
+      "opened_at": "2026-06-29T09:00:00Z",
+      "closed_at": "2026-06-29T10:30:00Z"
+    }
+  ],
+  "verification_evidence": [
+    {
+      "evidence_id": "urn:ssom:safety-evidence:proof-test-pt201-20260629",
+      "evidence_type": "proof_test",
+      "recorded_at": "2026-06-29T10:05:00Z",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629"
+    },
+    {
+      "evidence_id": "urn:ssom:safety-evidence:work-verification-20260629",
+      "evidence_type": "work_verification",
+      "recorded_at": "2026-06-29T10:25:00Z",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629"
+    }
+  ],
+  "safety_events": [
+    {
+      "event_id": "urn:ssom:safety-event:bypass-activated-20260629",
+      "event_type": "bypass_activated",
+      "event_time": "2026-06-29T09:10:00Z",
+      "related_context_id": "urn:ssom:safety-context:high-pressure-trip-201",
+      "related_asset_id": "urn:ssom:asset:sis-logic-1",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629",
+      "severity": "high"
+    },
+    {
+      "event_id": "urn:ssom:safety-event:proof-test-completed-20260629",
+      "event_type": "proof_test_completed",
+      "event_time": "2026-06-29T10:05:00Z",
+      "related_context_id": "urn:ssom:safety-context:high-pressure-trip-201",
+      "related_asset_id": "urn:ssom:asset:pt-201",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629",
+      "severity": "medium"
+    },
+    {
+      "event_id": "urn:ssom:safety-event:bypass-cleared-20260629",
+      "event_type": "bypass_cleared",
+      "event_time": "2026-06-29T10:10:00Z",
+      "related_context_id": "urn:ssom:safety-context:high-pressure-trip-201",
+      "related_asset_id": "urn:ssom:asset:sis-logic-1",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629",
+      "severity": "medium"
+    },
+    {
+      "event_id": "urn:ssom:safety-event:work-closed-20260629",
+      "event_type": "work_closed",
+      "event_time": "2026-06-29T10:30:00Z",
+      "related_context_id": "urn:ssom:safety-context:high-pressure-trip-201",
+      "related_asset_id": "urn:ssom:asset:safety-controller-201",
+      "related_work_action_id": "urn:ssom:safety-work:proof-test-20260629",
+      "severity": "low"
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "urn:ssom:safety-relationship:pt201-senses-reactor-feed-pump",
+      "from_asset_id": "urn:ssom:asset:pt-201",
+      "to_asset_id": "urn:ssom:asset:reactor-feed-pump-201",
+      "relationship_type": "senses"
+    },
+    {
+      "relationship_id": "urn:ssom:safety-relationship:sis-logic-evaluates-pt201",
+      "from_asset_id": "urn:ssom:asset:sis-logic-1",
+      "to_asset_id": "urn:ssom:asset:pt-201",
+      "relationship_type": "evaluates"
+    },
+    {
+      "relationship_id": "urn:ssom:safety-relationship:sdv201-acts-on-pump",
+      "from_asset_id": "urn:ssom:asset:sdv-201",
+      "to_asset_id": "urn:ssom:asset:reactor-feed-pump-201",
+      "relationship_type": "acts_on"
+    },
+    {
+      "relationship_id": "urn:ssom:safety-relationship:sis-logic-controls-sdv201",
+      "from_asset_id": "urn:ssom:asset:sis-logic-1",
+      "to_asset_id": "urn:ssom:asset:sdv-201",
+      "relationship_type": "controls"
+    },
+    {
+      "relationship_id": "urn:ssom:safety-relationship:safety-controller-protects-pump",
+      "from_asset_id": "urn:ssom:asset:safety-controller-201",
+      "to_asset_id": "urn:ssom:asset:reactor-feed-pump-201",
+      "relationship_type": "protects"
+    }
+  ]
+}

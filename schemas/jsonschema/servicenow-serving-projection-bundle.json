@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/servicenow-serving-projection-bundle.json",
+  "title": "SSOM ServiceNow Serving Projection Bundle",
+  "description": "Curated SSOM projection surface for workflow and system-of-action platforms such as ServiceNow.",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "profile_id",
+    "profile_version",
+    "scope_boundary",
+    "prohibited_primary_storage_classes",
+    "projections"
+  ],
+  "properties": {
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:serving-projection:"
+    },
+    "profile_id": {
+      "const": "serving-projection-profile"
+    },
+    "profile_version": {
+      "type": "string"
+    },
+    "scope_boundary": {
+      "type": "string"
+    },
+    "prohibited_primary_storage_classes": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "projections": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "projection_id",
+          "scenario_id",
+          "scenario_label",
+          "canonical_asset_id",
+          "asset_category",
+          "mapped_servicenow_ci_id",
+          "mapped_hierarchy_ref",
+          "current_operational_state",
+          "current_condition_score",
+          "risk_score",
+          "criticality",
+          "active_anomalies",
+          "relevant_event_alarm_summary",
+          "evidence_freshness",
+          "related_failure_modes",
+          "recommended_action",
+          "recommendation_confidence",
+          "work_recommendation",
+          "related_assets",
+          "operational_or_production_impact",
+          "workflow_refs",
+          "full_ssom_evidence_context_ref"
+        ],
+        "properties": {
+          "projection_id": {
+            "type": "string"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "scenario_label": {
+            "type": "string"
+          },
+          "canonical_asset_id": {
+            "type": "string"
+          },
+          "asset_category": {
+            "type": "string",
+            "enum": [
+              "pump",
+              "plc",
+              "vfd",
+              "chiller",
+              "robot_cell"
+            ]
+          },
+          "mapped_servicenow_ci_id": {
+            "type": ["string", "null"]
+          },
+          "mapped_hierarchy_ref": {
+            "type": ["string", "null"]
+          },
+          "current_operational_state": {
+            "type": "string"
+          },
+          "current_condition_score": {
+            "type": ["number", "null"]
+          },
+          "risk_score": {
+            "type": ["number", "null"]
+          },
+          "criticality": {
+            "type": ["string", "null"]
+          },
+          "active_anomalies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "relevant_event_alarm_summary": {
+            "type": "object",
+            "required": [
+              "open_alarm_count",
+              "latest_event_category",
+              "event_window_start",
+              "event_window_end"
+            ],
+            "properties": {
+              "open_alarm_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "latest_event_category": {
+                "type": ["string", "null"]
+              },
+              "event_window_start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "event_window_end": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "evidence_freshness": {
+            "type": "object",
+            "required": [
+              "last_evidence_time",
+              "freshness_status"
+            ],
+            "properties": {
+              "last_evidence_time": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "freshness_status": {
+                "type": "string",
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "late_arriving"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "related_failure_modes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommended_action": {
+            "type": ["string", "null"]
+          },
+          "recommendation_confidence": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "work_recommendation": {
+            "type": ["string", "null"]
+          },
+          "related_assets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "operational_or_production_impact": {
+            "type": ["string", "null"]
+          },
+          "workflow_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "ref_type",
+                "ref_id"
+              ],
+              "properties": {
+                "ref_type": {
+                  "type": "string",
+                  "enum": [
+                    "task",
+                    "incident",
+                    "change",
+                    "work"
+                  ]
+                },
+                "ref_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "full_ssom_evidence_context_ref": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

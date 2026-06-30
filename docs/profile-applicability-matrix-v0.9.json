@@ -194,7 +194,7 @@
     },
     {
       "profile_id": "serving-projection-profile",
-      "profile_label": "Serving Projection Profile",
+      "profile_label": "ServiceNow Serving Projection Profile",
       "standard_applicability": [
         {
           "standard_id": "b2mml",
@@ -202,7 +202,7 @@
           "required_for_claims": ["B2MML-facing projection claims"],
           "repo_evidence": [
             {
-              "artifact_ref": "docs/servicenow-coexistence.md",
+              "artifact_ref": "docs/servicenow-serving-projection-profile-v0.9.md",
               "evidence_type": "documentation"
             }
           ],
@@ -210,15 +210,63 @@
         },
         {
           "standard_id": "servicenow-projection",
-          "applicability": "projection_only",
+          "applicability": "profile_required",
           "required_for_claims": ["ServiceNow serving-projection claims"],
           "repo_evidence": [
             {
-              "artifact_ref": "docs/servicenow-coexistence.md",
+              "artifact_ref": "docs/servicenow-serving-projection-profile-v0.9.md",
               "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
+              "evidence_type": "fixture"
             }
           ],
-          "known_limitation": "Projection behavior is documentation-backed, not executable in this repo."
+          "known_limitation": "Projection behavior is fixture-backed and documentation-backed, but not a generic full-fidelity ServiceNow product adapter."
+        }
+      ]
+    },
+    {
+      "profile_id": "safety-context-profile",
+      "profile_label": "Functional Safety Foundation Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "iec-61511",
+          "applicability": "profile_required",
+          "required_for_claims": ["foundational safety context and traceability claims"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/functional-safety-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "The profile supports foundational safety context and traceability only, not a complete safety lifecycle implementation."
+        }
+      ]
+    },
+    {
+      "profile_id": "cyber-context-profile",
+      "profile_label": "OT Cybersecurity Foundation Profile",
+      "standard_applicability": [
+        {
+          "standard_id": "iec-62443",
+          "applicability": "profile_required",
+          "required_for_claims": ["foundational OT cyber interoperability context claims"],
+          "repo_evidence": [
+            {
+              "artifact_ref": "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
+              "evidence_type": "fixture"
+            }
+          ],
+          "known_limitation": "The profile supports foundational cyber asset and topology context only, not a complete cybersecurity management or control framework."
         }
       ]
     },

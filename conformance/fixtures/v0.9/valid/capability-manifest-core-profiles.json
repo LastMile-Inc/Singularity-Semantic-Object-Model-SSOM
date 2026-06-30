@@ -73,15 +73,35 @@
       ]
     },
     {
-      "profile_id": "servicenow-coexistence-projection-profile",
+      "profile_id": "serving-projection-profile",
       "profile_version": "0.9.0",
-      "support_level": "projected",
-      "projection_surface": "docs/servicenow-coexistence.md",
+      "support_level": "validated",
       "evidence_refs": [
-        "docs/servicenow-coexistence.md",
-        "conformance/checklist-v0.9.md"
+        "docs/servicenow-serving-projection-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
       ],
-      "notes": "Projection support is documented only where the profile support surface is explicitly described."
+      "notes": "The serving projection surface is bounded, curated, and fixture-backed rather than treated as a canonical evidence store."
+    },
+    {
+      "profile_id": "safety-context-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/functional-safety-foundation-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+        "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json"
+      ],
+      "notes": "The safety profile is intentionally bounded to foundational context and traceability rather than lifecycle-complete safety management."
+    },
+    {
+      "profile_id": "cyber-context-profile",
+      "profile_version": "0.9.0",
+      "support_level": "validated",
+      "evidence_refs": [
+        "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
+      ],
+      "notes": "The OT cyber profile is intentionally bounded to foundational identity, topology, posture, and mitigation context."
     }
   ],
   "conformance_artifacts": {

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added: Serving, Safety, And Cyber Foundation Profiles
+
+- Added a formal ServiceNow serving projection profile with a typed curated projection bundle and fixture coverage for pump, PLC, VFD, chiller, and robot-cell scenarios.
+- Added a functional safety foundation profile with bounded safety context, proof-test evidence, bypass visibility, and a negative fixture proving work closure cannot hide an active bypass.
+- Added an OT cybersecurity foundation profile with bounded cyber-managed asset, firmware or software identity, network identity, zone, conduit, vulnerability, posture, mitigation, and cyber-event semantics.
+
+### Changed: Standards And Capability Evidence
+
+- Upgraded ServiceNow, safety, and cyber profile references from documentation-only placeholders to formal profile docs, schemas, fixtures, and validator-backed capability-manifest evidence.
+- Updated standards mapping, profile applicability, migration guidance, README boundary language, and conformance checklist entries to preserve the qualified interoperability boundary.
+
 ### Added: Layered BigQuery Reference Architecture
 
 - Replaced illustrative BigQuery SQL with a layered BigQuery reference architecture covering raw evidence, canonical SSOM facts, curated operational intelligence, serving projections, and AI feature or evaluation datasets.

@@ -1,0 +1,346 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssom.dev/schema/cyber-foundation-bundle.json",
+  "title": "SSOM OT Cybersecurity Foundation Bundle",
+  "description": "Bounded OT cyber-context bundle for foundational asset, identity, topology, and posture semantics.",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "profile_id",
+    "profile_version",
+    "scope_boundary",
+    "asset_contexts",
+    "zones",
+    "conduits",
+    "vulnerabilities",
+    "security_postures",
+    "mitigation_actions",
+    "cyber_events",
+    "relationships"
+  ],
+  "properties": {
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^urn:ssom:cyber-foundation:"
+    },
+    "profile_id": {
+      "const": "cyber-context-profile"
+    },
+    "profile_version": {
+      "type": "string"
+    },
+    "scope_boundary": {
+      "type": "string"
+    },
+    "asset_contexts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "scenario_label",
+          "canonical_asset_id",
+          "asset_label",
+          "cyber_managed_asset",
+          "firmware_identity",
+          "software_identity",
+          "network_identity",
+          "zone_id",
+          "conduit_ids",
+          "protocol_contexts",
+          "vulnerability_refs",
+          "security_posture_ref",
+          "related_operational_assets"
+        ],
+        "properties": {
+          "scenario_id": {
+            "type": "string"
+          },
+          "scenario_label": {
+            "type": "string"
+          },
+          "canonical_asset_id": {
+            "type": "string"
+          },
+          "asset_label": {
+            "type": "string"
+          },
+          "cyber_managed_asset": {
+            "type": "boolean"
+          },
+          "firmware_identity": {
+            "type": ["string", "null"]
+          },
+          "software_identity": {
+            "type": ["string", "null"]
+          },
+          "network_identity": {
+            "type": ["string", "null"]
+          },
+          "zone_id": {
+            "type": "string"
+          },
+          "conduit_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "protocol_contexts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "vulnerability_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "security_posture_ref": {
+            "type": "string"
+          },
+          "related_operational_assets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "zones": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "zone_id",
+          "zone_label",
+          "zone_kind"
+        ],
+        "properties": {
+          "zone_id": {
+            "type": "string"
+          },
+          "zone_label": {
+            "type": "string"
+          },
+          "zone_kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "conduits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "conduit_id",
+          "conduit_label",
+          "from_zone_id",
+          "to_zone_id",
+          "protocol_contexts"
+        ],
+        "properties": {
+          "conduit_id": {
+            "type": "string"
+          },
+          "conduit_label": {
+            "type": "string"
+          },
+          "from_zone_id": {
+            "type": "string"
+          },
+          "to_zone_id": {
+            "type": "string"
+          },
+          "protocol_contexts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "vulnerabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "vulnerability_ref",
+          "vulnerability_label",
+          "source_reference",
+          "affected_identity",
+          "severity"
+        ],
+        "properties": {
+          "vulnerability_ref": {
+            "type": "string"
+          },
+          "vulnerability_label": {
+            "type": "string"
+          },
+          "source_reference": {
+            "type": "string"
+          },
+          "affected_identity": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "security_postures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "security_posture_ref",
+          "posture_state",
+          "severity",
+          "last_assessed_time"
+        ],
+        "properties": {
+          "security_posture_ref": {
+            "type": "string"
+          },
+          "posture_state": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "last_assessed_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "mitigation_actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "mitigation_action_id",
+          "target_asset_id",
+          "action_type",
+          "status",
+          "planned_or_executed_at"
+        ],
+        "properties": {
+          "mitigation_action_id": {
+            "type": "string"
+          },
+          "target_asset_id": {
+            "type": "string"
+          },
+          "action_type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "planned_or_executed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cyber_events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "event_id",
+          "event_type",
+          "target_asset_id",
+          "event_time",
+          "security_posture_ref",
+          "vulnerability_refs"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "target_asset_id": {
+            "type": "string"
+          },
+          "event_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "security_posture_ref": {
+            "type": "string"
+          },
+          "vulnerability_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "relationship_id",
+          "from_ref",
+          "to_ref",
+          "relationship_type"
+        ],
+        "properties": {
+          "relationship_id": {
+            "type": "string"
+          },
+          "from_ref": {
+            "type": "string"
+          },
+          "to_ref": {
+            "type": "string"
+          },
+          "relationship_type": {
+            "type": "string",
+            "enum": [
+              "is_connected_to",
+              "communicates_with",
+              "contains",
+              "hosts",
+              "protects",
+              "controls"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

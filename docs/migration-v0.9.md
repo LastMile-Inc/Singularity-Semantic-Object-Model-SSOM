@@ -33,3 +33,11 @@ Migration guidance for existing illustrative deployments:
 - Keep feature tables, retrieval views, labels, and evaluation sets in `ssom_ai`.
 - Replace JSON-first filters on high-frequency telemetry with typed columns such as `measurement_type`, `event_time`, `canonical_asset_id`, `tenant_id`, `site_id`, `quality_state`, and `canonical_unit_code`.
 - Preserve late-arriving, corrected, and superseded facts through append-preserving lineage fields rather than destructive updates.
+
+## Serving, safety, and cyber profile migration note
+
+- Replace informal or ad hoc ServiceNow payload exports with the bounded serving projection described in `docs/servicenow-serving-projection-profile-v0.9.md`.
+- Keep raw historian, OPC UA, and analytic cohort detail out of workflow-primary storage surfaces.
+- Use the functional safety foundation profile only for safety context, traceability, bypass visibility, and proof-test evidence boundaries.
+- Use the OT cybersecurity foundation profile only for foundational identity, topology, vulnerability, posture, and mitigation context.
+- Do not infer complete safety or cybersecurity management behavior from these profiles alone.

@@ -137,21 +137,21 @@
           "transformation_requirement": "projection_transform",
           "information_loss_risk": "medium",
           "required_profile": "serving-projection-profile",
-          "maturity": "documented_mapping",
+          "maturity": "fixture_backed",
           "repo_evidence": [
             {
-              "artifact_ref": "docs/servicenow-coexistence.md",
+              "artifact_ref": "docs/servicenow-serving-projection-profile-v0.9.md",
               "evidence_type": "documentation"
             },
             {
-              "artifact_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json",
+              "artifact_ref": "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json",
               "evidence_type": "fixture"
             }
           ],
           "known_limitation": "ServiceNow class hierarchies do not map one-to-one to SSOM roles without a projection profile and local class governance.",
           "example_refs": [
-            "docs/servicenow-coexistence.md",
-            "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+            "docs/servicenow-serving-projection-profile-v0.9.md",
+            "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
           ]
         }
       ]

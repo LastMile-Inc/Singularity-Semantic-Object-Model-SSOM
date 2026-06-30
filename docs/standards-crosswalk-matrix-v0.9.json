@@ -482,21 +482,20 @@
           "transformation_requirement": "profile_constraint",
           "information_loss_risk": "medium",
           "required_profile": "cyber-context-profile",
-          "maturity": "partial",
+          "maturity": "fixture_backed",
           "repo_evidence": [
             {
-              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
-              "evidence_type": "fixture"
+              "artifact_ref": "docs/ot-cybersecurity-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
             },
             {
-              "artifact_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json",
+              "artifact_ref": "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json",
               "evidence_type": "fixture"
             }
           ],
           "known_limitation": "SSOM preserves cyber-relevant asset and topology context, but does not encode IEC 62443 control requirements, security levels, or policy catalogs in the core repository.",
           "test_fixture_refs": [
-            "conformance/fixtures/v0.9/valid/relationship-bundle-utility-substation-topology.json",
-            "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+            "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
           ]
         }
       ]
@@ -526,18 +525,22 @@
           "maturity": "fixture_backed",
           "repo_evidence": [
             {
-              "artifact_ref": "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
+              "artifact_ref": "docs/functional-safety-foundation-profile-v0.9.md",
+              "evidence_type": "documentation"
+            },
+            {
+              "artifact_ref": "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
               "evidence_type": "fixture"
             },
             {
-              "artifact_ref": "conformance/fixtures/v0.8/invalid/event-alarm-bundle-safety-bypass-work-closed-while-active.json",
+              "artifact_ref": "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json",
               "evidence_type": "fixture"
             }
           ],
           "known_limitation": "SSOM preserves safety-relevant evidence and state context, but does not claim lifecycle, SIL, or verification-program completeness.",
           "test_fixture_refs": [
-            "conformance/fixtures/v0.8/valid/event-alarm-bundle-safety-bypass-activation.json",
-            "conformance/fixtures/v0.8/invalid/event-alarm-bundle-safety-bypass-work-closed-while-active.json"
+            "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json",
+            "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json"
           ]
         }
       ]

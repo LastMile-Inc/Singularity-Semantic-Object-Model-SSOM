@@ -1,0 +1,244 @@
+{
+  "bundle_id": "urn:ssom:serving-projection:servicenow-core-assets-v0.9",
+  "profile_id": "serving-projection-profile",
+  "profile_version": "0.9.0",
+  "scope_boundary": "Curated workflow and system-of-action projection only. Raw evidence, high-frequency telemetry, source assertions, ML features, and analytic cohorts remain outside the primary ServiceNow storage surface.",
+  "prohibited_primary_storage_classes": [
+    "raw_historian_samples",
+    "high_frequency_telemetry",
+    "raw_opcua_payloads",
+    "all_source_assertions",
+    "all_machine_learning_feature_records",
+    "all_raw_event_transitions",
+    "all_data_quality_records",
+    "all_analytical_cohort_data"
+  ],
+  "projections": [
+    {
+      "projection_id": "urn:ssom:projection:servicenow:pump-p101",
+      "scenario_id": "pump-p101",
+      "scenario_label": "Pump P-101 serving projection",
+      "canonical_asset_id": "urn:ssom:asset:pump-p101-v2",
+      "asset_category": "pump",
+      "mapped_servicenow_ci_id": "ci-p101-sysid",
+      "mapped_hierarchy_ref": "sn-equip-hierarchy:site-a/area-1/unit-4",
+      "current_operational_state": "running_with_recurrence_risk",
+      "current_condition_score": 61,
+      "risk_score": 73,
+      "criticality": "high",
+      "active_anomalies": [
+        "bearing_recurrence_risk",
+        "vibration_elevated"
+      ],
+      "relevant_event_alarm_summary": {
+        "open_alarm_count": 1,
+        "latest_event_category": "maintenance_follow_up",
+        "event_window_start": "2026-07-03T06:00:00Z",
+        "event_window_end": "2026-07-03T08:00:00Z"
+      },
+      "evidence_freshness": {
+        "last_evidence_time": "2026-07-03T07:00:00Z",
+        "freshness_status": "fresh"
+      },
+      "related_failure_modes": [
+        "bearing_degradation"
+      ],
+      "recommended_action": "Schedule targeted bearing inspection and recurrence review.",
+      "recommendation_confidence": 0.86,
+      "work_recommendation": "Create reliability follow-up work order.",
+      "related_assets": [
+        "urn:ssom:asset:motor-m101"
+      ],
+      "operational_or_production_impact": "Potential throughput reduction if recurrence accelerates.",
+      "workflow_refs": [
+        {
+          "ref_type": "work",
+          "ref_id": "WO-P101-20260703"
+        },
+        {
+          "ref_type": "incident",
+          "ref_id": "INC-P101-RECURRENCE"
+        }
+      ],
+      "full_ssom_evidence_context_ref": "conformance/fixtures/v0.9/valid/integrated-bundle-pump-p101-lifecycle.json"
+    },
+    {
+      "projection_id": "urn:ssom:projection:servicenow:plc-17",
+      "scenario_id": "plc-17",
+      "scenario_label": "PLC-17 serving projection",
+      "canonical_asset_id": "urn:ssom:asset:plc-17",
+      "asset_category": "plc",
+      "mapped_servicenow_ci_id": "ci-plc17-sysid",
+      "mapped_hierarchy_ref": "sn-equip-hierarchy:site-a/line-1/control-cell-1",
+      "current_operational_state": "online",
+      "current_condition_score": 79,
+      "risk_score": 48,
+      "criticality": "high",
+      "active_anomalies": [
+        "zone_conduit_review_required"
+      ],
+      "relevant_event_alarm_summary": {
+        "open_alarm_count": 0,
+        "latest_event_category": "communication_health",
+        "event_window_start": "2026-06-29T09:00:00Z",
+        "event_window_end": "2026-06-29T10:00:00Z"
+      },
+      "evidence_freshness": {
+        "last_evidence_time": "2026-06-29T10:00:00Z",
+        "freshness_status": "fresh"
+      },
+      "related_failure_modes": [],
+      "recommended_action": "Maintain conduit and network identity linkage for OT workflow context.",
+      "recommendation_confidence": 0.72,
+      "work_recommendation": "Track hardening review in change workflow.",
+      "related_assets": [
+        "urn:ssom:asset:vfd-12",
+        "urn:ssom:asset:gw-01"
+      ],
+      "operational_or_production_impact": "Loss of controller visibility would impact cell coordination.",
+      "workflow_refs": [
+        {
+          "ref_type": "change",
+          "ref_id": "CHG-PLC17-HARDENING"
+        }
+      ],
+      "full_ssom_evidence_context_ref": "conformance/fixtures/v0.5/valid/identity-bundle-plc-opcua-migration.json"
+    },
+    {
+      "projection_id": "urn:ssom:projection:servicenow:vfd-12",
+      "scenario_id": "vfd-12",
+      "scenario_label": "VFD-12 serving projection",
+      "canonical_asset_id": "urn:ssom:asset:vfd-12",
+      "asset_category": "vfd",
+      "mapped_servicenow_ci_id": "ci-vfd12-sysid",
+      "mapped_hierarchy_ref": "sn-equip-hierarchy:site-a/line-1/drive-chain",
+      "current_operational_state": "online_with_vulnerability",
+      "current_condition_score": 68,
+      "risk_score": 84,
+      "criticality": "high",
+      "active_anomalies": [
+        "known_vulnerable_firmware",
+        "cyber_posture_attention"
+      ],
+      "relevant_event_alarm_summary": {
+        "open_alarm_count": 1,
+        "latest_event_category": "drive_fault",
+        "event_window_start": "2026-06-29T07:30:00Z",
+        "event_window_end": "2026-06-29T08:15:00Z"
+      },
+      "evidence_freshness": {
+        "last_evidence_time": "2026-06-29T08:15:00Z",
+        "freshness_status": "fresh"
+      },
+      "related_failure_modes": [
+        "firmware_instability",
+        "drive_trip"
+      ],
+      "recommended_action": "Coordinate firmware mitigation planning and monitor drive faults.",
+      "recommendation_confidence": 0.81,
+      "work_recommendation": "Open mitigation change and maintenance validation task.",
+      "related_assets": [
+        "urn:ssom:asset:motor-m101",
+        "urn:ssom:asset:plc-17"
+      ],
+      "operational_or_production_impact": "Unexpected drive trip could stop the production line.",
+      "workflow_refs": [
+        {
+          "ref_type": "change",
+          "ref_id": "CHG-VFD12-FIRMWARE"
+        },
+        {
+          "ref_type": "task",
+          "ref_id": "TASK-VFD12-MITIGATION"
+        }
+      ],
+      "full_ssom_evidence_context_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-production-line-vfd-cyber-risk.json"
+    },
+    {
+      "projection_id": "urn:ssom:projection:servicenow:chiller-7a",
+      "scenario_id": "chiller-7a",
+      "scenario_label": "Chiller 7A multi-source projection",
+      "canonical_asset_id": "urn:ssom:asset:chiller-7a",
+      "asset_category": "chiller",
+      "mapped_servicenow_ci_id": "ci-chiller7a-sysid",
+      "mapped_hierarchy_ref": "sn-equip-hierarchy:site-b/utilities/chilled-water",
+      "current_operational_state": "running",
+      "current_condition_score": 83,
+      "risk_score": 41,
+      "criticality": "medium",
+      "active_anomalies": [
+        "identity_convergence_monitored"
+      ],
+      "relevant_event_alarm_summary": {
+        "open_alarm_count": 0,
+        "latest_event_category": "asset_identity_sync",
+        "event_window_start": "2026-06-29T05:00:00Z",
+        "event_window_end": "2026-06-29T06:00:00Z"
+      },
+      "evidence_freshness": {
+        "last_evidence_time": "2026-06-29T06:00:00Z",
+        "freshness_status": "fresh"
+      },
+      "related_failure_modes": [],
+      "recommended_action": "Preserve converged identifiers and use SSOM as the evidence context anchor.",
+      "recommendation_confidence": 0.69,
+      "work_recommendation": "No immediate work required; continue monitoring.",
+      "related_assets": [
+        "urn:ssom:asset:bms-gateway-3"
+      ],
+      "operational_or_production_impact": "Identity drift could degrade work routing and history continuity.",
+      "workflow_refs": [
+        {
+          "ref_type": "task",
+          "ref_id": "TASK-CHILLER7A-RECONCILE"
+        }
+      ],
+      "full_ssom_evidence_context_ref": "conformance/fixtures/v0.5/valid/identity-bundle-chiller-multi-source.json"
+    },
+    {
+      "projection_id": "urn:ssom:projection:servicenow:robot-cell-01",
+      "scenario_id": "robot-cell-01",
+      "scenario_label": "Robot cell serving projection",
+      "canonical_asset_id": "urn:ssom:boundary:robot-cell-01",
+      "asset_category": "robot_cell",
+      "mapped_servicenow_ci_id": "ci-robotcell01-sysid",
+      "mapped_hierarchy_ref": "sn-equip-hierarchy:site-a/line-1/robot-cell-01",
+      "current_operational_state": "available",
+      "current_condition_score": 76,
+      "risk_score": 55,
+      "criticality": "high",
+      "active_anomalies": [
+        "controller_sensor_dependency_tracking"
+      ],
+      "relevant_event_alarm_summary": {
+        "open_alarm_count": 0,
+        "latest_event_category": "topology_health",
+        "event_window_start": "2026-06-29T11:00:00Z",
+        "event_window_end": "2026-06-29T12:00:00Z"
+      },
+      "evidence_freshness": {
+        "last_evidence_time": "2026-06-29T12:00:00Z",
+        "freshness_status": "fresh"
+      },
+      "related_failure_modes": [
+        "controller_sensor_loss"
+      ],
+      "recommended_action": "Preserve robot-cell topology projection for operational workflows and dispatch context.",
+      "recommendation_confidence": 0.74,
+      "work_recommendation": "No active work. Keep related-asset graph current.",
+      "related_assets": [
+        "urn:ssom:asset:robot-arm-01",
+        "urn:ssom:asset:plc-17",
+        "urn:ssom:asset:hmi-01"
+      ],
+      "operational_or_production_impact": "Loss of robot-cell context impairs dispatch and root-cause coordination.",
+      "workflow_refs": [
+        {
+          "ref_type": "incident",
+          "ref_id": "INC-ROBOTCELL01-CONTEXT"
+        }
+      ],
+      "full_ssom_evidence_context_ref": "conformance/fixtures/v0.9/valid/relationship-bundle-robot-cell-line-context.json"
+    }
+  ]
+}

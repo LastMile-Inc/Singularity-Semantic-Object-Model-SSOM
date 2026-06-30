@@ -400,6 +400,8 @@ function ensureStandardsMappingArtifactSemantics(artifact, testName) {
         "event-alarm-profile",
         "relationship-governance-profile",
         "serving-projection-profile",
+        "safety-context-profile",
+        "cyber-context-profile",
         "batch-recipe-profile"
       ]);
       const seenProfiles = new Set();
@@ -610,6 +612,185 @@ function ensureBigQueryReferenceArchitectureSemantics(testName) {
     testName,
     "README coverage"
   );
+}
+
+function validateServicenowServingProjectionBundle(testName, relativePath) {
+  return validateFixture(testName, "servicenow-serving-projection-bundle.json", relativePath);
+}
+
+function ensureServicenowServingProjectionSemantics(bundle, testName) {
+  const requiredProhibitedClasses = new Set([
+    "raw_historian_samples",
+    "high_frequency_telemetry",
+    "raw_opcua_payloads",
+    "all_source_assertions",
+    "all_machine_learning_feature_records",
+    "all_raw_event_transitions",
+    "all_data_quality_records",
+    "all_analytical_cohort_data"
+  ]);
+  const seenProhibitedClasses = new Set(bundle.prohibited_primary_storage_classes || []);
+  for (const className of requiredProhibitedClasses) {
+    assert(seenProhibitedClasses.has(className), `${testName} must prohibit ${className} from workflow-primary storage.`);
+  }
+
+  const requiredScenarios = new Set(["pump-p101", "plc-17", "vfd-12", "chiller-7a", "robot-cell-01"]);
+  const seenScenarios = new Set();
+
+  for (const projection of bundle.projections || []) {
+    seenScenarios.add(projection.scenario_id);
+    assertWorkspacePathExists(projection.full_ssom_evidence_context_ref, testName, "full SSOM evidence context reference");
+    assert(
+      parseTimestamp(projection.relevant_event_alarm_summary.event_window_start, `${projection.projection_id} event_window_start`) <=
+        parseTimestamp(projection.relevant_event_alarm_summary.event_window_end, `${projection.projection_id} event_window_end`),
+      `${testName} projection ${projection.projection_id} must preserve an ordered event or alarm summary window.`
+    );
+    assert((projection.workflow_refs || []).length > 0, `${testName} projection ${projection.projection_id} must retain workflow-facing references.`);
+  }
+
+  for (const scenarioId of requiredScenarios) {
+    assert(seenScenarios.has(scenarioId), `${testName} is missing ServiceNow projection scenario ${scenarioId}.`);
+  }
+}
+
+function validateSafetyFoundationBundle(testName, relativePath) {
+  return validateFixture(testName, "safety-foundation-bundle.json", relativePath);
+}
+
+function ensureSafetyFoundationSemantics(bundle, testName) {
+  const assets = new Map((bundle.assets || []).map((entry) => [entry.canonical_asset_id, entry]));
+  const evidence = new Map((bundle.verification_evidence || []).map((entry) => [entry.evidence_id, entry]));
+  const workActions = new Map((bundle.work_actions || []).map((entry) => [entry.work_action_id, entry]));
+  const contexts = new Map((bundle.safety_contexts || []).map((entry) => [entry.context_id, entry]));
+  const roleSet = new Set((bundle.assets || []).map((entry) => entry.safety_asset_role));
+
+  for (const requiredRole of [
+    "sensor_element",
+    "logic_solver",
+    "final_element",
+    "controlled_process_asset",
+    "safety_related_asset"
+  ]) {
+    assert(roleSet.has(requiredRole), `${testName} must include safety asset role ${requiredRole}.`);
+  }
+
+  for (const context of bundle.safety_contexts || []) {
+    assert(assets.has(context.related_process_asset_id), `${testName} safety context ${context.context_id} must reference a known process asset.`);
+    assert(assets.has(context.sensor_asset_id), `${testName} safety context ${context.context_id} must reference a known sensor asset.`);
+    assert(assets.has(context.logic_solver_asset_id), `${testName} safety context ${context.context_id} must reference a known logic solver asset.`);
+    assert(assets.has(context.final_element_asset_id), `${testName} safety context ${context.context_id} must reference a known final element asset.`);
+    for (const evidenceRef of context.verification_evidence_refs || []) {
+      assert(evidence.has(evidenceRef), `${testName} safety context ${context.context_id} must reference known verification evidence.`);
+    }
+    for (const workRef of context.work_action_refs || []) {
+      assert(workActions.has(workRef), `${testName} safety context ${context.context_id} must reference known work actions.`);
+    }
+  }
+
+  const relationshipTriples = new Set((bundle.relationships || []).map((entry) => `${entry.from_asset_id}|${entry.relationship_type}|${entry.to_asset_id}`));
+  let chainFound = false;
+  for (const context of bundle.safety_contexts || []) {
+    const hasSensorLink = relationshipTriples.has(`${context.sensor_asset_id}|senses|${context.related_process_asset_id}`);
+    const hasLogicLink = relationshipTriples.has(`${context.logic_solver_asset_id}|controls|${context.final_element_asset_id}`) || relationshipTriples.has(`${context.logic_solver_asset_id}|evaluates|${context.sensor_asset_id}`);
+    const hasFinalLink = relationshipTriples.has(`${context.final_element_asset_id}|acts_on|${context.related_process_asset_id}`) || relationshipTriples.has(`${context.final_element_asset_id}|protects|${context.related_process_asset_id}`);
+    if (hasSensorLink && hasLogicLink && hasFinalLink) {
+      chainFound = true;
+    }
+
+    for (const workRef of context.work_action_refs || []) {
+      const workAction = workActions.get(workRef);
+      if (!workAction || (workAction.status !== "closed" && workAction.status !== "completed")) {
+        continue;
+      }
+      const closeTime = workAction.closed_at ? parseTimestamp(workAction.closed_at, `${workAction.work_action_id} closed_at`) : Number.NEGATIVE_INFINITY;
+      const bypassActiveUntil = context.bypass_active_until
+        ? parseTimestamp(context.bypass_active_until, `${context.context_id} bypass_active_until`)
+        : Number.POSITIVE_INFINITY;
+      assert(
+        context.bypass_state !== "active" || bypassActiveUntil <= closeTime,
+        `${testName} must not close work while a safety bypass remains active.`
+      );
+    }
+  }
+
+  assert(chainFound, `${testName} must preserve a sensor-to-logic-to-final-element safety relationship chain.`);
+
+  for (const event of bundle.safety_events || []) {
+    assert(contexts.has(event.related_context_id), `${testName} safety event ${event.event_id} must reference a known safety context.`);
+    assert(assets.has(event.related_asset_id), `${testName} safety event ${event.event_id} must reference a known asset.`);
+    if (event.related_work_action_id) {
+      assert(workActions.has(event.related_work_action_id), `${testName} safety event ${event.event_id} must reference known work context.`);
+    }
+  }
+}
+
+function expectInvalidSafetyFoundationBundle(testName, relativePath, expectedFragment) {
+  try {
+    const payload = validateSafetyFoundationBundle(testName, relativePath);
+    ensureSafetyFoundationSemantics(payload, testName);
+    throw new Error(`${testName} unexpectedly passed for ${relativePath}`);
+  } catch (error) {
+    const message = String(error.message || error);
+    if (!message.includes(expectedFragment)) {
+      throw new Error(`${testName} failed with unexpected validation error\n${message}`);
+    }
+  }
+}
+
+function validateCyberFoundationBundle(testName, relativePath) {
+  return validateFixture(testName, "cyber-foundation-bundle.json", relativePath);
+}
+
+function ensureCyberFoundationSemantics(bundle, testName) {
+  const zoneIds = new Set((bundle.zones || []).map((entry) => entry.zone_id));
+  const conduitIds = new Set((bundle.conduits || []).map((entry) => entry.conduit_id));
+  const vulnerabilityIds = new Set((bundle.vulnerabilities || []).map((entry) => entry.vulnerability_ref));
+  const postureIds = new Set((bundle.security_postures || []).map((entry) => entry.security_posture_ref));
+  const assetIds = new Set((bundle.asset_contexts || []).map((entry) => entry.canonical_asset_id));
+  const relationshipTypes = new Set((bundle.relationships || []).map((entry) => entry.relationship_type));
+  const seenScenarios = new Set();
+
+  for (const context of bundle.asset_contexts || []) {
+    seenScenarios.add(context.scenario_id);
+    assert(context.cyber_managed_asset === true, `${testName} asset context ${context.scenario_id} must represent a cyber-managed asset.`);
+    assert(zoneIds.has(context.zone_id), `${testName} asset context ${context.scenario_id} must reference a known zone.`);
+    for (const conduitId of context.conduit_ids || []) {
+      assert(conduitIds.has(conduitId), `${testName} asset context ${context.scenario_id} must reference a known conduit.`);
+    }
+    for (const vulnerabilityRef of context.vulnerability_refs || []) {
+      assert(vulnerabilityIds.has(vulnerabilityRef), `${testName} asset context ${context.scenario_id} must reference known vulnerabilities.`);
+    }
+    assert(postureIds.has(context.security_posture_ref), `${testName} asset context ${context.scenario_id} must reference a known security posture.`);
+  }
+
+  for (const conduit of bundle.conduits || []) {
+    assert(zoneIds.has(conduit.from_zone_id), `${testName} conduit ${conduit.conduit_id} must reference a known source zone.`);
+    assert(zoneIds.has(conduit.to_zone_id), `${testName} conduit ${conduit.conduit_id} must reference a known destination zone.`);
+  }
+
+  for (const action of bundle.mitigation_actions || []) {
+    assert(assetIds.has(action.target_asset_id), `${testName} mitigation action ${action.mitigation_action_id} must target a known cyber-managed asset.`);
+  }
+
+  for (const event of bundle.cyber_events || []) {
+    assert(assetIds.has(event.target_asset_id), `${testName} cyber event ${event.event_id} must reference a known asset.`);
+    assert(postureIds.has(event.security_posture_ref), `${testName} cyber event ${event.event_id} must reference a known security posture.`);
+    for (const vulnerabilityRef of event.vulnerability_refs || []) {
+      assert(vulnerabilityIds.has(vulnerabilityRef), `${testName} cyber event ${event.event_id} must reference known vulnerabilities.`);
+    }
+  }
+
+  for (const scenarioId of [
+    "networked-vfd-vulnerable-firmware",
+    "plc-zone-conduit-communication",
+    "safety-controller-cyber-managed-identity"
+  ]) {
+    assert(seenScenarios.has(scenarioId), `${testName} must include cyber scenario ${scenarioId}.`);
+  }
+
+  for (const relationshipType of ["contains", "communicates_with", "protects"]) {
+    assert(relationshipTypes.has(relationshipType), `${testName} must include cyber relationship type ${relationshipType}.`);
+  }
 }
 
 function expectInvalidMeasurementObservation(testName, relativePath, expectedFragment) {
@@ -2367,6 +2548,27 @@ results.push("README standards language remains qualified and avoids unsupported
 ensureBigQueryReferenceArchitectureSemantics("BigQuery reference architecture");
 results.push("BigQuery reference architecture stays layered, typed, lineage-aware, and explicitly non-normative while covering serving and AI projections");
 
+const servicenowServingProjectionBundle = validateServicenowServingProjectionBundle(
+  "ServiceNow serving projection profile",
+  "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
+);
+ensureServicenowServingProjectionSemantics(servicenowServingProjectionBundle, "ServiceNow serving projection profile");
+results.push("ServiceNow serving projections stay curated and workflow-oriented without becoming the primary storage surface for raw evidence or analytical history");
+
+const safetyFoundationBundle = validateSafetyFoundationBundle(
+  "functional safety foundation profile",
+  "conformance/fixtures/v0.9/valid/safety-foundation-bundle-sis-proof-test-context.json"
+);
+ensureSafetyFoundationSemantics(safetyFoundationBundle, "functional safety foundation profile");
+results.push("functional safety foundation profiles preserve safety context, proof-test evidence, bypass visibility, and sensor-to-logic-to-final-element traceability without claiming full lifecycle compliance");
+
+const cyberFoundationBundle = validateCyberFoundationBundle(
+  "OT cybersecurity foundation profile",
+  "conformance/fixtures/v0.9/valid/cyber-foundation-bundle-zone-conduit-assets.json"
+);
+ensureCyberFoundationSemantics(cyberFoundationBundle, "OT cybersecurity foundation profile");
+results.push("OT cybersecurity foundation profiles preserve cyber-managed identity, firmware or software context, zones, conduits, posture, vulnerability, and mitigation references without claiming full control-framework coverage");
+
 expectInvalidCapabilityManifest(
   "capability manifest overclaim",
   "conformance/fixtures/v0.9/invalid/capability-manifest-overclaim-standards-and-legacy.json",
@@ -2401,6 +2603,13 @@ expectInvalidEventAlarmBundle(
   "must retain a valid-from timestamp"
 );
 results.push("suppression and shelving require provenance and an explicit valid interval");
+
+expectInvalidSafetyFoundationBundle(
+  "safety bypass left active after work close",
+  "conformance/fixtures/v0.9/invalid/safety-foundation-bundle-bypass-active-after-work-close.json",
+  "must not close work while a safety bypass remains active"
+);
+results.push("functional safety foundation profiles reject work closure when safety bypass state remains active");
 
 expectInvalidEventAlarmBundle(
   "completed work while safety bypass remains active",

@@ -26,3 +26,7 @@ SSOM does not require ServiceNow CMDB or CSDM to become a complete industrial se
 ## Prompt 8 crosswalk reference
 
 - Structured ServiceNow projection guidance now lives in `docs/source-system-mapping-guidance-v0.9.json` under the `servicenow-cmdb` mapping patterns.
+
+## Formal profile reference
+
+- The bounded ServiceNow serving surface is now formalized in `docs/servicenow-serving-projection-profile-v0.9.md`.

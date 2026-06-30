@@ -30,6 +30,7 @@ The structured artifacts introduced here reference official or primary-source st
 - IEC 62443 zone and conduit foundations can be represented through operational boundaries, governed relationships, and cyber-managed asset context, but the control framework is still profile-dependent.
 - IEC 61511 safety context maps to bypass, event, state-transition, and verification evidence without claiming functional-safety program completeness.
 - ServiceNow, historian, EAM, SCADA, OEM cloud, and CMDB identity convergence guidance is now traceable and qualified.
+- Formal bounded profiles now exist for ServiceNow serving projection, functional safety foundation, and OT cybersecurity foundation surfaces.
 
 ## Claim boundary
 

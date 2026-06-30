@@ -80,12 +80,12 @@
         "serving-projection-profile"
       ],
       "required_evidence_refs": [
-        "docs/servicenow-coexistence.md",
-        "docs/source-system-mapping-guidance-v0.9.json"
+        "docs/servicenow-serving-projection-profile-v0.9.md",
+        "conformance/fixtures/v0.9/valid/servicenow-serving-projection-bundle-core-assets.json"
       ],
-      "status_reason": "Current evidence supports documented coexistence and projection guidance, not a generic executable ServiceNow adapter.",
+      "status_reason": "Current evidence supports a documented and fixture-backed curated projection surface, not a generic executable ServiceNow adapter.",
       "allowed_surfaces": [
-        "docs/servicenow-coexistence.md",
+        "docs/servicenow-serving-projection-profile-v0.9.md",
         "docs/standards-claims-matrix-v0.9.json"
       ]
     },
@@ -97,9 +97,10 @@
         "cyber-context-profile"
       ],
       "required_evidence_refs": [
+        "docs/ot-cybersecurity-foundation-profile-v0.9.md",
         "docs/transformation-loss-register-v0.9.json"
       ],
-      "status_reason": "The repository currently preserves foundational cyber context only; a richer cyber profile is still required before broader claims are safe.",
+      "status_reason": "The repository now includes a bounded OT cyber foundation profile, but broader IEC 62443 control-framework claims are still unsafe.",
       "allowed_surfaces": [
         "docs/standards-claims-matrix-v0.9.json"
       ]

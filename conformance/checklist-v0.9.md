@@ -40,3 +40,18 @@
 - [ ] Frequently queried telemetry and event fields are typed columns rather than JSON-only access paths.
 - [ ] Corrected and superseded facts are append-preserving and lineage-aware.
 - [ ] Serving projections and AI feature tables are rebuildable from canonical history.
+
+## ServiceNow Serving Projection Profile
+- [ ] ServiceNow projections remain curated, typed, and rebuildable rather than becoming the canonical evidence store.
+- [ ] Pump, PLC, VFD, chiller, and robot-cell projection scenarios are covered by the serving-profile fixture.
+- [ ] Raw historian samples, high-frequency telemetry, raw OPC UA payloads, ML feature records, raw event transitions, data-quality records, and analytical cohorts are excluded from workflow-primary storage.
+
+## Functional Safety Foundation Profile
+- [ ] Safety context keeps sensor element, logic solver, final element, and controlled process asset relationships explicit.
+- [ ] Proof-test and work-verification evidence remain linked to safety context.
+- [ ] Work closure while bypass remains active is rejected by the profile validator.
+
+## OT Cybersecurity Foundation Profile
+- [ ] Cyber context keeps firmware or software identity, network identity, zones, conduits, vulnerability references, posture references, and mitigation actions explicit.
+- [ ] The profile covers a networked vulnerable VFD, a PLC communicating through a conduit, and a safety controller with cyber-managed identity.
+- [ ] The profile is bounded as foundational OT cyber interoperability context rather than a complete cybersecurity management surface.
